@@ -41,9 +41,13 @@ class Universe:
         f=open(file,w)
         a=len(CPU)
         k=n1
-        while(k<=n1-8):
+        while(k>=8):
+            k -= 8
+            f.write(chr(a>>k & 0b11111111))
+        temp=a<<8-k
+        a=len(CPU)
+        k=n2+8-k
+        while(k>=8):
+            k -= 8
             f.write(a>>k & 0b11111111)
-            k += 8
-        temp=a>>k
-        
     
