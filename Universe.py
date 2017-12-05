@@ -50,7 +50,6 @@ class Universe:
         k=n1
         while(k>=0):
             f.write(a>>k & 0b11111111)
-<<<<<<< HEAD
             k -= 8
         nextToSave=0
         while 8 < len(self.CPU) - nextToSave:
@@ -209,9 +208,6 @@ class Universe:
         "renvoie la distance d'édition entre les codes des deux espèces données en paramètre"
 
         
-<<<<<<< HEAD
-=======
-        
     ## functions for analysis
     def colonisationRate(self) :
         "renvoie le taux de cases remplies dans la liste Memoire[] de l'univers à la date t"
@@ -272,4 +268,4 @@ class Universe:
 
         
     
->>>>>>> 9d1876b65e4bb70d1d872b3fcec6df62f5e45a41
+#>>>>>>> 9d1876b65e4bb70d1d872b3fcec6df62f5e45a41
