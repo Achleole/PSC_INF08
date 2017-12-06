@@ -57,22 +57,20 @@ class Universe:
         return (instructionsNb/len(self.Memory)) ;
 
 
-    def individus_boucles(t) : # pas fini du tout !
+    def loopUnits(self) : # pas fini du tout !
         "??? en utilisant la méthose donnée par le tuteur : un CPU-test parcourt le code, on identifie un individu-boucle comme la plus grande boucle possible."
         # je ne sais plus s'il faut pouvoir retourner au début depuis la fin, où juste arriver à la fin depuis le début
-        self = reconstitue(t);
-        N = len(self.Memoire);   # devrait être une variable globale ?
-        loopStart = [None] * N;
-        test = CPU() ;
+        N = len(self.Memory);   # devrait être une variable globale ?
+        origin = [None] * N;
+        test = CPU() ;   #comment gérer les différences de contenu des registres etc ?
         for i in range(N) :
-            if loopStart[i] == None :
-                loopStart[i] = i;
-                debut_courant = i;
+            if origin[i] == None :
+                origin[i] = i;
+                currentOrigin = i;
                 test.index = i;
                 while ?? :
                     test.execute();
-                    if ?? :
-                        debut_boucle[test.index] = debut_courant;
+                    origin[test.index] = currentOrigin;
                 test.clear() ; #si cette méthode n'existe pas, on peut juste remplacer par test=CPU();
         return debut_boucle;
 
