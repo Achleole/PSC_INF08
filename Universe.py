@@ -1,15 +1,4 @@
 import math
-class CPU:#fausse classe juste pour tester universe
-    def __init__(self,entier=None):
-        if entier==None:
-            self.entier=12
-        else:
-            self.entier=entier
-        pass
-    def execute(self):
-        pass
-    def toBits(self):
-        return self.entier
 class Universe:
     def __init__(self):
         self.CPU=[]
