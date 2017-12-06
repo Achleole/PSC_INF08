@@ -67,7 +67,7 @@ def jmpb(c):
                 return()
     
 def call(c):
-    "place l'adresse au sommet de la pile et saute au template le plus proche en avant:
+    "place l'adresse au sommet de la pile et saute au template le plus proche en avant:"
     stack.push(c.index)
     jmpb()
 
@@ -126,9 +126,9 @@ def adrb(c):
                 adr=(adr-i-1)%l
                 break
             if i==n-1:
-				Ax=(adr+1)%l
+				ax=(adr+1)%l
                 return()
-	Ax=(c.index+1)%l
+	ax=(c.index+1)%l
     
 def new(c):
     "crée un nouveau cpu"
@@ -136,8 +136,8 @@ def new(c):
 
 def read(c):
 	"lit l'instruction correspondant à l'adresse présente dans Ax et la place dans la pile"
-	c.stack.push(c.universe.memory[Ax])
+	c.stack.push(c.universe.memory[ax])
 
 def write(c):
 	"place l'instruction au sommet de la pile à l'adresse contenue dans Ax"
-	C.universe.memory[Ax]=c.stack.pop()
+	C.universe.memory[ax]=c.stack.pop()

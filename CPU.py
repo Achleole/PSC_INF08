@@ -1,5 +1,5 @@
 import instructions
-#import as fonc
+#a completer avec le nom du fichier de Pierre et Yueh : import  as fonc
 
 """ CODE Incomplet, a completer 
 quand il y aura le code de Pierre et Yueh
@@ -35,7 +35,11 @@ instructions_fonctions =
 	27: fonc.adro,
 	28: fonc.adrb,
 	29: fonc.adrf,
-	30: fonc.mal
+	30: fonc.mal,
+	#a partir de ce point on definit les nouvelles fonctions
+	31: fonc.new,
+	32: fonc.read,
+	33: fonc.write
 }
 """
 """Ce tableau stocke les correspondances entre les
@@ -48,7 +52,7 @@ class CPU:
 		""" Initialise les registres a 0"""
 		self.ax = self.bx = self.cx = self.dx = 0
 		self.universe = universe #Pointeur vers l'univers qui vient de le creer
-		self.adr = adr #adr designe l'adresse couramment lue par le CPU
+		self.index = index #index designe l'adresse couramment lue par le CPU
 		self.stack = []
 
 	def execute(self):
