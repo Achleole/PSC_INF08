@@ -1,4 +1,5 @@
 import math
+import CPU.py
 class Universe:
     def __init__(self):
         self.CPU=[]

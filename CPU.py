@@ -1,4 +1,4 @@
-import instructions
+import instructions_tierra.py
 #a completer avec le nom du fichier de Pierre et Yueh : import  as fonc
 
 """ CODE Incomplet, a completer 
