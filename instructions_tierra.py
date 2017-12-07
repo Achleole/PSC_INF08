@@ -137,8 +137,8 @@ def new(c):
     create(c)
 
 def read(c):
-    "lit l'instruction correspondant à l'adresse présente dans c.ax et la place dans la pile"
-    c.stack.push(c.universe.memory[c.ax])
+    "lit l'instruction correspondant à l'adresse présente dans c.bx et la place dans la pile"
+    c.stack.push(c.universe.memory[c.bx])
 
 def write(c):
     "place l'instruction au sommet de la pile à l'adresse contenue dans c.ax"
