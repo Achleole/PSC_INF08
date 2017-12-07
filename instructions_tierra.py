@@ -6,9 +6,11 @@ Ceci est un script temporaire.
 
 instructions tierra
 """
-"l=longuer de la mémoire circulaire"
-"d=distance de recherche mc.aximale des templates"
-"t=longueur mc.aximale des templates"
+"l=longueur de la mémoire circulaire"
+"d=distance de recherche maximale des templates"
+"t=longueur maximale des templates"
+
+import random as rd ; #il faut le placer ailleurs ?
 
 def ifz(c):
     "execute la prochaine istruction si c.cx=0, la passe sinon"
@@ -207,3 +209,7 @@ def not0(c):  #c'est vraiment ça qu'il faut faire ??
 def shl(c):
     "double the value of C"
     c.cx*=2
+
+def rand(c) :
+    c.cx = int(l*rd.random())
+    c.index = c.index=(c.index+1)%l #cette étape semble oubliée dans d'autres instructions
