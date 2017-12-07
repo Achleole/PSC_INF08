@@ -71,7 +71,7 @@ def jmpb(c):
 def call(c):
     "place l'adresse au sommet de la pile et saute au template le plus proche en avant:"
     c.stack.push(c.index)
-    jmpb(c)
+    jmpb(c) #plutôt jmp(c) ?
 
 def ret(c):
     "enlève l'adresse du haut de la pile et va s'y placer"
