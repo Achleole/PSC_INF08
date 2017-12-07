@@ -42,6 +42,7 @@ instructions_fonctions =
 	33: fonc.write
 }
 """
+#l'instruction mal n'existe plus
 """Ce tableau stocke les correspondances entre les
 fonctions a appeler et leur code correspondant dans la
 memoire.
@@ -63,6 +64,6 @@ class CPU:
 
 	def kill(self):
 		"""La fonction kill fait supprimer le CPU de l'univers"""
-		self.univers.kill()
+		self.universe.kill() # ne serait-ce pas plutôt self.universe.killCPU(self) ?
 
 	
