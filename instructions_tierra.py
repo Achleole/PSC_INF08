@@ -181,7 +181,7 @@ def movAB(c):
     "B takes the value of  A"
     c.bx=c.cx
 def movii(c):
-    "unknown function"
+    "unknown function" #cette fonction n'existe pas pour nous
 
 def subCAB(c):
     c.cx=c.ax-c.bx
@@ -210,5 +210,5 @@ def shl(c):
     c.cx*=2
 
 def rand(c) :
-    c.cx = int(l*rd.random())
+    c.ax = int(l*rd.random())
     c.index = c.index=(c.index+1)%l #cette étape semble oubliée dans d'autres instructions
