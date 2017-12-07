@@ -1,52 +1,43 @@
 import instructions_tierra.py
-#a completer avec le nom du fichier de Pierre et Yueh : import  as fonc
+import instructions_tierra as fonc
 
-""" CODE Incomplet, a completer 
-quand il y aura le code de Pierre et Yueh
 instructions_fonctions = 
 {
-	0: fonc.nop0,
-	1: fonc.nop1,
-	2: fonc.movdi,
-	3: fonc.movid,
-	4: fonc.movii,
-	5: fonc.pushA,
-	6: fonc.pushB,
-	7: fonc.pushC,
-	8: fonc.pushD,
-	9: fonc.popA,
-	10: fonc.popB,
-	11: fonc.popC,
-	12: fonc.popD,
-	13: fonc.puticc,
-	14: fonc.get,
-	15: fonc.inc,
-	16: fonc.dec,
-	17: fonc.add,
-	18: fonc.sub,
-	19: fonc.zero,
-	20: fonc.shl,
-	21: fonc.not0,
-	22: fonc.ifz,
-	23: fonc.ifZ,
-	24: fonc.jmpo,
-	25: fonc.jmpb,
-	26: fonc.call,
-	27: fonc.adro,
-	28: fonc.adrb,
-	29: fonc.adrf,
-	30: fonc.mal,
-	#a partir de ce point on definit les nouvelles fonctions
-	31: fonc.new,
-	32: fonc.read,
-	33: fonc.write
+	0: fonc.ifz,
+	1: fonc.jmp,
+	2: fonc.jmpb,
+	3: fonc.call,
+	4: fonc.ret,
+	5: fonc.adrf,
+	6: fonc.adrb,
+	7: fonc.new,
+	8: fonc.read,
+	9: fonc.write,
+	10: fonc.nop0,
+	11: fonc.nop1,
+	12: fonc.pushA,
+	13: fonc.pushB,
+	14: fonc.pushC,
+	15: fonc.pushD,
+	16: fonc.popA,
+	17: fonc.popB,
+	18: fonc.popC,
+	19: fonc.popD,
+	20: fonc.movCD,
+	21: fonc.movAB,
+	22: fonc.movii,
+	23: fonc.subCAB,
+	24: fonc.subAAC,
+	25: fonc.incA,
+	26: fonc.incB,
+	27: fonc.incC,
+	28: fonc.incD,
+	29: fonc.decC,
+	30: fonc.zero,
+	31: fonc.not0,
+	32: fonc.shl,
+	33: fonc.rand
 }
-"""
-#l'instruction mal n'existe plus
-"""Ce tableau stocke les correspondances entre les
-fonctions a appeler et leur code correspondant dans la
-memoire.
-Il reste a ajouter les nouvelles instructions"""
 
 class CPU:
 	def __init__(self, universe, index):
@@ -59,8 +50,11 @@ class CPU:
 	def execute(self):
 		"""execute l'instruction actuellement pointee par le CPU"""
 		i = self.universe.memoire[self.index]
-		instructions_fonctions[i](self) #execute la fonction representee 
+		try:
+			instructions_fonctions[i](self) #execute la fonction representee 
 		#par le code i
+		except:
+			print("Probleme d'execution de l'instruction")
 
 	def kill(self):
 		"""La fonction kill fait supprimer le CPU de l'univers"""

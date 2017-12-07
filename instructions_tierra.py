@@ -71,12 +71,11 @@ def jmpb(c):
 def call(c):
     "place l'adresse au sommet de la pile et saute au template le plus proche en avant:"
     c.stack.push(c.index)
-    jmpb()
+    jmpb(c)
 
 def ret(c):
     "enlève l'adresse du haut de la pile et va s'y placer"
     c.index=c.stack.pop()
-    return()
     
 def adrf():
     "cherche un template en avant et place son adresse dans c.ax"
@@ -175,10 +174,10 @@ def popC(c):
 def popD(c):
     c.dx=c.stack.pop()
 
-def movcd(c):
+def movCD(c):
     "C takes the value of D"
     c.cx=c.dx
-def movab(c):
+def movAB(c):
     "B takes the value of  A"
     c.bx=c.cx
 def movii(c):
