@@ -63,6 +63,6 @@ class CPU:
 
 	def kill(self):
 		"""La fonction kill fait supprimer le CPU de l'univers"""
-		self.univers.kill()
+		self.universe.kill() # ne serait-ce pas plutôt self.universe.killCPU(self) ?
 
 	
