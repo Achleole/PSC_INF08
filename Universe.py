@@ -1,10 +1,17 @@
 import math
-import CPU.py
+from CPU import *
 class Universe:
+    #valeurs ci-dessous très temporaires
+    #NB : n1 et n2 ne servent qu'a la sauvegarde, donc pas besoin de s'en occupper pour l'instant
+    b1=2 #nb bytes du nb de CPU et du numero du CPU considéré actuellement.(limite leur nombre)
+    n1=5 #nb bit d'un CPU
+    b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
+    n2=6 #nb bit d'une case memoire
     def __init__(self):
         self.CPU=[]
         self.CPUsuivant=-1
         self.memoire=[]
+        self.reaper=[]
     def roundSlicer(self):
         self.mainLoop(len(self.CPU))
     def forward(self,N):
@@ -22,58 +29,57 @@ class Universe:
         i = 0
         while not killed:
             if self.CPU[i] is cpu:
-                self.CPU=self.CPU[:i]+self.CPU[i+1:]
+                self.CPU.remove(i)
                 CPUsuivant -= (i < CPUsuivant)
                 killed = True
             i += 1
     def kill(self):
         self.CPU=self.CPU[:CPUsuivant]+self.CPU[CPUsuivant+1:]
         CPUsuivant -= 1
-    def createCPU(self):
+    def createCPU(self,case):
         """ Rajoute un  processeur dans le slicer, juste avant le processeur actif"""
-        nouveau = CPU()
-        self.CPU=self.CPU[self.CPUsuivant:]+[nouveau]+self.CPU[:self.CPUsuivant]
+        nouveau = CPU(self,case)
+        self.CPU.insert(self.CPUsuivant,nouveau)
+        self.reaper.append(nouveau)
         self.CPUsuivant+=1
+        if len(self.CPU)> 2**(8*self.b1)-1:
+            self.kill(self.reaper.pop(0))
     def photo(self,file):
         """Ecrit son etat dans le fichier donné en argument. Remplace le fichier s'il existait déjà"""
-        b1=2 #nb bytes du nb de CPU et du numero du CPU considéré actuellement.
-        n1=5 #nb bit d'un CPU
-        b2=2 #nb bytes du nb de case memoire.
-        n2=5 #nb bit d'une case memoire
         #Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
-        donnees=len(self.CPU).to_bytes(b1,byteorder='big')
-        donnees+=self.CPUsuivant.to_bytes(b1,byteorder='big')
+        donnees=len(self.CPU).to_bytes(self.b1,byteorder='big')
+        donnees+=self.CPUsuivant.to_bytes(self.b1,byteorder='big')
         
         nextToSave=0
         while 8 < len(self.CPU) - nextToSave:
             temp=0
             for i in range(8):
-                temp=(temp<<n1)+self.CPU[nextToSave].toBits()
+                temp=(temp<<self.n1)+self.CPU[nextToSave].toBits()
                 nextToSave += 1
-            donnees+=temp.to_bytes(n1,byteorder='big')
+            donnees+=temp.to_bytes(self.n1,byteorder='big')
         temp=0
         for i in range(nextToSave,len(self.CPU)):
-            temp=(temp<<n1)+self.CPU[i].toBits()
-        k=(len(self.CPU)-nextToSave)*n1
+            temp=(temp<<self.n1)+self.CPU[i].toBits()
+        k=(len(self.CPU)-nextToSave)*self.n1
         n=math.ceil(k/8.)
         print("n :",n,"/",temp)
         donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
 
 
-        donnees+=len(self.memoire).to_bytes(b2,byteorder='big')
+        donnees+=len(self.memoire).to_bytes(self.b2,byteorder='big')
             
         nextToSave=0
         while 8 < len(self.memoire) - nextToSave:
             temp=0
             for i in range(8):
-                temp=(temp<<n2)+self.memoire[nextToSave]
+                temp=(temp<<self.n2)+self.memoire[nextToSave]
                 nextToSave += 1
-            donnees+=temp.to_bytes(n2,byteorder='big')
+            donnees+=temp.to_bytes(self.n2,byteorder='big')
         
         temp=0
         for i in range(nextToSave,len(self.memoire)):
-            temp=(temp<<n2)+self.memoire[i]
-        k=(len(self.memoire)-nextToSave)*n2
+            temp=(temp<<self.n2)+self.memoire[i]
+        k=(len(self.memoire)-nextToSave)*self.n2
         n=math.ceil(k/8)
         donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
         
@@ -84,41 +90,37 @@ class Universe:
         f.close()
     def loadPhoto(self,file):
         """Lit un etat dans le fichier donné en argument."""
-        b1=2 #nb bytes du nb de CPU et du numero du CPU considéré actuellement.
-        n1=5 #nb bit d'un CPU
-        b2=2 #nb bytes du nb de case memoire.
-        n2=5 #nb bit d'une case memoire
         #Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
         self.CPU=[]
         f=open(file,'rb')
         
-        lenCPU=int.from_bytes(f.read(b1),byteorder='big')
-        self.CPUsuivant=int.from_bytes(f.read(b1),byteorder='big')
+        lenCPU=int.from_bytes(f.read(self.b1),byteorder='big')
+        self.CPUsuivant=int.from_bytes(f.read(self.b1),byteorder='big')
         
-        CPUs=f.read(math.ceil(n1*lenCPU/8.))
+        CPUs=f.read(math.ceil(self.n1*lenCPU/8.))
         k1=0
         for k in range(lenCPU):
             temp=0
-            while(k1<n1*(k+1)):
+            while(k1<self.n1*(k+1)):
                 l=k1//8
                 debut=k1-l*8
-                nombreALire=min(n1*(k+1)-k1,8-debut)
+                nombreALire=min(self.n1*(k+1)-k1,8-debut)
                 temp= (temp<<nombreALire )+ ( (CPUs[l] << debut & 0b11111111)>>(8-nombreALire) ) & 0b11111111   #on veut lire de debut a debut+nombre a lire.
                 k1+=nombreALire
             self.CPU.append(CPU(temp))
         
         self.memoire=[]
         
-        lenMemoire=int.from_bytes(f.read(b1),byteorder='big')
-        memoire=f.read(math.ceil(n2*lenMemoire/8.))
+        lenMemoire=int.from_bytes(f.read(self.b2),byteorder='big')
+        memoire=f.read(math.ceil(self.n2*lenMemoire/8.))
         print(memoire)
         k1=0
         for k in range(lenMemoire):
             temp=0
-            while(k1<n2*(k+1)):
+            while(k1<self.n2*(k+1)):
                 l=k1//8
                 debut=k1-l*8
-                nombreALire=min(n2*(k+1)-k1,8-debut)
+                nombreALire=min(self.n2*(k+1)-k1,8-debut)
                 temp= (temp<<nombreALire )+ ( (memoire[l] << debut & 0b11111111)>>(8-nombreALire) ) & 0b11111111   #on veut lire de debut a debut+nombre a lire.
                 k1+=nombreALire
             self.memoire.append(temp)
