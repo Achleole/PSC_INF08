@@ -57,7 +57,7 @@ class CPU:
 
 	def execute(self):
 		"""execute l'instruction actuellement pointee par le CPU"""
-		i = self.universe.memoire[self.adr]
+		i = self.universe.memoire[self.index]
 		instructions_fonctions[i](self) #execute la fonction representee 
 		#par le code i
 
