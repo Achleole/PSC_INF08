@@ -105,13 +105,14 @@ def adrf():
 
 def adrb(c):
     "cherche un template en arrière et place son adresse dans c.ax"
+    # ne devrait-on pas aussi mettre la longueur du template dans cx, comme dans Tierra ?
 	adr=(c.index+1)%l
 	template=[]
 	for k in range(t):
 		if c.universe.memory[adr]==nop0
 			template+=[nop1]
 		elif c.universe.memory[adr]==nop1
-			emplate+=[nop0]
+			template+=[nop0]
 		else:
 			adr=(adr+1)%l
 			break
@@ -142,10 +143,11 @@ def write(c):
 	"place l'instruction au sommet de la pile à l'adresse contenue dans c.ax"
 	C.universe.memory[c.ax]=c.stack.pop()
 
-def nop1(c):
+def nop0(c):
     "I don't know what does it do"
     return None
-def nop2(c):
+    
+def nop1(c):
     "I don't know what does it do"
     return None
 
@@ -196,7 +198,7 @@ def decC(c):
     c.cx-=1
 def zero(c):
     c.cx=0
-def not0(c):
+def not0(c):  #c'est vraiment ça qu'il faut faire ??
     "inverse the unity number"
     if c.cx%2==0:
         c.cx+=1
