@@ -48,7 +48,7 @@ memoire.
 Il reste a ajouter les nouvelles instructions"""
 
 class CPU:
-	def __init__(self, universe, adr):
+	def __init__(self, universe, index):
 		""" Initialise les registres a 0"""
 		self.ax = self.bx = self.cx = self.dx = 0
 		self.universe = universe #Pointeur vers l'univers qui vient de le creer
