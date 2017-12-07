@@ -65,7 +65,7 @@ class Universe:
         while 8 < len(self.memoire) - nextToSave:
             temp=0
             for i in range(8):
-                temp=(temp<<n2)++self.memoire[nextToSave]
+                temp=(temp<<n2)+self.memoire[nextToSave]
                 nextToSave += 1
             donnees+=temp.to_bytes(n2,byteorder='big')
         
