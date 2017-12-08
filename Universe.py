@@ -12,9 +12,9 @@ class Universe:
         self.CPUsuivant=-1
         self.reaper=[]
         self.memoryReset()
-    def memoryReset():
+    def memoryReset(self):
         self.memoire=[0]*(2**(b2*8))
-    def roundSlicer(s1elf):
+    def roundSlicer(self):
         self.mainLoop(len(self.CPU))
     def forward(self,N):
         """ fait executer N intruction"""
