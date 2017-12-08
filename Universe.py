@@ -13,7 +13,7 @@ class Universe:
         self.reaper=[]
         self.memoryReset()
     def memoryReset(self):
-        self.memoire=[0]*(2**(b2*8))
+        self.memoire=[0]*(2**(self.b2*8))
     def roundSlicer(self):
         self.mainLoop(len(self.CPU))
     def forward(self,N):
