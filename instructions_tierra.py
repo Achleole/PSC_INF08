@@ -75,7 +75,7 @@ def call(c):
 
 def ret(c):
     "enlève l'adresse du haut de la pile et va s'y placer"
-    c.index=c.stack.pop()
+    c.index=(c.stack.pop()+1)%l # attention : on arrive sur les nop -> il faut les sauter
     
 def adrf():
     "cherche un template en avant et place son adresse dans c.ax"
@@ -134,7 +134,7 @@ def adrb(c):
     
 def new(c):
     "crée un nouveau cpu"
-    create(c)
+    c.universe.createCPU(c.ax)
 
 def read(c):
     "lit l'instruction correspondant à l'adresse présente dans c.bx et la place dans la pile"
