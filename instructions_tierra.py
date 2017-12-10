@@ -211,4 +211,3 @@ def shl(c):
 
 def rand(c) :
     c.ax = int(l*rd.random())
-    c.index = c.index=(c.index+1)%l #cette étape semble oubliée dans d'autres instructions
