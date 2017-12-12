@@ -13,7 +13,7 @@ class Universe:
         self.reaper=[]
         self.memoryReset()
     def memoryReset(self):
-        self.memoire=[0]*(2**(self.b2*8))
+        self.memory=[0]*(2**(self.b2*8))
     def roundSlicer(self):
         self.mainLoop(len(self.CPU))
     def forward(self,N):
@@ -46,6 +46,11 @@ class Universe:
         self.CPUsuivant+=1
         if len(self.CPU)> 2**(8*self.b1)-1:
             self.kill(self.reaper.pop(0))
+    def addIndividual(self, index, ancestor) :
+        for i in range(len(ancestor)) :
+            self.memory[index + i % l] = ancestor[i]
+
+## Saving
     def photo(self,file):
         """Ecrit son etat dans le fichier donné en argument. Remplace le fichier s'il existait déjà"""
         #Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
@@ -68,20 +73,20 @@ class Universe:
         donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
 
 
-        donnees+=len(self.memoire).to_bytes(self.b2,byteorder='big')
+        donnees+=len(self.memory).to_bytes(self.b2,byteorder='big')
             
         nextToSave=0
-        while 8 < len(self.memoire) - nextToSave:
+        while 8 < len(self.memory) - nextToSave:
             temp=0
             for i in range(8):
-                temp=(temp<<self.n2)+self.memoire[nextToSave]
+                temp=(temp<<self.n2)+self.memory[nextToSave]
                 nextToSave += 1
             donnees+=temp.to_bytes(self.n2,byteorder='big')
         
         temp=0
-        for i in range(nextToSave,len(self.memoire)):
-            temp=(temp<<self.n2)+self.memoire[i]
-        k=(len(self.memoire)-nextToSave)*self.n2
+        for i in range(nextToSave,len(self.memory)):
+            temp=(temp<<self.n2)+self.memory[i]
+        k=(len(self.memory)-nextToSave)*self.n2
         n=math.ceil(k/8)
         donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
         
@@ -111,11 +116,11 @@ class Universe:
                 k1+=nombreALire
             self.CPU.append(CPU(temp))
         
-        self.memoire=[]
+        self.memory=[]
         
         lenMemoire=int.from_bytes(f.read(self.b2),byteorder='big')
-        memoire=f.read(math.ceil(self.n2*lenMemoire/8.))
-        print(memoire)
+        memory=f.read(math.ceil(self.n2*lenMemoire/8.))
+        print(memory)
         k1=0
         for k in range(lenMemoire):
             temp=0
@@ -123,9 +128,9 @@ class Universe:
                 l=k1//8
                 debut=k1-l*8
                 nombreALire=min(self.n2*(k+1)-k1,8-debut)
-                temp= (temp<<nombreALire )+ ( (memoire[l] << debut & 0b11111111)>>(8-nombreALire) ) & 0b11111111   #on veut lire de debut a debut+nombre a lire.
+                temp= (temp<<nombreALire )+ ( (memory[l] << debut & 0b11111111)>>(8-nombreALire) ) & 0b11111111   #on veut lire de debut a debut+nombre a lire.
                 k1+=nombreALire
-            self.memoire.append(temp)
+            self.memory.append(temp)
         f.close()
 
 
@@ -145,11 +150,11 @@ class Universe:
         # je ne sais plus s'il faut pouvoir retourner au début depuis la fin, où juste arriver à la fin depuis le début
         # qu'arrive-t-il aux instructions mortes ?
         self = reconstitue(t);
-        N = len(self.Memoire);   # devrait être une variable globale ?
+        N = len(self.memory);   # devrait être une variable globale ?
         loopStart = [None] * N;
         for i in range(N) :
             test = CPU() ;
-            if self.Memoire != None & loopStart[i] == None :
+            if self.memory != None & loopStart[i] == None :
                 test.index = i;
                 while loopStart[test.index] !=  i:
                     loopStart[test.index] = i;
