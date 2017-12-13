@@ -15,16 +15,21 @@ class Main:
 		i = 0
 		self.U = Univers.Univers()
 		self.U.inserer_cpu(0) #initialiste un CPU au debut de l'univers
+		compteur=0
 		while True:	
-			os.system('clear')
+			compteur+=1
 			self.U.executer_cpus()
 			self.test()
-			s = raw_input()
+			if compteur ==100:
+				s = input()
+				compteur=0
+			else:
+				s=" "
 			if s == "q":
 				break
 			if s == "d":
 				print(self.U.memoire[0:10])
 				print(self.U.memoire[47:51])
-				raw_input()
+				input()
 
 Main()

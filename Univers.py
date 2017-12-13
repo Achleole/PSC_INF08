@@ -9,7 +9,7 @@ class Univers:
 
 	def __init__(s):
 		#code temporaire
-		ancetre = charger_genome('adam')
+		ancetre = charger_genome('eve')
 		s.memoire = ancetre + [None]*(TAILLE_MEMOIRE-len(ancetre))
 		s.liste_cpus 	= []
 
