@@ -7,7 +7,7 @@ class Univers:
 	"Contient les CPU et le monde i.e les instructions a executer"
 	cpu_actuel 	   = 0
 	#valeurs non contractuelles.
-	b1=2 #nb bytes du nb de CPU et du numero du CPU considéré actuellement.(limite leur nombre)
+	b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
 	n1=5 #nb bit d'un CPU
 	b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
 	n2=6 #nb bit d'une case memoire

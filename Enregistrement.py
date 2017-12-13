@@ -10,7 +10,7 @@ def CPUtoInt(cpu):
 def intToCPU(entier):
 	return CPU()
 def photo(univers,file):
-	"""Ecrit son etat dans le fichier donné en argument. Remplace le fichier s'il existait déjà"""
+	"""Ecrit son etat dans le fichier done en argument. Remplace le fichier s'il existait deja"""
 	#Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
 	donnees=len(univers.liste_cpus).to_bytes(univers.b1,byteorder='big')
 	donnees+=univers.liste_cpussuivant.to_bytes(univers.b1,byteorder='big')
@@ -53,8 +53,9 @@ def photo(univers,file):
 	f.write(donnees)
 	print(len(donnees),donnees)
 	f.close()
+	
 def loadPhoto(univers,file):
-	"""Lit un etat dans le fichier donné en argument."""
+	"""Lit un etat dans le fichier donne en argument."""
 	#Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
 	univers.liste_cpus=[]
 	f=open(file,'rb')

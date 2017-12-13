@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/home/lucas/Documents/Polytechnique/PSC_Code")
+
 import os 
 import Univers
 from CPU import *
@@ -21,7 +24,7 @@ class Main:
 			self.U.executer_cpus()
 			self.test()
 			if compteur ==100:
-				s = input()
+				s = raw_input()
 				compteur=0
 			else:
 				s=" "
