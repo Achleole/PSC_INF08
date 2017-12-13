@@ -182,5 +182,12 @@ def read(c):
 
 def write(c):
 	"Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
-	c.univers.memoire[c.ax] = c.pop_stack()
+	if random.random>c.univers.mutation:
+		c.univers.memoire[c.ax] = c.pop_stack()
+	else:
+		c.univers.memoire[c.ax] = random.randint(39)
 	c.decrementer_stack_ptr()
+	
+def HCF(c)
+	"tue le cpu qui la lit"
+	die(c)
