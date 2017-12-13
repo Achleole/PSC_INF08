@@ -188,6 +188,6 @@ def write(c):
 		c.univers.memoire[c.ax] = random.randint(39)
 	c.decrementer_stack_ptr()
 	
-def HCF(c)
+def HCF(c):
 	"tue le cpu qui la lit"
 	die(c)
