@@ -189,5 +189,5 @@ def write(c):
 	c.decrementer_stack_ptr()
 	
 def HCF(c):
-	"tue le cpu qui la lit"
-	die(c)
+	"Tue le cpu qui la lit"
+	c.die()
