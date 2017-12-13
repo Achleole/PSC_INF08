@@ -13,9 +13,9 @@ class Univers:
 	n2=6 #nb bit d'une case memoire
 	def __init__(s):
 		#code temporaire
-		s.memoire = [None]*(TAILLE_MEMOIRE)
+		ancetre = charger_genome('eve')
+		s.memoire = ancetre + [None]*(TAILLE_MEMOIRE-len(ancetre))
 		s.liste_cpus 	= []
-		s.insDict = instructionsDict(correspondances)
 
 	def executer_cpus(s):
 		"Cette fonction execute tous les CPU 1 fois\
