@@ -10,6 +10,6 @@ class Experiment:
         univsList.append(univ)
         univ.addIndividual(0, ancestor)
         for i in range(t) :
-            univ.roundSlicer()
+            univ.executer_cpus()
     
     
