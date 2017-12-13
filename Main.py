@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/home/lucas/Documents/Polytechnique/PSC_Code")
-
 import os 
 import Univers
 from Enregistrement import *
@@ -9,6 +6,7 @@ from CPU import *
 class Main:
 
 	def test(self):
+		print(self.U.memoire[:10])
 		for i in range(len(self.U.liste_cpus)):
 			print("Pointeur du CPU numero ", i, '=', self.U.liste_cpus[i].ptr)
 			print("Valeur de ax du NPU numero", i, '=', self.U.liste_cpus[i].ax)
@@ -20,25 +18,10 @@ class Main:
 		self.U = Univers.Univers()
 		self.U.inserer_cpu(0) #initialiste un CPU au debut de l'univers
 		compteur=0
-		fichier="C:/Users/migli/Desktop/temporary.txt"
 		while True:	
-			compteur+=1
 			self.U.executer_cpus()
 			self.test()
-			if compteur ==100:
-				s = raw_input()
-				compteur=0
-			else:
-				s=" "
+			s = raw_input()
 			if s == "q":
-				break
-			if s == "d":
-				print(self.U.memoire[0:10])
-				print(self.U.memoire[47:51])
-				input()
-			if s == "s":
-				photo(self.U,fichier)
-			if s == "l":
-				loadPhoto(self.U,fichier)
-
+				quit()
 Main()

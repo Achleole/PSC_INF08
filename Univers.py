@@ -13,7 +13,8 @@ class Univers:
 	n2=6 #nb bit d'une case memoire
 	def __init__(s):
 		#code temporaire
-		s.memoire = [None]*TAILLE_MEMOIRE
+		eve = charger_genome('eve')
+		s.memoire = eve + [None]*(TAILLE_MEMOIRE-len(eve))
 		s.liste_cpus 	= []
 
 	def executer_cpus(s):
