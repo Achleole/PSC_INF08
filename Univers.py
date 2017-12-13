@@ -47,6 +47,8 @@ class Univers:
 		"Insere un nouveau CPU dans la liste juste apres celui actuellement pointe"
 		s.liste_cpus.insert(s.cpu_actuel+1, CPU(ptr, s))
 	
-	def addIndividual(self, index, indiv) :
+	def ajouter_genome_memoire(self, index, indiv):
+		"Place l'individu (sous forme de liste d'instructions)\
+		dans la memoire a partir de l'indice index"
 		for i in range(len(indiv)) :
 			self.memory[index + i % l] = indiv[i]
