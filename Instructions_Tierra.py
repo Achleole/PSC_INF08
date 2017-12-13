@@ -5,7 +5,7 @@ from Utilitaire import *
 import math
 
 LIMITE_RECHERCHE 		= 10
-NB_TOTAL_INSTRUCTIONS 	= 39
+NB_TOTAL_INSTRUCTIONS 	= 38
 
 #Definit la limite de recherhe pour le template
 longueur_pattern = 0
