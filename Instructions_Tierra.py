@@ -4,7 +4,8 @@ import random
 from Utilitaire import *
 import math
 
-LIMITE_RECHERCHE = 10
+LIMITE_RECHERCHE 		= 10
+NB_TOTAL_INSTRUCTIONS 	= 39
 
 #Definit la limite de recherhe pour le template
 longueur_pattern = 0
@@ -182,10 +183,10 @@ def read(c):
 
 def write(c):
 	"Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
-	if random.random>c.univers.mutation:
+	if random.random > c.univers.mutation:
 		c.univers.memoire[c.ax] = c.pop_stack()
 	else:
-		c.univers.memoire[c.ax] = random.randint(39)
+		c.univers.memoire[c.ax] = random.randint(NB_TOTAL_INSTRUCTIONS)
 	c.decrementer_stack_ptr()
 	
 def HCF(c):
