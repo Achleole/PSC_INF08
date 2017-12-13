@@ -9,8 +9,7 @@ class Univers:
 
 	def __init__(s):
 		#code temporaire
-		ancetre = charger_genome('eve')
-		s.memoire = ancetre + [None]*(TAILLE_MEMOIRE-len(ancetre))
+		s.memoire = [None]*(TAILLE_MEMOIRE)
 		s.liste_cpus 	= []
 
 	def executer_cpus(s):
@@ -42,3 +41,7 @@ class Univers:
 	def inserer_cpu(s, ptr):
 		"Insere un nouveau CPU dans la liste juste apres celui actuellement pointe"
 		s.liste_cpus.insert(s.cpu_actuel+1, CPU(ptr, s))
+	
+	def addIndividual(self, index, indiv) :
+		for i in range(len(indiv)) :
+			self.memory[index + i % l] = indiv[i]
