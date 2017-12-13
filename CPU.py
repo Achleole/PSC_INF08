@@ -1,69 +1,57 @@
-import instructions_tierra
-#a completer avec le nom du fichier de Pierre et Yueh : import  as fonc
+from Instructions_Tierra import *
 
-""" CODE Incomplet, a completer 
-quand il y aura le code de Pierre et Yueh
-instructions_fonctions = 
-{
-	0: fonc.nop0,
-	1: fonc.nop1,
-	2: fonc.movdi,
-	3: fonc.movid,
-	4: fonc.movii,
-	5: fonc.pushA,
-	6: fonc.pushB,
-	7: fonc.pushC,
-	8: fonc.pushD,
-	9: fonc.popA,
-	10: fonc.popB,
-	11: fonc.popC,
-	12: fonc.popD,
-	13: fonc.puticc,
-	14: fonc.get,
-	15: fonc.inc,
-	16: fonc.dec,
-	17: fonc.add,
-	18: fonc.sub,
-	19: fonc.zero,
-	20: fonc.shl,
-	21: fonc.not0,
-	22: fonc.ifz,
-	23: fonc.ifZ,
-	24: fonc.jmpo,
-	25: fonc.jmpb,
-	26: fonc.call,
-	27: fonc.adro,
-	28: fonc.adrb,
-	29: fonc.adrf,
-	30: fonc.mal,
-	#a partir de ce point on definit les nouvelles fonctions
-	31: fonc.new,
-	32: fonc.read,
-	33: fonc.write
-}
-"""
-#l'instruction mal n'existe plus
-"""Ce tableau stocke les correspondances entre les
-fonctions a appeler et leur code correspondant dans la
-memoire.
-Il reste a ajouter les nouvelles instructions"""
+TAILLE_STACK = 10
 
 class CPU:
-	def __init__(self, universe, index):
-		""" Initialise les registres a 0"""
+
+	#ptr stocke l'adresse actuellement pointee par le CPU
+	def __init__(self, ptr, univers):
 		self.ax = self.bx = self.cx = self.dx = 0
-		self.universe = universe #Pointeur vers l'univers qui vient de le creer
-		self.index = index #index designe l'adresse couramment lue par le CPU
-		self.stack = []
+		self.ptr							  = ptr
+		self.univers						  = univers
+		self.stack 							  = [0]*TAILLE_STACK
+		self.stack_ptr						  = 0
 
 	def execute(self):
-		"""execute l'instruction actuellement pointee par le CPU"""
-		i = self.universe.memoire[self.index]
-		instructions_fonctions[i](self) #execute la fonction representee 
-		#par le code i
+		"execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
+		Attention, les instructions dans l'univers sont stockees sous forme de chaine de caractere\
+		correspondant EXACTEMENT au nom des fonctions"
+		try:
+			f = eval(self.univers.memoire[self.ptr])
+			f(self)
+		except Exception as e:
+			print("Instruction ayant echoue : ", self.univers.memoire[self.ptr])
+			print(e)
+		finally:
+			self.incrementer_ptr()
 
-	def kill(self):
-		"""La fonction kill fait supprimer le CPU de l'univers"""
-		self.universe.kill() # ne serait-ce pas plutôt self.universe.killCPU(self) ?
+	def incrementer_ptr(self):
+		self.ptr = (self.ptr + 1)%(len(self.univers.memoire))
 
-	
+	def incrementer_stack_ptr(self):
+		self.stack_ptr = (self.stack_ptr + 1) % (TAILLE_STACK)
+
+	def decrementer_stack_ptr(self):
+		self.stack_ptr = (self.stack_ptr - 1) % (TAILLE_STACK)
+
+	def pop_stack(self):
+		"Retourne la valeur du stack qui est au dessus i.e en stack_ptr - 1 SANS DECREMENTER\
+		le stack pointeur"
+		return self.stack[(self.stack_ptr-1)%TAILLE_STACK]
+
+	def push_stack(self, x):
+		"Met la valeur de l'argument dans la stack SANS INCREMENTER le stack\
+		pointeur"
+		self.stack[self.stack_ptr] = x
+
+	def die(self):
+		univers.kill(self)
+
+	#FONCTIONS D'AFFICHAGE
+	def afficher_etat(self):
+		print("valeurs de ax, bx, cx et dx : ")
+		print(self.ax, self.bx, self.cx, self.dx)
+		print("Etat du pointeur d'instructions")
+		print(self.ptr, " sur ", self.univers.memoire[self.ptr])
+		print('valeur de la stack : ', self.stack)
+		print('pointeur de la stack : ', self.stack_ptr)
