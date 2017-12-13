@@ -1,3 +1,4 @@
+import math
 def charger_genome(fichier):
 	genome = []
 	"Renvoie sous forme de tableau de strings le genome specifie dans le fichier"

@@ -1,5 +1,6 @@
 import os 
 import Univers
+from Enregistrement import *
 from CPU import *
 
 class Main:
