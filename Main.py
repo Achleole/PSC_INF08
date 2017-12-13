@@ -3,6 +3,7 @@ sys.path.append("/home/lucas/Documents/Polytechnique/PSC_Code")
 
 import os 
 import Univers
+from Enregistrement import *
 from CPU import *
 
 class Main:
@@ -19,6 +20,7 @@ class Main:
 		self.U = Univers.Univers()
 		self.U.inserer_cpu(0) #initialiste un CPU au debut de l'univers
 		compteur=0
+		fichier="C:/Users/migli/Desktop/temporary.txt"
 		while True:	
 			compteur+=1
 			self.U.executer_cpus()
@@ -34,5 +36,9 @@ class Main:
 				print(self.U.memoire[0:10])
 				print(self.U.memoire[47:51])
 				input()
+			if s == "s":
+				photo(self.U,fichier)
+			if s == "l":
+				loadPhoto(self.U,fichier)
 
 Main()

@@ -5,8 +5,8 @@ class Experiment:
         this.speciesList = []
     
     def simulate(self, ancestor, t) :
-        """ Crée un nouvel univers et y fait tourner une nouvelle simulation pour un temps t (en nb de tours de slicer) après avoir placé un ancêtre ancestor """
-        univ = Univ()
+        """ Cree un nouvel univers et y fait tourner une nouvelle simulation pour un temps t (en nb de tours de slicer) après avoir placé un ancêtre ancestor """
+        univ = Univers()
         univsList.append(univ)
         univ.addIndividual(0, ancestor)
         for i in range(t) :

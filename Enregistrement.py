@@ -1,3 +1,4 @@
+import math
 def charger_genome(fichier):
 	genome = []
 	"Renvoie sous forme de tableau de strings le genome specifie dans le fichier"
@@ -13,7 +14,7 @@ def photo(univers,file):
 	"""Ecrit son etat dans le fichier done en argument. Remplace le fichier s'il existait deja"""
 	#Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
 	donnees=len(univers.liste_cpus).to_bytes(univers.b1,byteorder='big')
-	donnees+=univers.liste_cpussuivant.to_bytes(univers.b1,byteorder='big')
+	donnees+=univers.cpu_actuel.to_bytes(univers.b1,byteorder='big')
 	
 	nextToSave=0
 	while 8 < len(univers.liste_cpus) - nextToSave:
@@ -24,7 +25,7 @@ def photo(univers,file):
 		donnees+=temp.to_bytes(univers.n1,byteorder='big')
 	temp=0
 	for i in range(nextToSave,len(univers.liste_cpus)):
-		temp=CPUtoInt((temp<<univers.n1)+univers.liste_cpus[i])
+		temp=(temp<<univers.n1)+CPUtoInt(univers.liste_cpus[i])
 	k=(len(univers.liste_cpus)-nextToSave)*univers.n1
 	n=math.ceil(k/8.)
 	print("n :",n,"/",temp)
@@ -61,7 +62,7 @@ def loadPhoto(univers,file):
 	f=open(file,'rb')
 	
 	lenCPU=int.from_bytes(f.read(univers.b1),byteorder='big')
-	univers.liste_cpussuivant=int.from_bytes(f.read(univers.b1),byteorder='big')
+	univers.cpu_actuel=int.from_bytes(f.read(univers.b1),byteorder='big')
 	
 	CPUs=f.read(math.ceil(univers.n1*lenCPU/8.))
 	k1=0
@@ -91,3 +92,4 @@ def loadPhoto(univers,file):
 			k1+=nombreALire
 		univers.memoire.append(temp)
 	f.close()
+
