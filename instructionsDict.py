@@ -1,4 +1,4 @@
-class instructionsDict :
+class InstructionsDict :
     """ est un dictionnaire à double sens contenant les instructions et les entiers associés """
     def __init__(self):
         """Crée un dictionnaire d'instructions vide"""
