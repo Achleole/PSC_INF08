@@ -11,11 +11,14 @@ class Univers:
 	n1=5 #nb bit d'un CPU
 	b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
 	n2=6 #nb bit d'une case memoire
+	
 	def __init__(s):
 		#code temporaire
-		eve = charger_genome('eve')
-		s.memoire = eve + [None]*(TAILLE_MEMOIRE-len(eve))
-		s.liste_cpus 	= []
+		eve 					= charger_genome('eve')
+		s.memoire 				= eve + [None]*(TAILLE_MEMOIRE-len(eve))
+		s.liste_cpus 			= []
+		s.localisation_cpus 	= {} #Cette variable associe a chaque indice, la liste des cpus qui sont 
+		#en train de la litre 
 
 	def executer_cpus(s):
 		"Cette fonction execute tous les CPU 1 fois\
