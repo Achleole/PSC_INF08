@@ -28,7 +28,6 @@ class CPU:
 		finally:
 			self.incrementer_ptr()
 			self.ajouter_localisation()
-		print(self.univers.localisation_cpus)
 
 	def enlever_localisation(self):
 		"Enleve ce CPU du tableau localisation_cpu"
@@ -67,7 +66,8 @@ class CPU:
 		self.stack[self.stack_ptr] = x
 
 	def die(self):
-		univers.kill(self)
+		self.enlever_localisation()
+		univers.enlever_cpu(self)
 
 	#FONCTIONS D'AFFICHAGE
 	def afficher_etat(self):

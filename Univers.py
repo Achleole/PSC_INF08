@@ -2,6 +2,7 @@ from CPU import *
 from Enregistrement import *
 
 TAILLE_MEMOIRE = 500
+LARGEUR_DENSITE = 0
 
 class Univers:
 	"Contient les CPU et le monde i.e les instructions a executer"
@@ -19,6 +20,7 @@ class Univers:
 		s.liste_cpus 			= []
 		s.localisation_cpus 	= {} #Cette variable associe a chaque indice, la liste des cpus qui sont 
 		#en train de la litre 
+		s.mutation				= 0 #Valeur temporaire
 
 	def executer_cpus(s):
 		"Cette fonction execute tous les CPU 1 fois\
@@ -37,9 +39,18 @@ class Univers:
 
 
 	def tuer_cpu(s, cpu):
-		s.liste_cpus.remove(cpu)
+		cpu.die()
 
 	def tuer_cpu_actuel(s):
+		s.cpu_actuel.die()
+
+	def enlever_cpu(s, cpu):
+		"Ne pas APPELER DIRECTEMENT CETTE fonction dans le code ! Appeler plutot la fonction\
+		 tuer CPU, car enlever_cpu de fait que l'enlever de la liste des cpus. Losqu'un CPU meurt\
+		 il faut aussi qu'il soit enleve de la liste localisation_cpu"
+		s.liste_cpus.remove(cpu)
+
+	def enlever_cpu_actuel(s):
 		liste.pop(s.cpu_actuel)
 
 	def next_cpu(s):
@@ -55,3 +66,16 @@ class Univers:
 		dans la memoire a partir de l'indice index"
 		for i in range(len(indiv)) :
 			self.memory[index + i % l] = indiv[i]
+
+	def calculer_densite_cpus(self, ptr):
+		"Calcule le nombre de cpus par case dans les 2*LARGEUR_DENSITE cases alentours"
+		total = 0
+		for i in range(ptr-LARGEUR_DENSITE, ptr+LARGEUR_DENSITE+1):
+			if(self.localisation_cpus.has_key(i)):
+				total += len(self.localisation_cpus[i])
+		return total/(float(2*LARGEUR_DENSITE + 1))
+
+	def tuer_cpus_par_densite(self):
+		"On va tuer tous les CPUS en meme temps pour pas donner\
+		d'avantage a certains CPUs"
+		pass #TODO
