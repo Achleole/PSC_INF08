@@ -145,11 +145,6 @@ def movDC(c):
 def movBA(c):
 	c.bx = c.ax
 
-def movii(c):
-	#sert a copier le contenu d'une case dans une autree
-	u = c.univers
-	u.memoire[c.ax] = u.memoire[c.bx]
-
 def adr(c, fonc=trouver_template_complementaire):
 	try:
 		l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
