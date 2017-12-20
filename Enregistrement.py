@@ -1,4 +1,4 @@
-import math
+from math import *
 from CPU import *
 def charger_genome(fichier):
 	genome = []
@@ -7,19 +7,38 @@ def charger_genome(fichier):
 	for line in f:
 		genome.append(line.strip())
 	return genome
+
 def CPUtoInt(cpu):
+	k=ceil(log(CPU.TAILLE_STACK,2))
 	resultat=cpu.ax
-	resultat=(resultat<<n2)+cpu.bx
-	resultat=(resultat<<n2)+cpu.cx
-	resultat=(resultat<<n2)+cpu.dx
-	resultat=(resultat<<n2)+cpu.ptr
+	resultat=(resultat<<cpu.univers.n2)+cpu.bx
+	resultat=(resultat<<cpu.univers.n2)+cpu.cx
+	resultat=(resultat<<cpu.univers.n2)+cpu.dx
+	resultat=(resultat<<cpu.univers.n2)+cpu.ptr
 	for i in cpu.stack:
-		resultat=(resultat<<n2)+i
-	resultat=(resultat<<n2)+cpu.stack_ptr
+		resultat=(resultat<<cpu.univers.n2)+i
+	resultat=(resultat<<k)+cpu.stack_ptr
 	return resultat
-def intToCPU(entier,Univers):
-	case_pointee=0
-	return CPU(case_pointee, Univers, ax, bx, cx, dx,stack , stack_ptr)
+	
+def intToCPU(entier,univers):
+	k=ceil(log(CPU.TAILLE_STACK,2))
+	bits0=0
+	for i in range(univers.n2):
+		bits0+=2**i
+	bits1=0
+	for i in range(k):
+		bits1+=2**i
+	stack_ptr=entier & bits1		
+	stack=[]
+	for i in range(CPU.TAILLE_STACK):
+		stack.insert(0,(entier>>(k+i*cpu.univers.n2))&bits0)
+	ptr=(entier>>(k+(CPU.TAILLE_STACK)*cpu.univers.n2))&bits0
+	dx=(entier>>(k+(CPU.TAILLE_STACK+1)*cpu.univers.n2))&bits0
+	cx=(entier>>(k+(CPU.TAILLE_STACK+2)*cpu.univers.n2))&bits0
+	bx=(entier>>(k+(CPU.TAILLE_STACK+3)*cpu.univers.n2))&bits0
+	ax=(entier>>(k+(CPU.TAILLE_STACK+4)*cpu.univers.n2))&bits0
+	print(ax, bx, cx, dx,stack , stack_ptr)
+	return CPU(ptr, Univers, ax, bx, cx, dx,stack , stack_ptr)
 def photo(univers,file):
 	"""Ecrit son etat dans le fichier done en argument. Remplace le fichier s'il existait deja"""
 	#Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
@@ -37,7 +56,7 @@ def photo(univers,file):
 	for i in range(nextToSave,len(univers.liste_cpus)):
 		temp=(temp<<univers.n1)+CPUtoInt(univers.liste_cpus[i])
 	k=(len(univers.liste_cpus)-nextToSave)*univers.n1
-	n=math.ceil(k/8.)
+	n=ceil(k/8.)
 	print("n :",n,"/",temp)
 	donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
 
@@ -56,7 +75,7 @@ def photo(univers,file):
 	for i in range(nextToSave,len(univers.memoire)):
 		temp=(temp<<univers.n2)+univers.memoire[i]
 	k=(len(univers.memoire)-nextToSave)*univers.n2
-	n=math.ceil(k/8)
+	n=ceil(k/8)
 	donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
 	
 
@@ -74,7 +93,7 @@ def loadPhoto(univers,file):
 	lenCPU=int.from_bytes(f.read(univers.b1),byteorder='big')
 	univers.cpu_actuel=int.from_bytes(f.read(univers.b1),byteorder='big')
 	
-	CPUs=f.read(math.ceil(univers.n1*lenCPU/8.))
+	CPUs=f.read(ceil(univers.n1*lenCPU/8.))
 	k1=0
 	for k in range(lenCPU):
 		temp=0
@@ -89,7 +108,7 @@ def loadPhoto(univers,file):
 	univers.memoire=[]
 	
 	lenMemoire=int.from_bytes(f.read(univers.b2),byteorder='big')
-	memory=f.read(math.ceil(univers.n2*lenMemoire/8.))
+	memory=f.read(ceil(univers.n2*lenMemoire/8.))
 	print(memory)
 	k1=0
 	for k in range(lenMemoire):

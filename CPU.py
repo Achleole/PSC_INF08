@@ -15,14 +15,12 @@ class CPU:
 		self.univers						  = univers
 		self.stack 							  = stack
 		self.stack_ptr						  = stack_ptr
-		#self.ajouter_localisation()
-
+	
 	def execute(self):
 		"execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
 		Attention, les instructions dans l'univers sont stockees sous forme de chaine de caractere\
 		correspondant EXACTEMENT au nom des fonctions"
 
-		#self.enlever_localisation()
 		try:
 			ins = self.univers.memoire[self.ptr]
 			f = eval(self.univers.insDict.toString(ins))
@@ -32,7 +30,6 @@ class CPU:
 			print(e)
 		finally:
 			self.incrementer_ptr()
-			#self.ajouter_localisation()
 
 	def enlever_localisation(self):
 		"Enleve ce CPU du tableau localisation_cpu"
