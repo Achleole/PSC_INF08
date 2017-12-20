@@ -5,8 +5,8 @@ from math import *
 
 TAILLE_MEMOIRE = 500
 TAUX_MUTATION  = 0
-LARGEUR_CALCUL_DENSITE = 1
-SEUIL_DENSITE		   = 2.0
+LARGEUR_CALCUL_DENSITE = 0
+SEUIL_DENSITE		   = 1.5
 
 class Univers:
 	"Contient les CPU et le monde i.e les instructions a executer"
@@ -98,8 +98,8 @@ class Univers:
 		nombre = 0
 		for i in range(position - LARGEUR_CALCUL_DENSITE, position + LARGEUR_CALCUL_DENSITE+1):
 			if i in s.localisation_cpus:
-				nombre += len(s.localisation_cpus)
-		return nombre/(2*LARGEUR_CALCUL_DENSITE + 1)
+				nombre += len(s.localisation_cpus[i])
+		return float(nombre)/float((2*LARGEUR_CALCUL_DENSITE+1))
 
 	def tuer_cpus_par_densite(s):
 		"Tue tous les CPUs qui sont dans un endroit trop dense\
