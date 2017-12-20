@@ -1,6 +1,7 @@
 from CPU import *
 from Enregistrement import *
 from math import *
+import InstructionsDict
 
 
 TAILLE_MEMOIRE = 500
@@ -15,9 +16,10 @@ class Univers:
 	TAILLE_MEMOIRE = 500
 	def __init__(s):
 		#code temporaire
-		eve = charger_genome('eve')
-		s.memoire = eve + [2]*(TAILLE_MEMOIRE-len(eve))
+		#eve = charger_genome('eve')
+		s.memoire = [2]*(TAILLE_MEMOIRE)
 		s.liste_cpus 	= []
+		s.insDict = InstructionsDict.InstructionsDict()
 
 	def executer_cpus(s):
 		"Cette fonction execute tous les CPU 1 fois\
@@ -51,4 +53,4 @@ class Univers:
 	
 	def addIndividual(self, index, indiv) :
 		for i in range(len(indiv)) :
-			self.memory[index + i % l] = indiv[i]
+			self.memoire[index + i % len(self.memoire)] = indiv[i]
