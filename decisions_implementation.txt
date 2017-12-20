@@ -1,13 +1,13 @@
-Une classe CPU :
+Une classe CPU :
 index (où ce CPU lit)
 univ
 méthode exécuter qui appelle exécuteri(i) où i est l'identifiant de l'instruction en cours d'exécution
 et toutes les infos liées au fonctionnement du CPU
 
-La classe Univers (principale) :
+La classe Univers (principale) :
 CPU[]
 Memoire[]
-mainloop(nb tour) : c'est le slicer
+mainloop(nb tour) : c'est le slicer
 save(fichier)
 creer(CPU)
 tuerCPU()
@@ -17,9 +17,9 @@ Les instructions sont identifiées par une suite de bits
 
 Mort par durée de vie
 
-Il faudra :
+Il faudra :
 envisager l'instruction de mort,
 améliorer la gestion de CPU[] pour ne pas avoir un coût linéaire à chaque fois qu'on supprime un CPU,
 changer la méthode d'erreur
-faire une classe (interface) instruction ??
+faire une classe (interface) instruction ??
 remplacer une case de Memoire[] par 5 cases (une par bit!) et lire 5 cases pour avoir une instruction (1 case = 1 bit au lieu de 1 case = 1 instruction)

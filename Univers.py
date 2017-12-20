@@ -1,7 +1,6 @@
 from CPU import *
 from Enregistrement import *
 
-TAILLE_MEMOIRE = 500
 
 class Univers:
 	"Contient les CPU et le monde i.e les instructions a executer"
@@ -11,10 +10,12 @@ class Univers:
 	n1=5 #nb bit d'un CPU
 	b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
 	n2=6 #nb bit d'une case memoire
+	TAILLE_MEMOIRE = 500
 	def __init__(s):
 		#code temporaire
 		eve = charger_genome('eve')
-		s.memoire = eve + [None]*(TAILLE_MEMOIRE-len(eve))
+		#s.memoire = eve + [None]*(TAILLE_MEMOIRE-len(eve))
+		s.memoire= [2]*s.TAILLE_MEMOIRE
 		s.liste_cpus 	= []
 
 	def executer_cpus(s):

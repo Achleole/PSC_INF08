@@ -1,4 +1,5 @@
 import math
+from CPU import *
 def charger_genome(fichier):
 	genome = []
 	"Renvoie sous forme de tableau de strings le genome specifie dans le fichier"
@@ -8,8 +9,9 @@ def charger_genome(fichier):
 	return genome
 def CPUtoInt(cpu):
 	return 0
-def intToCPU(entier):
-	return CPU()
+def intToCPU(entier,Univers):
+	case_pointee=0
+	return CPU(case_pointee,Univers)
 def photo(univers,file):
 	"""Ecrit son etat dans le fichier done en argument. Remplace le fichier s'il existait deja"""
 	#Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
@@ -74,7 +76,7 @@ def loadPhoto(univers,file):
 			nombreALire=min(univers.n1*(k+1)-k1,8-debut)
 			temp= (temp<<nombreALire )+ ( (CPUs[l] << debut & 0b11111111)>>(8-nombreALire) ) & 0b11111111   #on veut lire de debut a debut+nombre a lire.
 			k1+=nombreALire
-		univers.liste_cpus.append(intToCPU(temp))
+		univers.liste_cpus.append(intToCPU(temp,univers))
 	
 	univers.memoire=[]
 	
