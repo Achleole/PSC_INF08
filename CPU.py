@@ -20,9 +20,9 @@ class CPU:
 		"execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
 		Attention, les instructions dans l'univers sont stockees sous forme de chaine de caractere\
 		correspondant EXACTEMENT au nom des fonctions"
-
+		
+		ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
 		try:
-			ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
 			f = eval(ins)
 			f(self)
 		except Exception as e:
