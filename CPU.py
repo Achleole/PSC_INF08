@@ -5,12 +5,15 @@ class CPU:
 	TAILLE_STACK = 10
 
 	#ptr stocke l'adresse actuellement pointee par le CPU
-	def __init__(self, ptr, univers):
-		self.ax = self.bx = self.cx = self.dx = 0
+	def __init__(self, ptr, univers, ax = 0, bx = 0,cx = 0,dx = 0,stack=[0]*TAILLE_STACK,stack_ptr = 0):
+		self.ax = ax
+		self.bx = bx
+		self.cx = cx
+		self.dx = dx
 		self.ptr							  = ptr
 		self.univers						  = univers
-		self.stack 							  = [0]*TAILLE_STACK
-		self.stack_ptr						  = 0
+		self.stack 							  = stack
+		self.stack_ptr						  = stack_ptr
 		#self.ajouter_localisation()
 
 	def execute(self):
