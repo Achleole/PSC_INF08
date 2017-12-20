@@ -16,12 +16,11 @@ class Univers:
 	TAILLE_MEMOIRE = 500
 	def __init__(s):
 		#code temporaire
-		s.mutation 				   = TAUX_MUTATION
+		s.mutation 				   = TAUX_MUTATION #definit le taux de mutation de l'univers
 		s.indice_cpu_actuel 	   = 0
 		s.cpu_actuel 			   = None
 	
 		eve = charger_genome('eve')
-		print(eve)
 		s.localisation_cpus = {}
 		s.memoire 			= eve + [None]*(TAILLE_MEMOIRE-len(eve))
 		s.liste_cpus 		= []
@@ -40,7 +39,7 @@ class Univers:
 	def executer_cpu(s, cpu): 
 		"Execute le CPU actuellement pointe SANS PASSER AU SUIVANT\
 		i.e sans incrementer cpu_actuel"
-		s.supprimer_cpu_localisation(s.cpu_actuel)
+			s.supprimer_cpu_localisation(s.cpu_actuel)
 		cpu.execute()
 		s.ajouter_cpu_localisation(s.cpu_actuel)
 

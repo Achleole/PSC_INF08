@@ -7,6 +7,7 @@ def charger_genome(fichier):
 	for line in f:
 		genome.append(line.strip())
 	return genome
+
 def CPUtoInt(cpu):
 	k=ceil(log(CPU.TAILLE_STACK,2))
 	resultat=cpu.ax
@@ -18,6 +19,7 @@ def CPUtoInt(cpu):
 		resultat=(resultat<<cpu.univers.n2)+i
 	resultat=(resultat<<k)+cpu.stack_ptr
 	return resultat
+	
 def intToCPU(entier,univers):
 	k=ceil(log(CPU.TAILLE_STACK,2))
 	bits0=0
