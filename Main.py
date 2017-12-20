@@ -47,7 +47,7 @@ class Main:
 		self.U.addIndividual(0, ancestor)
 		self.U.inserer_cpu(0)
 		for i in range(1000) :
-			self.U.executer_cpus()
+			self.U.cycle()
 			self.test()
 				
 Main()
