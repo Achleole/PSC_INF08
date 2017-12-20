@@ -22,7 +22,7 @@ class CPU:
 		Attention, les instructions dans l'univers sont stockees sous forme de chaine de caractere\
 		correspondant EXACTEMENT au nom des fonctions"
 
-		self.enlever_localisation()
+		#self.enlever_localisation()
 		try:
 			f = eval(self.univers.memoire[self.ptr])
 			f(self)
@@ -70,7 +70,7 @@ class CPU:
 		self.stack[self.stack_ptr] = x
 
 	def die(self):
-		self.enlever_localisation()
+		#self.enlever_localisation()
 		univers.enlever_cpu(self)
 
 	#FONCTIONS D'AFFICHAGE
