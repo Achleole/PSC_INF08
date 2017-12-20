@@ -3,6 +3,7 @@ from Enregistrement import *
 from math import *
 
 
+TAILLE_MEMOIRE = 500
 class Univers:
 	"Contient les CPU et le monde i.e les instructions a executer"
 	cpu_actuel 	   = 0
@@ -15,8 +16,7 @@ class Univers:
 	def __init__(s):
 		#code temporaire
 		eve = charger_genome('eve')
-		#s.memoire = eve + [None]*(TAILLE_MEMOIRE-len(eve))
-		s.memoire= [2]*s.TAILLE_MEMOIRE
+		s.memoire = eve + [2]*(TAILLE_MEMOIRE-len(eve))
 		s.liste_cpus 	= []
 
 	def executer_cpus(s):

@@ -1,5 +1,6 @@
 from Instructions_Tierra import *
 
+TAILLE_STACK = 10
 
 class CPU:
 	TAILLE_STACK = 10

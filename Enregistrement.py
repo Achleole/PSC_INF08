@@ -19,7 +19,7 @@ def CPUtoInt(cpu):
 	return resultat
 def intToCPU(entier,Univers):
 	case_pointee=0
-	return CPU(case_pointee,Univers)
+	return CPU(case_pointee, Univers, ax, bx, cx, dx,stack , stack_ptr)
 def photo(univers,file):
 	"""Ecrit son etat dans le fichier done en argument. Remplace le fichier s'il existait deja"""
 	#Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
