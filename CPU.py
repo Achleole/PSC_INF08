@@ -22,10 +22,11 @@ class CPU:
 		correspondant EXACTEMENT au nom des fonctions"
 
 		try:
-			f = eval(self.univers.memoire[self.ptr])
+			ins = self.univers.memoire[self.ptr]
+			f = eval(self.univers.insDict.toString(ins))
 			f(self)
 		except Exception as e:
-			print("Instruction ayant echoue : ", self.univers.memoire[self.ptr])
+			print("Instruction ayant echoue : ", ins)
 			print(e)
 		finally:
 			self.incrementer_ptr()

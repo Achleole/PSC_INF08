@@ -30,10 +30,10 @@ def calculer_pattern(memoire, ptr_tmp):
 	pattern = [] #on rappelle que le pattern qu'on cherche est 
 	#le COMPLEMENTAIRE de celui qu'on voit
 	while True:
-		if memoire[ptr_tmp] == "nop0":
-			pattern.append("nop1")
-		elif memoire[ptr_tmp] == "nop1":
-			pattern.append("nop0")
+		if memoire[ptr_tmp] == 0:
+			pattern.append(1)
+		elif memoire[ptr_tmp] == 1:
+			pattern.append(0)
 		else:
 			break
 		ptr_tmp = (ptr_tmp + 1) % len(memoire)

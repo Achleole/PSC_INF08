@@ -1,6 +1,7 @@
 from CPU import *
 from Enregistrement import *
 from math import *
+import InstructionsDict
 
 
 TAILLE_MEMOIRE = 500
@@ -18,14 +19,14 @@ class Univers:
 	TAILLE_MEMOIRE = 500
 	def __init__(s):
 		#code temporaire
+		#eve = charger_genome('eve')
+		s.memoire = [2]*(TAILLE_MEMOIRE)
+		s.liste_cpus 	= []
+		s.insDict = InstructionsDict.InstructionsDict()
 		s.mutation 				   = TAUX_MUTATION #definit le taux de mutation de l'univers
 		s.indice_cpu_actuel 	   = 0
 		s.cpu_actuel 			   = None
-	
-		eve = charger_genome('eve')
 		s.localisation_cpus = {}
-		s.memoire 			= eve + [None]*(TAILLE_MEMOIRE-len(eve))
-		s.liste_cpus 		= []
 
 	def cycle(s):
 		"Execute les CPUs puit les tue par densite"
@@ -91,7 +92,8 @@ class Univers:
 	
 	def addIndividual(self, index, indiv) :
 		for i in range(len(indiv)) :
-			self.memory[index + i % l] = indiv[i]
+			self.memoire[index + i % len(self.memoire)] = indiv[i]
+
 
 	def calculer_densite(s, position):
 		#Calcule la densite de CPU a la position donnee
@@ -113,3 +115,4 @@ class Univers:
 				liste_tues.append(c)
 		for c in liste_tues:
 			s.liste_cpus.remove(c)
+
