@@ -18,10 +18,21 @@ class Main:
 		self.U = Univers.Univers()
 		self.U.inserer_cpu(0) #initialiste un CPU au debut de l'univers
 		compteur=0
+		fichier="C:/Users/migli/Desktop/temporary.txt"
 		while True:	
 			self.U.executer_cpus()
 			self.test()
-			s = raw_input()
+			if compteur==100:
+				s = input()
+				compteur=0
+			else:
+				compteur+=1
+				s=' '
 			if s == "q":
 				quit()
+			if s == "s":
+				photo(self.U,fichier)
+			if s == "l":
+				loadPhoto(self.U,fichier)
+				
 Main()
