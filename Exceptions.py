@@ -9,3 +9,7 @@ class NoPatternException(Exception):
 	"Cette classe set a gerer quand il n'y a pas de pattern apres l'instruction jmp/call/adr"
 	def __init__(self):
 		super(NoPatternException, self).__init__()
+
+class NoCPUException(Exception):
+	def __init__(self):
+		super(NoCPUException, self).__init__()

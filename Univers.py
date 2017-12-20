@@ -5,6 +5,8 @@ from math import *
 
 TAILLE_MEMOIRE = 500
 TAUX_MUTATION  = 0
+LARGEUR_CALCUL_DENSITE = 1
+SEUIL_DENSITE		   = 2.0
 
 class Univers:
 	"Contient les CPU et le monde i.e les instructions a executer"
@@ -25,9 +27,20 @@ class Univers:
 		s.memoire 			= eve + [None]*(TAILLE_MEMOIRE-len(eve))
 		s.liste_cpus 		= []
 
+	def cycle(s):
+		"Execute les CPUs puit les tue par densite"
+		try:
+			s.executer_cpus()
+			s.tuer_cpus_par_densite()
+		except Exception as e:
+			print(e)
+			raise
+
 	def executer_cpus(s):
 		"Cette fonction execute tous les CPU 1 fois\
 		PRECISION IMPORTANTE : on parcourt la liste dans l'ordre des indices decroissant"
+		if len(s.liste_cpus) == 0:
+			raise NoCPUException()
 		indice_cpu_depart = (s.indice_cpu_actuel) #Contient le cpu auquel on devra s'arreter
 		s.cpu_actuel 	  = s.liste_cpus[s.indice_cpu_actuel]
 		s.executer_cpu(s.cpu_actuel)
@@ -39,7 +52,7 @@ class Univers:
 	def executer_cpu(s, cpu): 
 		"Execute le CPU actuellement pointe SANS PASSER AU SUIVANT\
 		i.e sans incrementer cpu_actuel"
-			s.supprimer_cpu_localisation(s.cpu_actuel)
+		s.supprimer_cpu_localisation(s.cpu_actuel)
 		cpu.execute()
 		s.ajouter_cpu_localisation(s.cpu_actuel)
 
@@ -79,3 +92,24 @@ class Univers:
 	def addIndividual(self, index, indiv) :
 		for i in range(len(indiv)) :
 			self.memory[index + i % l] = indiv[i]
+
+	def calculer_densite(s, position):
+		#Calcule la densite de CPU a la position donnee
+		nombre = 0
+		for i in range(position - LARGEUR_CALCUL_DENSITE, position + LARGEUR_CALCUL_DENSITE+1):
+			if i in s.localisation_cpus:
+				nombre += len(s.localisation_cpus)
+		return nombre/(2*LARGEUR_CALCUL_DENSITE + 1)
+
+	def tuer_cpus_par_densite(s):
+		"Tue tous les CPUs qui sont dans un endroit trop dense\
+		Par mesure d'egalite, tous les cpus a tuer le seront en meme temps\
+		Dans ce but, on les stocke un par un dans le tableau liste_tues"
+		#FONCTION NON TESTEE
+		liste_tues = []
+		for c in s.liste_cpus:
+			densite = s.calculer_densite(c.ptr)
+			if densite >= SEUIL_DENSITE:
+				liste_tues.append(c)
+		for c in liste_tues:
+			s.liste_cpus.remove(c)
