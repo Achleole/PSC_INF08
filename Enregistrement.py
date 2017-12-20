@@ -8,7 +8,15 @@ def charger_genome(fichier):
 		genome.append(line.strip())
 	return genome
 def CPUtoInt(cpu):
-	return 0
+	resultat=cpu.ax
+	resultat=(resultat<<n2)+cpu.bx
+	resultat=(resultat<<n2)+cpu.cx
+	resultat=(resultat<<n2)+cpu.dx
+	resultat=(resultat<<n2)+cpu.ptr
+	for i in cpu.stack:
+		resultat=(resultat<<n2)+i
+	resultat=(resultat<<n2)+cpu.stack_ptr
+	return resultat
 def intToCPU(entier,Univers):
 	case_pointee=0
 	return CPU(case_pointee,Univers)

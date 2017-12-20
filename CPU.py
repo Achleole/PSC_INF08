@@ -1,8 +1,8 @@
 from Instructions_Tierra import *
 
-TAILLE_STACK = 10
 
 class CPU:
+	TAILLE_STACK = 10
 
 	#ptr stocke l'adresse actuellement pointee par le CPU
 	def __init__(self, ptr, univers):
@@ -11,7 +11,7 @@ class CPU:
 		self.univers						  = univers
 		self.stack 							  = [0]*TAILLE_STACK
 		self.stack_ptr						  = 0
-		self.ajouter_localisation()
+		#self.ajouter_localisation()
 
 	def execute(self):
 		"execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
@@ -27,7 +27,7 @@ class CPU:
 			print(e)
 		finally:
 			self.incrementer_ptr()
-			self.ajouter_localisation()
+			#self.ajouter_localisation()
 
 	def enlever_localisation(self):
 		"Enleve ce CPU du tableau localisation_cpu"
