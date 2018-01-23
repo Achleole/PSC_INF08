@@ -4,7 +4,7 @@ from math import *
 import InstructionsDict
 
 
-TAILLE_MEMOIRE = 500
+TAILLE_MEMOIRE = 50000
 TAUX_MUTATION  = 0
 LARGEUR_CALCUL_DENSITE = 0
 SEUIL_DENSITE		   = 1.5
@@ -113,6 +113,6 @@ class Univers:
 			densite = s.calculer_densite(c.ptr)
 			if densite >= SEUIL_DENSITE:
 				liste_tues.append(c)
-		for c in liste_tues:
-			s.liste_cpus.remove(c)
+		for i in range(len(liste_tues)-1):
+			s.liste_cpus.remove(liste_tues[i])
 
