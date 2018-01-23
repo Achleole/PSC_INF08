@@ -1,3 +1,5 @@
+import random
+
 class InstructionsDict :
     """ est un dictionnaire a double sens contenant les instructions et les entiers associes """
     def __init__(self):
@@ -45,4 +47,6 @@ class InstructionsDict :
     
     def toString(self, nb):
         """Renvoie la String traduction de l'entier nb"""
+        if nb not in self.intToStr :
+            nb = random.randint(0,37)
         return self.intToStr[nb]
