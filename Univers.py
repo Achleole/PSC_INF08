@@ -26,10 +26,15 @@ class Univers:
         s.insDict                  = insDict
         s.mutation 				   = mutation #definit le taux de mutation de l'univers
         s.indice_cpu_actuel 	   = 0
-        s.cpu_actuel 			   = None
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
         s.SEUIL_DENSITE            = SEUIL_DENSITE
+
+    def cpu_actuel(s):
+        "Renvoie un pointeur vers le CPU actuel"
+        if len(s.liste_cpus)==0 :
+            return None
+        return s.liste_cpus[s.indice_cpu_actuel]
 
     def cycle(s):
         "Execute les CPUs puit les tue par densite"
@@ -46,19 +51,20 @@ class Univers:
         if len(s.liste_cpus) == 0:
             raise NoCPUException()
         indice_cpu_depart = (s.indice_cpu_actuel) #Contient le cpu auquel on devra s'arreter
-        s.cpu_actuel 	  = s.liste_cpus[s.indice_cpu_actuel]
-        s.executer_cpu(s.cpu_actuel)
+        cpu_actuel 	  = s.cpu_actuel()
+        s.executer_cpu_actuel()
         s.next_cpu()
         while s.indice_cpu_actuel != indice_cpu_depart:
-            s.executer_cpu(s.cpu_actuel)
+            s.executer_cpu_actuel()
             s.next_cpu()
 
-    def executer_cpu(s, cpu):
+    def executer_cpu_actuel(s):
         "Execute le CPU actuellement pointe SANS PASSER AU SUIVANT\
         i.e sans incrementer cpu_actuel"
-        s.supprimer_cpu_localisation(s.cpu_actuel)
+        cpu = s.cpu_actuel()
+        s.supprimer_cpu_localisation(cpu)
         cpu.execute()
-        s.ajouter_cpu_localisation(s.cpu_actuel)
+        s.ajouter_cpu_localisation(cpu)
 
     def supprimer_cpu_localisation(s, cpu):
         "Prend en argument le pointeur vers un cpu et l'enleve du dictionnaire localisation_cpus"
@@ -81,12 +87,11 @@ class Univers:
         s.supprimer_cpu_localisation(cpu)
 
     def tuer_cpu_actuel(s):
-        s.tuer_cpu(s.cpu_actuel)
+        s.tuer_cpu(s.cpu_actuel())
 
     def next_cpu(s):
         "Met a jour cpu_actuel pour pointer le suivant a executer"
         s.indice_cpu_actuel = (s.indice_cpu_actuel - 1)%(len(s.liste_cpus))
-        s.cpu_actuel 		= s.liste_cpus[s.indice_cpu_actuel]
 
     def inserer_cpu(s, c):
        "Insere le nouveau CPU c dans la liste juste apres celui actuellement pointe"
