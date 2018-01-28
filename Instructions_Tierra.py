@@ -172,7 +172,7 @@ def new(c):
 	c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers))
 
 def rand(c):
-	c.ax  = int(Univers.TAILLE_MEMOIRE*random.random())
+	c.ax  = int(c.univers.TAILLE_MEMOIRE*random.random())
 	"Place dans c.ax une valeur aleatoire"
 
 def read(c):

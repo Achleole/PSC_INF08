@@ -4,10 +4,10 @@ from math import *
 import InstructionsDict
 
 
-TAILLE_MEMOIRE = 50000
-TAUX_MUTATION  = 0
-LARGEUR_CALCUL_DENSITE = 0
-SEUIL_DENSITE		   = 1.5
+#TAILLE_MEMOIRE = 50000
+#TAUX_MUTATION  = 0
+#LARGEUR_CALCUL_DENSITE = 0
+#SEUIL_DENSITE		   = 1.5
 
 class Univers:
     "Contient les CPU et le monde i.e les instructions a executer"
@@ -16,17 +16,20 @@ class Univers:
     b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
     n2=6 #nb bit d'une case memoire
     n1=4*n2+n2+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
-    TAILLE_MEMOIRE = 500
-    def __init__(s):
+    #TAILLE_MEMOIRE = 500
+    def __init__(s, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=0, SEUIL_DENSITE=1.5):
         #code temporaire
         #eve = charger_genome('eve')
-        s.memoire = [2]*(TAILLE_MEMOIRE)
-        s.liste_cpus 	= []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ?
-        s.insDict = InstructionsDict.InstructionsDict()
-        s.mutation 				   = TAUX_MUTATION #definit le taux de mutation de l'univers
+        s.TAILLE_MEMOIRE           = TAILLE_MEMOIRE
+        s.memoire                  = [2]*(s.TAILLE_MEMOIRE)
+        s.liste_cpus 	           = []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ?
+        s.insDict                  = insDict
+        s.mutation 				   = mutation #definit le taux de mutation de l'univers
         s.indice_cpu_actuel 	   = 0
         s.cpu_actuel 			   = None
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
+        s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
+        s.SEUIL_DENSITE            = SEUIL_DENSITE
 
     def cycle(s):
         "Execute les CPUs puit les tue par densite"
@@ -61,11 +64,11 @@ class Univers:
         "Prend en argument le pointeur vers un cpu et l'enleve du dictionnaire localisation_cpus"
         try:
             s.localisation_cpus[cpu.ptr].remove(cpu)
+            if s.localisation_cpus[cpu.ptr] == []:
+                del s.localisation_cpus[cpu.ptr]
         except Exception as e:
             print("Erreur de suppression de localisation !")
             print(e)
-        if s.localisation_cpus[cpu.ptr] == []:
-            del s.localisation_cpus[cpu.ptr]
 
     def ajouter_cpu_localisation(s, cpu):
         if not cpu.ptr in s.localisation_cpus:
@@ -98,10 +101,10 @@ class Univers:
     def calculer_densite(s, position):
         #Calcule la densite de CPU a la position donnee
         nombre = 0
-        for i in range(position - LARGEUR_CALCUL_DENSITE, position + LARGEUR_CALCUL_DENSITE+1):
+        for i in range(position - s.LARGEUR_CALCUL_DENSITE, position + s.LARGEUR_CALCUL_DENSITE+1):
             if i in s.localisation_cpus:
                 nombre += len(s.localisation_cpus[i])
-        return float(nombre)/float((2*LARGEUR_CALCUL_DENSITE+1))
+        return float(nombre)/float((2*s.LARGEUR_CALCUL_DENSITE+1))
 
     def tuer_cpus_par_densite(s):
         "Tue tous les CPUs qui sont dans un endroit trop dense\
@@ -111,7 +114,7 @@ class Univers:
         liste_tues = []
         for c in s.liste_cpus:
             densite = s.calculer_densite(c.ptr)
-            if densite >= SEUIL_DENSITE:
+            if densite >= s.SEUIL_DENSITE:
                 liste_tues.append(c)
         for i in range(len(liste_tues)-1):
             s.tuer_cpu(liste_tues[i])
