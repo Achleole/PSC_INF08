@@ -104,28 +104,5 @@ class TestCPU(unittest.TestCase):
         self.assertEqual(3, c.pop_stack())
         self.assertEqual(c.stack_ptr, 1)
 
-    def test_ajouter_localisation(self):
-        c = CPU.CPU(102, self.u)
-        c.ajouter_localisation()
-        self.assertTrue(102 in self.u.localisation_cpus and c in self.u.localisation_cpus[102])
-        c2 = CPU.CPU(102, self.u)
-        c3 = CPU.CPU(102, self.u)
-        c3.ajouter_localisation()
-        c2.ajouter_localisation()
-        #Pour verifier que l'ajout de CPUs n'en retire pas d'autres :
-        self.assertTrue(102 in self.u.localisation_cpus and c in self.u.localisation_cpus[102])
-        self.assertTrue(102 in self.u.localisation_cpus and c2 in self.u.localisation_cpus[102])
-        self.assertTrue(102 in self.u.localisation_cpus and c3 in self.u.localisation_cpus[102])
-
-    def test_enlever_localisation(self):
-        c1 = CPU.CPU(102, self.u)
-        c2 = CPU.CPU(102, self.u)
-        c3 = CPU.CPU(102, self.u)
-        c1.ajouter_localisation()
-        c3.ajouter_localisation()
-        c2.ajouter_localisation()
-        c1.enlever_localisation()
-        self.assertTrue(c1 not in self.u.localisation_cpus[102] and c2 in self.u.localisation_cpus[102] and c3 in self.u.localisation_cpus[102])
-
 
     # Comment tester execute ??

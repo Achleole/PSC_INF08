@@ -31,23 +31,6 @@ class CPU:
 		finally:
 			self.incrementer_ptr()
 
-	def enlever_localisation(self):
-		"Enleve ce CPU du tableau localisation_cpu"
-		try:
-			self.univers.localisation_cpus[self.ptr].remove(self)
-			if(self.univers.localisation_cpus[self.ptr] == []):
-				del self.univers.localisation_cpus[self.ptr]
-		except Exception as e:
-			print("Le CPU n'est pas la ou il le devrait !")
-
-	def ajouter_localisation(self):
-		"Ajoute le CPU dans la case correspondante dans le tableau localisation_cpu de Univers"
-		if(self.univers.localisation_cpus.has_key(self.ptr)):
-			self.univers.localisation_cpus[self.ptr].append(self)
-		else:
-			self.univers.localisation_cpus[self.ptr] = [self]
-
-
 	def incrementer_ptr(self):
 		self.ptr = (self.ptr + 1)%(len(self.univers.memoire))
 
