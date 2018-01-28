@@ -10,11 +10,21 @@ def charger_genome(fichier):
 
 def CPUtoInt(cpu):
 	k=ceil(log(CPU.TAILLE_STACK,2))
+	if cpu.ax>2**(cpu.univers.n3):
+		print("erreur ax")
+	if cpu.bx>2**(cpu.univers.n3):
+		print("erreur bx")
+	if cpu.cx>2**(cpu.univers.n3):
+		print("erreur cx")
+	if cpu.dx>2**(cpu.univers.n3):
+		print("erreur dx")
+	if cpu.ptr>2**(cpu.univers.n3):
+		print("erreur ptr")
 	resultat=cpu.ax
-	resultat=(resultat<<cpu.univers.n2)+cpu.bx
-	resultat=(resultat<<cpu.univers.n2)+cpu.cx
-	resultat=(resultat<<cpu.univers.n2)+cpu.dx
-	resultat=(resultat<<cpu.univers.n2)+cpu.ptr
+	resultat=(resultat<<cpu.univers.n3)+cpu.bx
+	resultat=(resultat<<cpu.univers.n3)+cpu.cx
+	resultat=(resultat<<cpu.univers.n3)+cpu.dx
+	resultat=(resultat<<cpu.univers.n3)+cpu.ptr
 	for i in cpu.stack:
 		resultat=(resultat<<cpu.univers.n2)+i
 	resultat=(resultat<<k)+cpu.stack_ptr
@@ -23,27 +33,29 @@ def CPUtoInt(cpu):
 def intToCPU(entier,univers):
 	k=ceil(log(CPU.TAILLE_STACK,2))
 	bits0=0
-	for i in range(univers.n2):
+	for i in range(univers.n3):
 		bits0+=2**i
 	bits1=0
 	for i in range(k):
 		bits1+=2**i
+	bits2=0
+	for i in range(univers.n2):
+		bits2+=2**i
 	stack_ptr=entier & bits1		
 	stack=[]
 	for i in range(CPU.TAILLE_STACK):
-		stack.insert(0,(entier>>(k+i*cpu.univers.n2))&bits0)
-	ptr=(entier>>(k+(CPU.TAILLE_STACK)*cpu.univers.n2))&bits0
-	dx=(entier>>(k+(CPU.TAILLE_STACK+1)*cpu.univers.n2))&bits0
-	cx=(entier>>(k+(CPU.TAILLE_STACK+2)*cpu.univers.n2))&bits0
-	bx=(entier>>(k+(CPU.TAILLE_STACK+3)*cpu.univers.n2))&bits0
-	ax=(entier>>(k+(CPU.TAILLE_STACK+4)*cpu.univers.n2))&bits0
-	print(ax, bx, cx, dx,stack , stack_ptr)
-	return CPU(ptr, Univers, ax, bx, cx, dx,stack , stack_ptr)
+		stack.insert(0,(entier>>(k+i*univers.n2))&bits2)
+	ptr=(entier>>(k+(CPU.TAILLE_STACK)*univers.n2))&bits0
+	dx=(entier>>(k+CPU.TAILLE_STACK*univers.n2+1*univers.n3))&bits0
+	cx=(entier>>(k+CPU.TAILLE_STACK*univers.n2+2*univers.n3))&bits0
+	bx=(entier>>(k+CPU.TAILLE_STACK*univers.n2+3*univers.n3))&bits0
+	ax=(entier>>(k+CPU.TAILLE_STACK*univers.n2+4*univers.n3))&bits0
+	return CPU(ptr, univers, ax, bx, cx, dx,stack , stack_ptr)
 def photo(univers,file):
 	"""Ecrit son etat dans le fichier done en argument. Remplace le fichier s'il existait deja"""
 	#Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
 	donnees=len(univers.liste_cpus).to_bytes(univers.b1,byteorder='big')
-	donnees+=univers.cpu_actuel.to_bytes(univers.b1,byteorder='big')
+	donnees+=univers.indice_cpu_actuel.to_bytes(univers.b1,byteorder='big')
 	
 	nextToSave=0
 	while 8 < len(univers.liste_cpus) - nextToSave:
@@ -54,10 +66,12 @@ def photo(univers,file):
 		donnees+=temp.to_bytes(univers.n1,byteorder='big')
 	temp=0
 	for i in range(nextToSave,len(univers.liste_cpus)):
+		t=CPUtoInt(univers.liste_cpus[i])
+		print(log(t if t>0 else 1,2)," < ",univers.n1)
 		temp=(temp<<univers.n1)+CPUtoInt(univers.liste_cpus[i])
 	k=(len(univers.liste_cpus)-nextToSave)*univers.n1
 	n=ceil(k/8.)
-	print("n :",n,"/",temp)
+	print("n :",n,"/",k,log(temp,2))
 	donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
 
 
@@ -91,7 +105,7 @@ def loadPhoto(univers,file):
 	f=open(file,'rb')
 	
 	lenCPU=int.from_bytes(f.read(univers.b1),byteorder='big')
-	univers.cpu_actuel=int.from_bytes(f.read(univers.b1),byteorder='big')
+	univers.indice_cpu_actuel=int.from_bytes(f.read(univers.b1),byteorder='big')
 	
 	CPUs=f.read(ceil(univers.n1*lenCPU/8.))
 	k1=0
