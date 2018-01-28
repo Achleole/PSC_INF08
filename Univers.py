@@ -116,4 +116,11 @@ class Univers:
 				liste_tues.append(c)
 		for c in liste_tues:
 			s.liste_cpus.remove(c)
-
+	def afficher(self):
+		print("===============")
+		print("memoire :",self.memoire)
+		print("liste CPU :")
+		for cpu in self.liste_cpus:
+			cpu.afficher_etat()
+		print("indice_cpu_actuel :",self.indice_cpu_actuel)
+		

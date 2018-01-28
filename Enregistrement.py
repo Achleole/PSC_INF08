@@ -10,16 +10,16 @@ def charger_genome(fichier):
 
 def CPUtoInt(cpu):
 	k=ceil(log(CPU.TAILLE_STACK,2))
-	if cpu.ax>2**(cpu.univers.n3):
-		print("erreur ax")
-	if cpu.bx>2**(cpu.univers.n3):
-		print("erreur bx")
-	if cpu.cx>2**(cpu.univers.n3):
-		print("erreur cx")
-	if cpu.dx>2**(cpu.univers.n3):
-		print("erreur dx")
-	if cpu.ptr>2**(cpu.univers.n3):
-		print("erreur ptr")
+	# if cpu.ax>2**(cpu.univers.n3):
+	# 	print("erreur ax")
+	# if cpu.bx>2**(cpu.univers.n3):
+	# 	print("erreur bx")
+	# if cpu.cx>2**(cpu.univers.n3):
+	# 	print("erreur cx")
+	# if cpu.dx>2**(cpu.univers.n3):
+	# 	print("erreur dx")
+	# if cpu.ptr>2**(cpu.univers.n3):
+	# 	print("erreur ptr")
 	resultat=cpu.ax
 	resultat=(resultat<<cpu.univers.n3)+cpu.bx
 	resultat=(resultat<<cpu.univers.n3)+cpu.cx
@@ -67,13 +67,11 @@ def photo(univers,file):
 	temp=0
 	for i in range(nextToSave,len(univers.liste_cpus)):
 		t=CPUtoInt(univers.liste_cpus[i])
-		print(log(t if t>0 else 1,2)," < ",univers.n1)
 		temp=(temp<<univers.n1)+CPUtoInt(univers.liste_cpus[i])
 	k=(len(univers.liste_cpus)-nextToSave)*univers.n1
 	n=ceil(k/8.)
-	print("n :",n,"/",k,log(temp,2))
+	# print("n :",n,"/",k,log(temp,2))
 	donnees+=(temp<<(8*n-k)).to_bytes(n,byteorder='big')
-
 
 	donnees+=len(univers.memoire).to_bytes(univers.b2,byteorder='big')
 		
@@ -95,7 +93,7 @@ def photo(univers,file):
 
 	f=open(file,'wb')
 	f.write(donnees)
-	print(len(donnees),donnees)
+	# print(len(donnees),donnees)
 	f.close()
 	
 def loadPhoto(univers,file):
@@ -115,7 +113,7 @@ def loadPhoto(univers,file):
 			l=k1//8
 			debut=k1-l*8
 			nombreALire=min(univers.n1*(k+1)-k1,8-debut)
-			temp= (temp<<nombreALire )+ ( (CPUs[l] << debut & 0b11111111)>>(8-nombreALire) ) & 0b11111111   #on veut lire de debut a debut+nombre a lire.
+			temp= (temp<<nombreALire )+ (( (CPUs[l] << debut & 0b11111111)>>(8-nombreALire) ) & 0b11111111 )  #on veut lire de debut a debut+nombre a lire.
 			k1+=nombreALire
 		univers.liste_cpus.append(intToCPU(temp,univers))
 	
@@ -123,7 +121,7 @@ def loadPhoto(univers,file):
 	
 	lenMemoire=int.from_bytes(f.read(univers.b2),byteorder='big')
 	memory=f.read(ceil(univers.n2*lenMemoire/8.))
-	print(memory)
+	# print(memory)
 	k1=0
 	for k in range(lenMemoire):
 		temp=0
