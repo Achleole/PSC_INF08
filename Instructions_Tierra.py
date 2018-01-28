@@ -169,7 +169,7 @@ def adrf(c):
 #													NOUVELLES INSTRUCTIONS
 def new(c):
 	"Creer un nouveau cpu a l'endroit de ax"
-	c.univers.inserer_cpu(c.ax)
+	c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers))
 
 def rand(c):
 	c.ax  = int(Univers.TAILLE_MEMOIRE*random.random())
