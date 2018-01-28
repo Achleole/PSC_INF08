@@ -69,7 +69,7 @@ class CPU:
 
 	def die(self):
 		#self.enlever_localisation()
-		univers.enlever_cpu(self)
+		self.univers.tuer_cpu(self)
 
 	#FONCTIONS D'AFFICHAGE
 	def afficher_etat(self):
