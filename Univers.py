@@ -13,10 +13,10 @@ class Univers:
     "Contient les CPU et le monde i.e les instructions a executer"
     #valeurs non contractuelles.
     b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
-	b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
-	n2=6 #nb bit d'une case memoire
-	n3=16 #nb de bit d'un registre du CPU
-	n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
+    b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
+    n2=6 #nb bit d'une case memoire
+    n3=16 #nb de bit d'un registre du CPU
+    n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
     def __init__(s, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=0, SEUIL_DENSITE=1.5):
         #code temporaire
@@ -36,6 +36,10 @@ class Univers:
         if len(s.liste_cpus)==0 :
             return None
         return s.liste_cpus[s.indice_cpu_actuel]
+
+    def ind(self, i):
+        """Renvoie l'indice i modulo TAILLE_MEMOIRE"""
+        return (i%self.TAILLE_MEMOIRE)
 
     def cycle(s):
         "Execute les CPUs puit les tue par densite"
@@ -100,16 +104,17 @@ class Univers:
        s.ajouter_cpu_localisation(c)
 
     def addIndividual(self, index, indiv) :
+        "Ecrit l'individu indiv dans la memoire a partir de l'adresse index. indiv est sous la forme d'un tableau d'entiers"
         for i in range(len(indiv)) :
-            self.memoire[index + i % len(self.memoire)] = indiv[i]
+            self.memoire[(index + i) % len(self.memoire)] = indiv[i]
 
 
     def calculer_densite(s, position):
-        #Calcule la densite de CPU a la position donnee
+        "Calcule la densite de CPU a la position donnee"
         nombre = 0
         for i in range(position - s.LARGEUR_CALCUL_DENSITE, position + s.LARGEUR_CALCUL_DENSITE+1):
-            if i in s.localisation_cpus:
-                nombre += len(s.localisation_cpus[i])
+            if (s.ind(i)) in s.localisation_cpus:
+                nombre += len(s.localisation_cpus[s.ind(i)])
         return float(nombre)/float((2*s.LARGEUR_CALCUL_DENSITE+1))
 
     def tuer_cpus_par_densite(s):
