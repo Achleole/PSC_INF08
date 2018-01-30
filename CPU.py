@@ -22,6 +22,8 @@ class CPU:
 		correspondant EXACTEMENT au nom des fonctions"
 		
 		ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
+		#On utilise le dictionnaire d'instructions de notre Univers 
+		#Permet de modifier les instructions que l'on va utiliser
 		try:
 			f = eval(ins)
 			f(self)

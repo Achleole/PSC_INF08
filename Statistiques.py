@@ -3,7 +3,7 @@ Classe servant a faire les stats sur l'univers et les CPUs
 A ne pas utiliser pour l'instant (pas fonctionnel)
 """
 
-class Statistique:
+class Statistiques:
 	def __init__(self, U):
 		"Chaque instance va etre reliee a un Univers"
 		self.univers 	= U
@@ -17,8 +17,7 @@ class Statistique:
 		self.recuperer_cpus_total()
 
 	def recuperer_cpus_crees(self):
-		self.cpus_crees.append(self.univers.retourner_cpus_crees())MPLEMENTER DANS LA CLASSE UNIVERS : self.univers.cpus_crees() pour 
-		#renvoyer le nombre de cpus qui ont etes crees durant le cycle passe
+		self.cpus_crees.append(self.univers.retourner_cpus_crees())
 
 	def recuperer_cpus_total(self):
 		self.cpus_total.append(self.univers.retourner_cpus_total())

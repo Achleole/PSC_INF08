@@ -12,11 +12,11 @@ import InstructionsDict
 class Univers:
     "Contient les CPU et le monde i.e les instructions a executer"
     #valeurs non contractuelles.
-    b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
-	b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
-	n2=6 #nb bit d'une case memoire
-	n3=16 #nb de bit d'un registre du CPU
-	n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
+    b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.
+    b2=2 #nb bytes du nb de case memoire.
+    n2=6 #nb bit d'une case memoire
+    n3=16 #nb de bit d'un registre du CPU
+    n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
     def __init__(s, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=0, SEUIL_DENSITE=1.5):
         #code temporaire
@@ -51,7 +51,7 @@ class Univers:
         s.cpus_crees = 0
 
     def retourner_cpus_crees(s):
-        return cpus_crees
+        return s.cpus_crees
 
     def retourner_cpus_total(s):
         return len(s.liste_cpus)
@@ -61,7 +61,8 @@ class Univers:
         try:
             s.executer_cpus()
             s.tuer_cpus_par_densite()
-            s.mettre_a_jour()
+            if s.statistiques != None:
+                s.statistiques.mettre_a_jour()
             s.reinitialise_cpus_crees()
         except Exception as e:
             print(e)
