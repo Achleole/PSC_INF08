@@ -6,11 +6,11 @@ import InstructionsDict
 class TestUnivers(unittest.TestCase):
 
     def test_creationUnivers(self) :
-        u = Univers.Univers(TAILLE_MEMOIRE=40000, insDict=InstructionsDict.InstructionsDict(), mutation=2e-12, LARGEUR_CALCUL_DENSITE=1, SEUIL_DENSITE=1.4)
+        u = Univers.Univers(TAILLE_MEMOIRE=40000, insDict=InstructionsDict.InstructionsDict(), mutation=2e-12, LARGEUR_CALCUL_DENSITE=1, maxCPUs=2)
         self.assertEqual(u.TAILLE_MEMOIRE, 40000)
         self.assertEqual(u.mutation,2e-12)
         self.assertEqual(u.LARGEUR_CALCUL_DENSITE,1)
-        self.assertEqual(u.SEUIL_DENSITE, 1.4)
+        self.assertEqual(u.maxCPUs, 2)
 
     def test_ajouter_cpu_localisation(self):
         u = Univers.Univers()
@@ -115,3 +115,35 @@ class TestUnivers(unittest.TestCase):
         self.assertEqual(u.indice_cpu_actuel, 2)
         u.next_cpu()
         self.assertEqual(u.indice_cpu_actuel, 1)
+
+    def test_addIndividual(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10)
+        indiv = [5,4,3]
+        u.addIndividual(0, indiv)
+        self.assertEqual(u.memoire[:3], indiv)
+        self.assertEqual(u.memoire[3:10],[2]*7)
+        u.addIndividual(9, indiv)
+        self.assertEqual(u.memoire, [4,3,3]+([2]*6)+[5])
+
+    def test_nbCPUs_at_i(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        self.assertEqual(2, u.nbCPUs_at_i(3))
+        self.assertEqual(1, u.nbCPUs_at_i(4))
+        self.assertEqual(0, u.nbCPUs_at_i(0))
+
+    def test_kill_at(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10, LARGEUR_CALCUL_DENSITE=1, maxCPUs=2)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        u.kill_at(3,3)
+        self.assertEqual(u.nbCPUs_at_i(3)+u.nbCPUs_at_i(4)+u.nbCPUs_at_i(5), 1)
