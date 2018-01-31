@@ -3,6 +3,8 @@ Classe servant a faire les stats sur l'univers et les CPUs
 A ne pas utiliser pour l'instant (pas fonctionnel)
 """
 
+from math import log
+
 class Statistiques:
 	def __init__(self, U):
 		"Chaque instance va etre reliee a un Univers"
@@ -21,3 +23,19 @@ class Statistiques:
 
 	def recuperer_cpus_total(self):
 		self.cpus_total.append(self.univers.retourner_cpus_total())
+
+	def calculer_entropie(self):
+		"Calcule l'entropie S des instructions de l'Univers"
+		S = 0
+		memoire = self.univers.retourner_copie_memoire()
+		occurences = {}
+		for x in memoire:
+			if x in occurences:
+				occurences[x] += 1
+			else:
+				occurences = 1
+		for x in occurences:
+			proba = float(occurences[x])/len(memoire)
+			S += proba*log(proba)
+		return S
+		

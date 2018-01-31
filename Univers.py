@@ -1,6 +1,7 @@
 from CPU import *
 from Enregistrement import *
 from math import *
+import copy
 import InstructionsDict
 
 
@@ -43,6 +44,9 @@ class Univers:
         if len(s.liste_cpus)==0 :
             return None
         return s.liste_cpus[s.indice_cpu_actuel]
+
+    def retourner_copie_memoire(self):
+        return copy.copy(s.memoire)
 
     def incremente_cpus_crees(s):
         s.cpus_crees += 1
