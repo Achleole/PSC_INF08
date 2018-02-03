@@ -32,7 +32,7 @@ class CPU:
 			self.incrementer_ptr()
 
 	def incrementer_ptr(self):
-		self.ptr = (self.ptr + 1)%(len(self.univers.memoire))
+		self.ptr = self.univers.ind((self.ptr + 1))
 
 	def incrementer_stack_ptr(self):
 		self.stack_ptr = (self.stack_ptr + 1) % (TAILLE_STACK)

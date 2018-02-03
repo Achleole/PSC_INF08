@@ -107,7 +107,7 @@ class Univers:
     def addIndividual(self, index, indiv) :
         "Ecrit l'individu indiv dans la memoire a partir de l'adresse index. indiv est sous la forme d'un tableau d'entiers"
         for i in range(len(indiv)) :
-            self.memoire[(index + i) % len(self.memoire)] = indiv[i]
+            self.memoire[self.ind(index + i)] = indiv[i]
 
 
     def calculer_densite(s, position):
