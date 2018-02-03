@@ -138,7 +138,8 @@ class Univers:
 
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par kill_at dans les endroits trop denses"""
-        start = random.randint(0, s.TAILLE_MEMOIRE-1) #on commence a une position aleatoire pour ne pas introduire de biais de position
+        #start = random.randint(0, s.TAILLE_MEMOIRE-1) #on commence a une position aleatoire pour ne pas introduire de biais de position
+        start = 0
         i = start
         l = 2*s.LARGEUR_CALCUL_DENSITE   #largeur reelle de l'intervalle de calcul de densite - 1
         nbCPUs = 0
@@ -147,7 +148,8 @@ class Univers:
         if nbCPUs > s.maxCPUs :
             s.kill_at(start, nbCPUs)
         i+=1
-        while i != start :    # a toute entree de la boucle, i est dans range(1, TAILLE_MEMOIRE+1) et nbCPUs est le nb de CPUs places aux indices range(i-1, i + 2*LARGEUR_CALCUL_DENSITE)
+        count = 0
+        while i != start and not (start==0 and i==s.TAILLE_MEMOIRE) :    # a toute entree de la boucle, i est dans range(1, TAILLE_MEMOIRE+1) et nbCPUs est le nb de CPUs places aux indices range(i-1, i + 2*LARGEUR_CALCUL_DENSITE)
             nbCPUs -= s.nbCPUs_at_i(i - 1) # i-1 est toujours dans range(0, TAILLE_MEMOIRE)
             if i==s.TAILLE_MEMOIRE :
                 i = 0
@@ -155,6 +157,7 @@ class Univers:
             if nbCPUs > s.maxCPUs:
                 s.kill_at(i, nbCPUs)
             i+=1
+            count+=1
 
 
     def afficher(self):
