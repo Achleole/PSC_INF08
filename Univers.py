@@ -130,14 +130,14 @@ class Univers:
         l = 2*s.LARGEUR_CALCUL_DENSITE
         target = max(1, s.maxCPUs / 2)
         while n > target :
-            j = s.ind(i + int((l+1)*random.random()))   # +1 ou pas ?
+            j = s.ind(random.randint(i, i+l))   # +1 ou pas ?
             if j in s.localisation_cpus :
-                k = int(len(s.localisation_cpus[j]))
+                k = random.randint(0,len(s.localisation_cpus[j])-1)
                 s.tuer_cpu(s.localisation_cpus[j][k])
 
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par kill_at dans les endroits trop denses"""
-        start = int(s.TAILLE_MEMOIRE*random.random()) #on commence a une position aleatoire pour ne pas introduire de biais de position
+        start = random.randint(0, s.TAILLE_MEMOIRE-1) #on commence a une position aleatoire pour ne pas introduire de biais de position
         i = start
         l = 2*s.LARGEUR_CALCUL_DENSITE   #largeur reelle de l'intervalle de calcul de densite - 1
         nbCPUs = 0
