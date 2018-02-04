@@ -68,19 +68,37 @@ class Univers:
         "Execute le CPU actuellement pointe SANS PASSER AU SUIVANT\
         i.e sans incrementer cpu_actuel"
         cpu = s.cpu_actuel()
-        s.supprimer_cpu_localisation(cpu)
+        i = cpu.ptr
         cpu.execute()
+        s.supprimer_cpu_localisation(cpu, i)
         s.ajouter_cpu_localisation(cpu)
 
-    def supprimer_cpu_localisation(s, cpu):
-        "Prend en argument le pointeur vers un cpu et l'enleve du dictionnaire localisation_cpus"
-        try:
-            s.localisation_cpus[cpu.ptr].remove(cpu)
-            if s.localisation_cpus[cpu.ptr] == []:
-                del s.localisation_cpus[cpu.ptr]
-        except Exception as e:
+    def supprimer_cpu_localisation(s, cpu, i=-1):
+        """Prend en argument le pointeur vers un cpu et l'enleve de l'adresse i dans le dictionnaire localisation_cpus"""
+        # Si i n'est pas precise, i vaut -1 et le cpu est recherche dans toute la memoire a partir de cpu.ptr
+        if i == -1 :
+            for j in range(0, s.TAILLE_MEMOIRE/2+1) :
+                k = s.ind(cpu.ptr + j)
+                if (k in s.localisation_cpus) and (cpu in s.localisation_cpus[k]) :
+                    s.localisation_cpus[k].remove(cpu)
+                    if s.localisation_cpus[k] == []:
+                        del s.localisation_cpus[k]
+                    return
+                k = s.ind(cpu.ptr - j)
+                if (k in s.localisation_cpus) and (cpu in s.localisation_cpus[k]) :
+                    s.localisation_cpus[k].remove(cpu)
+                    if s.localisation_cpus[k] == []:
+                        del s.localisation_cpus[k]
+                    return
             print("Erreur de suppression de localisation !")
-            print(e)
+        else :
+            try:
+                s.localisation_cpus[i].remove(cpu)
+                if s.localisation_cpus[i] == []:
+                    del s.localisation_cpus[i]
+            except Exception as e:
+                print("Erreur de suppression de localisation !")
+                print(e)
 
     def ajouter_cpu_localisation(s, cpu):
         if not cpu.ptr in s.localisation_cpus:
@@ -88,11 +106,14 @@ class Univers:
         if not cpu in s.localisation_cpus[cpu.ptr]:
             s.localisation_cpus[cpu.ptr].append(cpu)
 
-    def tuer_cpu(s, cpu):
+    def tuer_cpu(s, cpu, i=-1):
+        """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
         s.liste_cpus.remove(cpu)
-        s.supprimer_cpu_localisation(cpu)
+        s.supprimer_cpu_localisation(cpu, i)
 
     def tuer_cpu_actuel(s):
+        """NE PAS UTILISER SI CPU ACTUEL EN COURS D'EXECUTION"""
+        # car risque de pb a la suppression de la localisation
         s.tuer_cpu(s.cpu_actuel())
 
     def next_cpu(s):
@@ -134,6 +155,7 @@ class Univers:
 
     def killAround(s, i, n):
         """Tue les CPUs dans la region commencant a l'indice i et contenant au depart n CPUs, jusqu'a atteindre la moitie de la densite limite"""
+        # suppose qu'aucun CPU n'est en cours d'execution
         l = 2*s.LARGEUR_CALCUL_DENSITE
         target = max(1, (s.maxCPUs / 2))
         while n > target :
@@ -142,6 +164,7 @@ class Univers:
                 k = random.randint(0,len(s.localisation_cpus[j])-1)
                 s.tuer_cpu(s.localisation_cpus[j][k])
                 n-=1
+        # peut-etre le cpu c est-il dans plusieurs localisations ? (et lorsqu'il est supprime de liste_cpus, toute les localisations ne sont pas supprimees...)
 
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par killAround dans les endroits trop denses"""
@@ -174,3 +197,13 @@ class Univers:
         for cpu in self.liste_cpus:
             cpu.afficher_etat()
         print("indice_cpu_actuel :", self.indice_cpu_actuel)
+
+    def nbCPUsInLocalisation(s):
+        d = {}
+        for i in s.localisation_cpus.keys():
+            for c in s.localisation_cpus[i]:
+                if c in d :
+                    d[c] += 1
+                else :
+                    d[c] = 0
+        return len(d)

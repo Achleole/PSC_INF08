@@ -2,6 +2,9 @@ import unittest
 import Univers
 import CPU
 import InstructionsDict
+import Instructions
+import Enregistrement
+
 
 class TestUnivers(unittest.TestCase):
 
@@ -35,7 +38,7 @@ class TestUnivers(unittest.TestCase):
         u.ajouter_cpu_localisation(c1)
         u.ajouter_cpu_localisation(c3)
         u.ajouter_cpu_localisation(c2)
-        u.supprimer_cpu_localisation(c1)
+        u.supprimer_cpu_localisation(c1, 102)
         self.assertTrue(c1 not in u.localisation_cpus[102] and c2 in u.localisation_cpus[102] and c3 in u.localisation_cpus[102])
         # (on pourrait aussi verifier que les autres valeurs de localisation_cpus ne sont pas modifiees)
     
@@ -174,4 +177,21 @@ class TestUnivers(unittest.TestCase):
         c3 = CPU.CPU(4, u)
         u.inserer_cpu(c3)
         u.tuer_cpus_par_densite()
-        self.assertTrue(True)
+        self.assertTrue(True) ### a changer !!!
+
+    def test_executions_rapide(self):
+        u = Univers.Univers(TAILLE_MEMOIRE = 5000, LARGEUR_CALCUL_DENSITE = 1, maxCPUs = 2)
+        u.insDict.initialize(Instructions.instructions)
+        eve = Enregistrement.charger_genome('eve')
+        ancestor = u.insDict.toInts(eve)
+        u.addIndividual(0, ancestor)
+        u.inserer_cpu(CPU.CPU(0,u))
+        d = {}
+        for k in range(10000) :
+            u.cycle()
+            for i in u.localisation_cpus.keys() :
+                for c in u.localisation_cpus[i] :
+                    self.assertFalse(c in d)
+                    d[c] = 0
+            self.assertEqual(len(d), len(u.liste_cpus))
+            d.clear()
