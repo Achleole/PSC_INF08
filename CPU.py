@@ -11,8 +11,8 @@ class CPU:
 		self.bx = bx
 		self.cx = cx
 		self.dx = dx
-		self.ptr							  = ptr
 		self.univers						  = univers
+		self.ptr							  = ptr
 		self.stack 							  = stack
 		self.stack_ptr						  = stack_ptr
 	
@@ -22,14 +22,20 @@ class CPU:
 		correspondant EXACTEMENT au nom des fonctions"
 		
 		ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
-		try:
-			f = eval(ins)
-			f(self)
-		except Exception as e:
-			print("Instruction ayant echoue : ", ins)
-			print(e)
-		finally:
-			self.incrementer_ptr()
+		if ins == "HCF":
+			HCF(self)
+		else :
+			self.univers.supprimer_cpu_localisation(self)
+			try:
+				f = eval(ins)
+				f(self)
+			except Exception as e:
+				print("Instruction ayant echoue : ", ins)
+				print(e)
+			finally:
+				self.incrementer_ptr()
+				self.univers.ajouter_cpu_localisation(self)
+
 
 	def incrementer_ptr(self):
 		self.ptr = self.univers.ind((self.ptr + 1))

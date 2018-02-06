@@ -67,38 +67,18 @@ class Univers:
     def executer_cpu_actuel(s):
         "Execute le CPU actuellement pointe SANS PASSER AU SUIVANT\
         i.e sans incrementer cpu_actuel"
-        cpu = s.cpu_actuel()
-        i = cpu.ptr
-        cpu.execute()
-        s.supprimer_cpu_localisation(cpu, i)
-        s.ajouter_cpu_localisation(cpu)
+        s.cpu_actuel().execute()
 
-    def supprimer_cpu_localisation(s, cpu, i=-1):
-        """Prend en argument le pointeur vers un cpu et l'enleve de l'adresse i dans le dictionnaire localisation_cpus"""
-        # Si i n'est pas precise, i vaut -1 et le cpu est recherche dans toute la memoire a partir de cpu.ptr
-        if i == -1 :
-            for j in range(0, s.TAILLE_MEMOIRE/2+1) :
-                k = s.ind(cpu.ptr + j)
-                if (k in s.localisation_cpus) and (cpu in s.localisation_cpus[k]) :
-                    s.localisation_cpus[k].remove(cpu)
-                    if s.localisation_cpus[k] == []:
-                        del s.localisation_cpus[k]
-                    return
-                k = s.ind(cpu.ptr - j)
-                if (k in s.localisation_cpus) and (cpu in s.localisation_cpus[k]) :
-                    s.localisation_cpus[k].remove(cpu)
-                    if s.localisation_cpus[k] == []:
-                        del s.localisation_cpus[k]
-                    return
+    def supprimer_cpu_localisation(s, cpu):
+        """Prend en argument le pointeur vers un cpu et l'enleve dans le dictionnaire localisation_cpus"""
+        i = cpu.ptr
+        try:
+            s.localisation_cpus[i].remove(cpu)
+            if s.localisation_cpus[i] == []:
+                del s.localisation_cpus[i]
+        except Exception as e:
             print("Erreur de suppression de localisation !")
-        else :
-            try:
-                s.localisation_cpus[i].remove(cpu)
-                if s.localisation_cpus[i] == []:
-                    del s.localisation_cpus[i]
-            except Exception as e:
-                print("Erreur de suppression de localisation !")
-                print(e)
+            print(e)
 
     def ajouter_cpu_localisation(s, cpu):
         if not cpu.ptr in s.localisation_cpus:
@@ -106,10 +86,10 @@ class Univers:
         if not cpu in s.localisation_cpus[cpu.ptr]:
             s.localisation_cpus[cpu.ptr].append(cpu)
 
-    def tuer_cpu(s, cpu, i=-1):
+    def tuer_cpu(s, cpu):
         """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
         s.liste_cpus.remove(cpu)
-        s.supprimer_cpu_localisation(cpu, i)
+        s.supprimer_cpu_localisation(cpu)
 
     def tuer_cpu_actuel(s):
         """NE PAS UTILISER SI CPU ACTUEL EN COURS D'EXECUTION"""

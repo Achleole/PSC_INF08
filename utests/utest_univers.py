@@ -38,7 +38,7 @@ class TestUnivers(unittest.TestCase):
         u.ajouter_cpu_localisation(c1)
         u.ajouter_cpu_localisation(c3)
         u.ajouter_cpu_localisation(c2)
-        u.supprimer_cpu_localisation(c1, 102)
+        u.supprimer_cpu_localisation(c1)
         self.assertTrue(c1 not in u.localisation_cpus[102] and c2 in u.localisation_cpus[102] and c3 in u.localisation_cpus[102])
         # (on pourrait aussi verifier que les autres valeurs de localisation_cpus ne sont pas modifiees)
     
