@@ -140,7 +140,27 @@ class TestUnivers(unittest.TestCase):
         self.assertEqual(1, u.nbCPUs_at_i(4))
         self.assertEqual(0, u.nbCPUs_at_i(0))
 
-    def test_kill_at(self):
+    def test_nbCPUs_around_i(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10, LARGEUR_CALCUL_DENSITE=1)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        self.assertEqual(3, u.nbCPUs_around_i(3))
+        self.assertEqual(3, u.nbCPUs_around_i(4))
+        self.assertEqual(1, u.nbCPUs_around_i(5))
+        self.assertEqual(0, u.nbCPUs_around_i(6))
+        self.assertEqual(0, u.nbCPUs_around_i(0))
+        c4 = CPU.CPU(0, u)
+        u.inserer_cpu(c4)
+        self.assertEqual(1, u.nbCPUs_around_i(9))
+        c5 = CPU.CPU(9, u)
+        u.inserer_cpu(c5)
+        self.assertEqual(2, u.nbCPUs_around_i(0))
+
+    def test_killAround(self):
         u = Univers.Univers(TAILLE_MEMOIRE=10, LARGEUR_CALCUL_DENSITE=1, maxCPUs=2)
         c1 = CPU.CPU(3, u)
         u.inserer_cpu(c1)
@@ -177,21 +197,22 @@ class TestUnivers(unittest.TestCase):
         c3 = CPU.CPU(4, u)
         u.inserer_cpu(c3)
         u.tuer_cpus_par_densite()
-        self.assertTrue(True) ### a changer !!!
+        for i in range(10) :
+            self.assertTrue(u.nbCPUs_around_i(i)<=1)
 
-    def test_executions_rapide(self):
-        u = Univers.Univers(TAILLE_MEMOIRE = 5000, LARGEUR_CALCUL_DENSITE = 1, maxCPUs = 2)
-        u.insDict.initialize(Instructions.instructions)
-        eve = Enregistrement.charger_genome('eve')
-        ancestor = u.insDict.toInts(eve)
-        u.addIndividual(0, ancestor)
-        u.inserer_cpu(CPU.CPU(0,u))
-        d = {}
-        for k in range(10000) :
-            u.cycle()
-            for i in u.localisation_cpus.keys() :
-                for c in u.localisation_cpus[i] :
-                    self.assertFalse(c in d)
-                    d[c] = 0
-            self.assertEqual(len(d), len(u.liste_cpus))
-            d.clear()
+    # def test_executions_rapide(self):
+    #     u = Univers.Univers(TAILLE_MEMOIRE = 5000, LARGEUR_CALCUL_DENSITE = 1, maxCPUs = 2)
+    #     u.insDict.initialize(Instructions.instructions)
+    #     eve = Enregistrement.charger_genome('eve')
+    #     ancestor = u.insDict.toInts(eve)
+    #     u.addIndividual(0, ancestor)
+    #     u.inserer_cpu(CPU.CPU(0,u))
+    #     d = {}
+    #     for k in range(10000) :
+    #         u.cycle()
+    #         for i in u.localisation_cpus.keys() :
+    #             for c in u.localisation_cpus[i] :
+    #                 self.assertFalse(c in d)
+    #                 d[c] = 0
+    #         self.assertEqual(len(d), len(u.liste_cpus))
+    #         d.clear()

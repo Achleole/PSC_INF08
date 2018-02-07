@@ -110,15 +110,6 @@ class Univers:
         for i in range(len(indiv)) :
             self.memoire[self.ind(index + i)] = indiv[i]
 
-
-    def calculer_densite(s, position):
-        "Calcule la densite de CPU a la position donnee"
-        nombre = 0
-        for i in range(position - s.LARGEUR_CALCUL_DENSITE, position + s.LARGEUR_CALCUL_DENSITE+1):
-            if (s.ind(i)) in s.localisation_cpus:
-                nombre += len(s.localisation_cpus[s.ind(i)])
-        return float(nombre)/float((2*s.LARGEUR_CALCUL_DENSITE+1))
-
     def nbCPUs_at_i(s, i) :
         """renvoie le nb (eventuellement nul) de CPUs localises a l'adresse i"""
         if i in s.localisation_cpus :
@@ -178,7 +169,7 @@ class Univers:
             cpu.afficher_etat()
         print("indice_cpu_actuel :", self.indice_cpu_actuel)
 
-    def nbCPUsInLocalisation(s):
+    def nbCPUsInLocalisation(s):   #juste pour le debogage
         d = {}
         for i in s.localisation_cpus.keys():
             for c in s.localisation_cpus[i]:
