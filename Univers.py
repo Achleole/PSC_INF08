@@ -2,6 +2,7 @@ from CPU import *
 from Enregistrement import *
 from math import *
 import InstructionsDict
+import random
 
 
 #TAILLE_MEMOIRE = 50000
@@ -12,13 +13,13 @@ import InstructionsDict
 class Univers:
     "Contient les CPU et le monde i.e les instructions a executer"
     #valeurs non contractuelles.
-    b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.
-    b2=2 #nb bytes du nb de case memoire.
+    b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
+    b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
     n2=6 #nb bit d'une case memoire
     n3=16 #nb de bit d'un registre du CPU
     n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
-    def __init__(s, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=0, SEUIL_DENSITE=1.5):
+    def __init__(s, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=1, maxCPUs=1):
         #code temporaire
         #eve = charger_genome('eve')
         s.statistiques             = None #Pointeur vers l'instance de la classe statistiques 
@@ -32,7 +33,7 @@ class Univers:
         s.indice_cpu_actuel 	   = 0
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
-        s.SEUIL_DENSITE            = SEUIL_DENSITE
+        s.maxCPUs                 = maxCPUs
 
     def set_statistiques(s, stats):
         "Initialisation des stats"
@@ -43,6 +44,10 @@ class Univers:
         if len(s.liste_cpus)==0 :
             return None
         return s.liste_cpus[s.indice_cpu_actuel]
+
+    def ind(self, i):
+        """Renvoie l'indice i modulo TAILLE_MEMOIRE"""
+        return (i%self.TAILLE_MEMOIRE)
 
     def incremente_cpus_crees(s):
         s.cpus_crees += 1
@@ -84,17 +89,15 @@ class Univers:
     def executer_cpu_actuel(s):
         "Execute le CPU actuellement pointe SANS PASSER AU SUIVANT\
         i.e sans incrementer cpu_actuel"
-        cpu = s.cpu_actuel()
-        s.supprimer_cpu_localisation(cpu)
-        cpu.execute()
-        s.ajouter_cpu_localisation(cpu)
+        s.cpu_actuel().execute()
 
     def supprimer_cpu_localisation(s, cpu):
-        "Prend en argument le pointeur vers un cpu et l'enleve du dictionnaire localisation_cpus"
+        """Prend en argument le pointeur vers un cpu et l'enleve dans le dictionnaire localisation_cpus"""
+        i = cpu.ptr
         try:
-            s.localisation_cpus[cpu.ptr].remove(cpu)
-            if s.localisation_cpus[cpu.ptr] == []:
-                del s.localisation_cpus[cpu.ptr]
+            s.localisation_cpus[i].remove(cpu)
+            if s.localisation_cpus[i] == []:
+                del s.localisation_cpus[i]
         except Exception as e:
             print("Erreur de suppression de localisation !")
             print(e)
@@ -106,10 +109,13 @@ class Univers:
             s.localisation_cpus[cpu.ptr].append(cpu)
 
     def tuer_cpu(s, cpu):
+        """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
         s.liste_cpus.remove(cpu)
         s.supprimer_cpu_localisation(cpu)
 
     def tuer_cpu_actuel(s):
+        """NE PAS UTILISER SI CPU ACTUEL EN COURS D'EXECUTION"""
+        # car risque de pb a la suppression de la localisation
         s.tuer_cpu(s.cpu_actuel())
 
     def next_cpu(s):
@@ -123,30 +129,60 @@ class Univers:
        s.incremente_cpus_crees()
 
     def addIndividual(self, index, indiv) :
+        "Ecrit l'individu indiv dans la memoire a partir de l'adresse index. indiv est sous la forme d'un tableau d'entiers"
         for i in range(len(indiv)) :
-            self.memoire[index + i % len(self.memoire)] = indiv[i]
+            self.memoire[self.ind(index + i)] = indiv[i]
 
+    def nbCPUs_at_i(s, i) :
+        """renvoie le nb (eventuellement nul) de CPUs localises a l'adresse i"""
+        if i in s.localisation_cpus :
+            return len(s.localisation_cpus[i])
+        else :
+            return 0
 
-    def calculer_densite(s, position):
-        #Calcule la densite de CPU a la position donnee
-        nombre = 0
-        for i in range(position - s.LARGEUR_CALCUL_DENSITE, position + s.LARGEUR_CALCUL_DENSITE+1):
-            if i in s.localisation_cpus:
-                nombre += len(s.localisation_cpus[i])
-        return float(nombre)/float((2*s.LARGEUR_CALCUL_DENSITE+1))
+    def nbCPUs_around_i(s, i) :
+        """renvoie le nb (eventuellement nul) de CPUs localises dans la region centree en l'adresse i"""
+        nb = 0
+        for j in range(-s.LARGEUR_CALCUL_DENSITE, s.LARGEUR_CALCUL_DENSITE+1) :
+            nb += s.nbCPUs_at_i(s.ind(i+j))
+        return nb
+
+    def killAround(s, i, n):
+        """Tue les CPUs dans la region commencant a l'indice i et contenant au depart n CPUs, jusqu'a atteindre la moitie de la densite limite"""
+        # suppose qu'aucun CPU n'est en cours d'execution
+        l = 2*s.LARGEUR_CALCUL_DENSITE
+        target = max(1, (s.maxCPUs / 2))
+        while n > target :
+            j = s.ind(random.randint(i, i+l))   # +1 ou pas ?
+            if j in s.localisation_cpus :
+                k = random.randint(0,len(s.localisation_cpus[j])-1)
+                s.tuer_cpu(s.localisation_cpus[j][k])
+                n-=1
+        # peut-etre le cpu c est-il dans plusieurs localisations ? (et lorsqu'il est supprime de liste_cpus, toute les localisations ne sont pas supprimees...)
 
     def tuer_cpus_par_densite(s):
-        "Tue tous les CPUs qui sont dans un endroit trop dense\
-        Par mesure d'egalite, tous les cpus a tuer le seront en meme temps\
-        Dans ce but, on les stocke un par un dans le tableau liste_tues"
-        #FONCTION NON TESTEE
-        liste_tues = []
-        for c in s.liste_cpus:
-            densite = s.calculer_densite(c.ptr)
-            if densite >= s.SEUIL_DENSITE:
-                liste_tues.append(c)
-        for i in range(len(liste_tues)-1):
-            s.tuer_cpu(liste_tues[i])
+        """Fait tuer des CPUs par killAround dans les endroits trop denses"""
+        l = 2 * s.LARGEUR_CALCUL_DENSITE  # largeur reelle de l'intervalle de calcul de densite - 1
+        start = random.randint(0,
+                               len(s.liste_cpus) - 1)  # on commence a un CPU aleatoire pour ne pas introduire de biais d'age
+        killZones = []
+        for k in range(start, len(s.liste_cpus)) :
+            i = s.liste_cpus[k].ptr
+            for j in range(-s.LARGEUR_CALCUL_DENSITE, s.LARGEUR_CALCUL_DENSITE+1) :
+                n = s.nbCPUs_around_i(s.ind(i+j))
+                if n > s.maxCPUs:
+                    killZones.append(s.ind(i+j))
+        for k in range(0, start) :
+            i = s.liste_cpus[k].ptr
+            for j in range(-s.LARGEUR_CALCUL_DENSITE, s.LARGEUR_CALCUL_DENSITE+1) :
+                n = s.nbCPUs_around_i(s.ind(i+j))
+                if n > s.maxCPUs:
+                    killZones.append(s.ind(i+j))
+        for i in killZones :
+            s.killAround(s.ind(i-s.LARGEUR_CALCUL_DENSITE), s.nbCPUs_around_i(i))
+        # avec cette methode est qu'apres en avoir deja supprime, on va faire appel a killAround pour des zones potentiellement deja redescendues sous la densite seuil
+        # on pourrait optimiser en ne recalculant pas les nbCPUs_around_i(les indices i deja traites par un autre k)
+
 
     def afficher(self):
         print("===============")
@@ -155,3 +191,13 @@ class Univers:
         for cpu in self.liste_cpus:
             cpu.afficher_etat()
         print("indice_cpu_actuel :", self.indice_cpu_actuel)
+
+    def nbCPUsInLocalisation(s):   #juste pour le debogage
+        d = {}
+        for i in s.localisation_cpus.keys():
+            for c in s.localisation_cpus[i]:
+                if c in d :
+                    d[c] += 1
+                else :
+                    d[c] = 0
+        return len(d)

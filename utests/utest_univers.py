@@ -2,15 +2,18 @@ import unittest
 import Univers
 import CPU
 import InstructionsDict
+import Instructions
+import Enregistrement
+
 
 class TestUnivers(unittest.TestCase):
 
     def test_creationUnivers(self) :
-        u = Univers.Univers(TAILLE_MEMOIRE=40000, insDict=InstructionsDict.InstructionsDict(), mutation=2e-12, LARGEUR_CALCUL_DENSITE=1, SEUIL_DENSITE=1.4)
+        u = Univers.Univers(TAILLE_MEMOIRE=40000, insDict=InstructionsDict.InstructionsDict(), mutation=2e-12, LARGEUR_CALCUL_DENSITE=1, maxCPUs=2)
         self.assertEqual(u.TAILLE_MEMOIRE, 40000)
         self.assertEqual(u.mutation,2e-12)
         self.assertEqual(u.LARGEUR_CALCUL_DENSITE,1)
-        self.assertEqual(u.SEUIL_DENSITE, 1.4)
+        self.assertEqual(u.maxCPUs, 2)
 
     def test_ajouter_cpu_localisation(self):
         u = Univers.Univers()
@@ -115,3 +118,101 @@ class TestUnivers(unittest.TestCase):
         self.assertEqual(u.indice_cpu_actuel, 2)
         u.next_cpu()
         self.assertEqual(u.indice_cpu_actuel, 1)
+
+    def test_addIndividual(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10)
+        indiv = [5,4,3]
+        u.addIndividual(0, indiv)
+        self.assertEqual(u.memoire[:3], indiv)
+        self.assertEqual(u.memoire[3:10],[2]*7)
+        u.addIndividual(9, indiv)
+        self.assertEqual(u.memoire, [4,3,3]+([2]*6)+[5])
+
+    def test_nbCPUs_at_i(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        self.assertEqual(2, u.nbCPUs_at_i(3))
+        self.assertEqual(1, u.nbCPUs_at_i(4))
+        self.assertEqual(0, u.nbCPUs_at_i(0))
+
+    def test_nbCPUs_around_i(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10, LARGEUR_CALCUL_DENSITE=1)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        self.assertEqual(3, u.nbCPUs_around_i(3))
+        self.assertEqual(3, u.nbCPUs_around_i(4))
+        self.assertEqual(1, u.nbCPUs_around_i(5))
+        self.assertEqual(0, u.nbCPUs_around_i(6))
+        self.assertEqual(0, u.nbCPUs_around_i(0))
+        c4 = CPU.CPU(0, u)
+        u.inserer_cpu(c4)
+        self.assertEqual(1, u.nbCPUs_around_i(9))
+        c5 = CPU.CPU(9, u)
+        u.inserer_cpu(c5)
+        self.assertEqual(2, u.nbCPUs_around_i(0))
+
+    def test_killAround(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10, LARGEUR_CALCUL_DENSITE=1, maxCPUs=2)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        u.killAround(3, 3)
+        self.assertEqual(u.nbCPUs_at_i(3)+u.nbCPUs_at_i(4)+u.nbCPUs_at_i(5), 1)
+        u = Univers.Univers(TAILLE_MEMOIRE=10, LARGEUR_CALCUL_DENSITE=1, maxCPUs=5)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        c4 = CPU.CPU(4, u)
+        u.inserer_cpu(c4)
+        c5 = CPU.CPU(4, u)
+        u.inserer_cpu(c5)
+        c6 = CPU.CPU(4, u)
+        u.inserer_cpu(c6)
+        u.killAround(3, 6)
+        self.assertEqual(u.nbCPUs_at_i(3) + u.nbCPUs_at_i(4) + u.nbCPUs_at_i(5), 2)
+
+
+
+    def test_tuer_cpus_par_densite(self):
+        u = Univers.Univers(TAILLE_MEMOIRE=10, LARGEUR_CALCUL_DENSITE=1, maxCPUs=2)
+        c1 = CPU.CPU(3, u)
+        u.inserer_cpu(c1)
+        c2 = CPU.CPU(3, u)
+        u.inserer_cpu(c2)
+        c3 = CPU.CPU(4, u)
+        u.inserer_cpu(c3)
+        u.tuer_cpus_par_densite()
+        for i in range(10) :
+            self.assertTrue(u.nbCPUs_around_i(i)<=1)
+
+    # def test_executions_rapide(self):
+    #     u = Univers.Univers(TAILLE_MEMOIRE = 5000, LARGEUR_CALCUL_DENSITE = 1, maxCPUs = 2)
+    #     u.insDict.initialize(Instructions.instructions)
+    #     eve = Enregistrement.charger_genome('eve')
+    #     ancestor = u.insDict.toInts(eve)
+    #     u.addIndividual(0, ancestor)
+    #     u.inserer_cpu(CPU.CPU(0,u))
+    #     d = {}
+    #     for k in range(10000) :
+    #         u.cycle()
+    #         for i in u.localisation_cpus.keys() :
+    #             for c in u.localisation_cpus[i] :
+    #                 self.assertFalse(c in d)
+    #                 d[c] = 0
+    #         self.assertEqual(len(d), len(u.liste_cpus))
+    #         d.clear()
