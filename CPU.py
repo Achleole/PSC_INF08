@@ -19,9 +19,8 @@ class CPU:
 
     def execute(self):
         "execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
-        Attention, les instructions dans l'univers sont stockees sous forme de chaine de caractere\
+        Attention, les instructions sont stockees dans le dictionnaire de l'univers sous forme de chaine de caractere\
         correspondant EXACTEMENT au nom des fonctions"
-
         ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
         if ins == "HCF":
             HCF(self)

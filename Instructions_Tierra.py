@@ -100,9 +100,9 @@ def jmp(c):
 		l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
 	except PatternNotFoundException as e:
 		c.ptr += e.l_pattern
-		print("ERREUR TAMER") #a enleve
+		print("pattern non trouve")
 	except NoPatternException:
-		print("ERREUR TAMER")
+		print("pas de pattern apres l'instruction jmp")
 		return
 	else:
 		c.ptr = indice + l_pattern- 1 #on soustrait 1 car le ptr va ensuite etre incremente

@@ -22,6 +22,9 @@ class Univers:
     def __init__(s, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=1, maxCPUs=1):
         #code temporaire
         #eve = charger_genome('eve')
+        s.statistiques             = None #Pointeur vers l'instance de la classe statistiques 
+                                            #qui va recuperer les donnees de l'univers
+        s.cpus_crees               = 0 #Contient le nombre de cpus crees lors du cycle termine
         s.TAILLE_MEMOIRE           = TAILLE_MEMOIRE
         s.memoire                  = [2]*(s.TAILLE_MEMOIRE)
         s.liste_cpus 	           = []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ?
@@ -31,6 +34,10 @@ class Univers:
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
         s.maxCPUs                 = maxCPUs
+
+    def set_statistiques(s, stats):
+        "Initialisation des stats"
+        s.statistiques = stats
 
     def cpu_actuel(s):
         "Renvoie un pointeur vers le CPU actuel"
@@ -42,11 +49,26 @@ class Univers:
         """Renvoie l'indice i modulo TAILLE_MEMOIRE"""
         return (i%self.TAILLE_MEMOIRE)
 
+    def incremente_cpus_crees(s):
+        s.cpus_crees += 1
+
+    def reinitialise_cpus_crees(s):
+        s.cpus_crees = 0
+
+    def retourner_cpus_crees(s):
+        return s.cpus_crees
+
+    def retourner_cpus_total(s):
+        return len(s.liste_cpus)
+
     def cycle(s):
-        "Execute les CPUs puit les tue par densite"
+        "Execute les CPUs, met a jour les statistiques puit les tue par densite"
         try:
             s.executer_cpus()
             s.tuer_cpus_par_densite()
+            if s.statistiques != None:
+                s.statistiques.mettre_a_jour()
+            s.reinitialise_cpus_crees()
         except Exception as e:
             print(e)
             raise
@@ -104,6 +126,7 @@ class Univers:
        "Insere le nouveau CPU c dans la liste juste apres celui actuellement pointe"
        s.liste_cpus.insert(s.indice_cpu_actuel + 1, c)
        s.ajouter_cpu_localisation(c)
+       s.incremente_cpus_crees()
 
     def addIndividual(self, index, indiv) :
         "Ecrit l'individu indiv dans la memoire a partir de l'adresse index. indiv est sous la forme d'un tableau d'entiers"
