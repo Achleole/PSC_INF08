@@ -147,6 +147,8 @@ def movBA(c):
 def movii(c):
 	#sert a copier le contenu d'une case dans une autree
 	u = c.univers
+	c.bx = u.ind(c.bx)
+	c.ax = u.ind(c.ax)
 	u.memoire[c.ax] = u.memoire[c.bx]
 
 def adr(c, fonc=trouver_template_complementaire):
@@ -177,11 +179,13 @@ def rand(c):
 
 def read(c):
 	"Lit l'instruction correspondant a l'adresse presente dans c.bx et la place dans la stack"
+	c.bx = c.univers.ind(c.bx)
 	c.push_stack(c.univers.memoire[c.bx])
 	c.incrementer_stack_ptr()
 
 def write(c):
 	"Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
+	c.ax = c.univers.ind(c.ax)
 	if random.random()>c.univers.mutation:
 		c.univers.memoire[c.ax] = c.pop_stack()
 	else:
