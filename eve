@@ -3,8 +3,9 @@ nop0
 nop0
 nop0
 nop0
-nop0
 rand
+pushA
+popD
 zero
 pushC
 popB
@@ -36,8 +37,7 @@ zero
 nop0
 nop1
 nop0
-subCAB
-pushC
+pushD
 popA
 new
 jmp
