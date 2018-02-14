@@ -27,7 +27,7 @@ class Univers:
         s.cpus_crees               = 0 #Contient le nombre de cpus crees lors du cycle termine
         s.TAILLE_MEMOIRE           = TAILLE_MEMOIRE
         s.memoire                  = [2]*(s.TAILLE_MEMOIRE)
-        s.liste_cpus 	           = []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ?
+        s.liste_cpus 	           = []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ? NOOOON. La liste dynamique de python est en O(1) pour l'accès et dans le pire des cas pondéré en O(1) pour rajouter, donc ca serait pas mieux, juste plus galère ^^
         s.insDict                  = insDict
         s.mutation 				   = mutation #definit le taux de mutation de l'univers
         s.indice_cpu_actuel 	   = 0
@@ -182,7 +182,6 @@ class Univers:
             s.killAround(s.ind(i-s.LARGEUR_CALCUL_DENSITE), s.nbCPUs_around_i(i))
         # avec cette methode est qu'apres en avoir deja supprime, on va faire appel a killAround pour des zones potentiellement deja redescendues sous la densite seuil
         # on pourrait optimiser en ne recalculant pas les nbCPUs_around_i(les indices i deja traites par un autre k)
-
 
     def afficher(self):
         print("===============")
