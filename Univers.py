@@ -200,3 +200,11 @@ class Univers:
                 else :
                     d[c] = 0
         return len(d)
+
+    def exec(self, n):
+        for i in range(n):
+            self.supprimer_cpu_localisation(self.cpu_actuel())
+            self.executer_cpu_actuel()
+            self.ajouter_cpu_localisation(self.cpu_actuel())
+            self.next_cpu()
+

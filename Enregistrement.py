@@ -56,7 +56,7 @@ def intToCPU(entier, univers):
     ax = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 4 * univers.n3)) & bits0
     return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr)
 
-class Replay
+class Replay:
     def __init__(self):
         self.univers=None
         self.fichier=None
@@ -70,7 +70,7 @@ class Replay
         self.etat='r'
         self.fichier=fichier
         self.f=open(fichier,'r')
-        self.n=int(f.readline())
+        self.n=int(self.f.readline())
     def openWrite(self,fichier,n=100):
         self.etat='w'
         self.fichier=fichier
@@ -78,6 +78,15 @@ class Replay
         self.n=n
         self.f.write('n\n')
         self.f.close()
+    def saveEvolution(self,case):
+        if self.etat=='w':
+            self.buffer=(self.buffer<<Univers.n2)+case
+            self.nBits+=Univers.n2
+            while self.nBits>=8:
+                saving=self.buffer>>(self.nBits-8)
+                self.buffer-=saving<<(self.nBits-8)
+                self.f.write(saving.to_bytes(1,byteorder='big'))
+                self.nBits-=8
     def simulate(self):
         if self.etat=='r':
 
@@ -87,7 +96,15 @@ class Replay
             case=self.buffer>>(self.nBits-Univers.n2)
             self.buffer-=case<<(self.nBits-Univers.n2)
             self.nBits-=Univers.n2
+    def nom_temp(self,memoire):
+        self.supprimer_cpu_localisation(self.cpu_actuel())
+        if self.univers.memoire[self.univers.cpu_actuel().ptr] == 36:
+            self.univers.executer_cpu_actuel()
+            self.univers.memoire[self.univers.ind(self.univers.cpu_actuel().ax)]=memoire
 
+        self.univers.executer_cpu_actuel()
+        self.univers.ajouter_cpu_localisation(self.cpu_actuel())
+        self.univers.next_cpu()
 
     def photo(self,univers,mode='w'):
         """Ecrit son etat dans le fichier done en argument. Ajoute les données a la din du fichier s'il existait deja"""
@@ -133,8 +150,7 @@ class Replay
         # print(len(donnees),donnees)
         f.close()
 
-
-    def loadPhoto(self,univers=Univers.Univers()):
+    def loadPhoto(self,univers):
         """Lit un etat dans le fichier donne en argument."""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
         univers.liste_cpus = []
