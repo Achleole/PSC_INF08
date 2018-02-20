@@ -57,13 +57,24 @@ def intToCPU(entier, univers):
     return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr)
 
 class Replay:
-    def __init__(self):
+    def __init__(self,n):
         self.univers=None
         self.fichier=None
         self.f=None
         self.buffer=0
         self.nBits=0
         self.etat=''
+        self.position=0
+    def runAndSaveOne(self):
+        if self.position%self.n:
+            c = self.univers.cpu_actuel()
+            self.univers.exec(1)
+            # si l'instruction lue est 36 == "write", c.ax n'est pas modifié, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] après avoir effectué l'instruction
+            self.saveEvolution(c.univers.memoire[c.ax])
+        else:
+            self.univers.exec(1)
+            self.photo(self.univers,'a')
+        self.position+=1
     def openLoad(self,fichier):
         if self.etat!='':
             self.f.close()
@@ -71,12 +82,18 @@ class Replay:
         self.fichier=fichier
         self.f=open(fichier,'r')
         self.n=int(self.f.readline())
+    def readOne(self):
+        if self.position%self.n==0:
+            self.loadPhoto()
+        else:
+            self.advance(self.readEvolution())
+        self.position+=1
     def openWrite(self,fichier,n=100):
         self.etat='w'
         self.fichier=fichier
         self.f=open(fichier)
         self.n=n
-        self.f.write('n\n')
+        self.f.write(str(n)+'\n')
         self.f.close()
     def saveEvolution(self,case):
         if self.etat=='w':
@@ -87,7 +104,7 @@ class Replay:
                 self.buffer-=saving<<(self.nBits-8)
                 self.f.write(saving.to_bytes(1,byteorder='big'))
                 self.nBits-=8
-    def simulate(self):
+    def readEvolution(self):
         if self.etat=='r':
 
             while self.nBits<Univers.n2:
@@ -96,6 +113,18 @@ class Replay:
             case=self.buffer>>(self.nBits-Univers.n2)
             self.buffer-=case<<(self.nBits-Univers.n2)
             self.nBits-=Univers.n2
+    def advance(self,case):
+        self.univers.supprimer_cpu_localisation(self.univers.cpu_actuel())
+        c=self.univers.cpu_actuel()
+        if self.univers.memoire[c.ptr]!=36:
+            self.univers.executer_cpu_actuel()
+        else:
+            #comme la fonction write mais qui écrit la valeur case donnée en argument a la place de ce que le CPU devrait écrire.
+            c.ax = c.univers.ind(c.ax)
+            c.univers.memoire[c.ax] = case
+            c.decrementer_stack_ptr()
+        self.univers.ajouter_cpu_localisation(self.univers.cpu_actuel())
+        self.univers.next_cpu()
     def nom_temp(self,memoire):
         self.supprimer_cpu_localisation(self.cpu_actuel())
         if self.univers.memoire[self.univers.cpu_actuel().ptr] == 36:
@@ -150,45 +179,45 @@ class Replay:
         # print(len(donnees),donnees)
         f.close()
 
-    def loadPhoto(self,univers):
+    def loadPhoto(self):
         """Lit un etat dans le fichier donne en argument."""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
-        univers.liste_cpus = []
+        self.univers.liste_cpus = []
         f = open(self.fichier, 'rb')
-        lenCPU = int.from_bytes(f.read(univers.b1), byteorder='big')
+        lenCPU = int.from_bytes(f.read(self.univers.b1), byteorder='big')
 
-        univers.indice_cpu_actuel = int.from_bytes(f.read(univers.b1), byteorder='big')
+        self.univers.indice_cpu_actuel = int.from_bytes(f.read(self.univers.b1), byteorder='big')
 
-        CPUs = f.read(ceil(univers.n1 * lenCPU / 8.))
+        CPUs = f.read(ceil(self.univers.n1 * lenCPU / 8.))
         k1 = 0
         for k in range(lenCPU):
             temp = 0
-            while (k1 < univers.n1 * (k + 1)):
+            while (k1 < self.univers.n1 * (k + 1)):
                 l = k1 // 8
                 debut = k1 - l * 8
-                nombreALire = min(univers.n1 * (k + 1) - k1, 8 - debut)
+                nombreALire = min(self.univers.n1 * (k + 1) - k1, 8 - debut)
                 temp = (temp << nombreALire) + (((CPUs[l] << debut & 0b11111111) >> (
                         8 - nombreALire)) & 0b11111111)  # on veut lire de debut a debut+nombre a lire.
                 k1 += nombreALire
-            univers.liste_cpus.append(intToCPU(temp, univers))
+            self.univers.liste_cpus.append(intToCPU(temp, self.univers))
 
-        univers.memoire = []
+        self.univers.memoire = []
 
-        lenMemoire = int.from_bytes(f.read(univers.b2), byteorder='big')
-        memory = f.read(ceil(univers.n2 * lenMemoire / 8.))
+        lenMemoire = int.from_bytes(f.read(self.univers.b2), byteorder='big')
+        memory = f.read(ceil(self.univers.n2 * lenMemoire / 8.))
         # print(memory)
         k1 = 0
         for k in range(lenMemoire):
             temp = 0
-            while (k1 < univers.n2 * (k + 1)):
+            while (k1 < self.univers.n2 * (k + 1)):
                 l = k1 // 8
                 debut = k1 - l * 8
-                nombreALire = min(univers.n2 * (k + 1) - k1, 8 - debut)
+                nombreALire = min(self.univers.n2 * (k + 1) - k1, 8 - debut)
                 temp = (temp << nombreALire) + ((memory[l] << debut & 0b11111111) >> (
                         8 - nombreALire)) & 0b11111111  # on veut lire de debut a debut+nombre a lire.
                 k1 += nombreALire
-            univers.memoire.append(temp)
+            self.univers.memoire.append(temp)
         f.close()
-        for cpu in univers.liste_cpus:
-            univers.ajouter_cpu_localisation(cpu)
-        return univers
+        for cpu in self.univers.liste_cpus:
+            self.univers.ajouter_cpu_localisation(cpu)
+        return self.univers

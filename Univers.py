@@ -207,4 +207,14 @@ class Univers:
             self.executer_cpu_actuel()
             self.ajouter_cpu_localisation(self.cpu_actuel())
             self.next_cpu()
+    def copy(self):
+        autre=Univers(self.TAILLE_MEMOIRE,self.insDict,self.mutation,self.LARGEUR_CALCUL_DENSITE,self.maxCPUs)
+        autre.memoire=self.memoire[:]
+        autre.indice_cpu_actuel=self.indice_cpu_actuel
+        autre.mutation = self.mutation
+        for cpu in self.liste_cpus:
+            c = cpu.copy(autre)
+            autre.liste_cpus.append(c)
+            autre.ajouter_cpu_localisation(c)
+        return autre
 

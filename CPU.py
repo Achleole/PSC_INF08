@@ -69,3 +69,5 @@ class CPU:
         print(self.ptr, " sur ", self.univers.memoire[self.ptr])
         print('valeur de la stack : ', self.stack)
         print('pointeur de la stack : ', self.stack_ptr)
+    def copy(self,nUnivers):
+        return CPU(self.ptr, nUnivers, self.ax, self.bx, self.cx, self.dx, self.stack[:], self.stack_ptr)
