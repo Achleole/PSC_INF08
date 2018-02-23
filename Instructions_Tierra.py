@@ -116,8 +116,8 @@ def jmpb(c):
     except NoPatternException:
         return
     else:
+        c.ptr = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
         print('truc')
-        c.ptr = indice + l_pattern - 1 #on soustrait 1 car le ptr va ensuite etre incremente
 
 def call(c):
     try:
@@ -131,12 +131,14 @@ def call(c):
         c.push_stack(c.ptr + l_pattern + 1)
         #c.incrementer_stack_ptr() #on stocke l'ANCIENNE adresse + l_pattern
         c.ptr = indice + l_pattern - 1 #car on va a l'adresse apres le pattern
+        0
 
 
 def ret(c):
     x = c.pop_stack()
     #c.decrementer_stack_ptr()
     c.ptr = x - 1 #car on va incrementer ensuite c.ptr
+    0
 
 def movDC(c):
     c.dx = c.cx
@@ -172,6 +174,8 @@ def adrf(c):
 def new(c):
     "Creer un nouveau cpu a l'endroit de ax"
     c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers))
+    c.nvx.append(c.ax)
+    0
 
 def rand(c):
     c.ax  = int(c.univers.TAILLE_MEMOIRE*random.random())
@@ -182,15 +186,19 @@ def read(c):
     c.bx = c.univers.ind(c.bx)
     c.push_stack(c.univers.memoire[c.bx])
     c.incrementer_stack_ptr()
+    c.lastRead = c.univers.memoire[c.bx]
 
 def write(c):
     "Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
     c.ax = c.univers.ind(c.ax)
-    if random.random()>c.univers.mutation:
+    a = random.random()
+    if a>c.univers.mutation:
         c.univers.memoire[c.ax] = c.pop_stack()
     else:
-        c.univers.memoire[c.ax] = random.randint(39)
+        c.univers.memoire[c.ax] = random.randint(38)
+    c.univers.auteurs[c.ax] = c #debogage
     c.decrementer_stack_ptr()
+    0
 
 def HCF(c):
     "Tue le cpu qui la lit"

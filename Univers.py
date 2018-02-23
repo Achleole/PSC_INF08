@@ -27,6 +27,7 @@ class Univers:
         s.cpus_crees               = 0 #Contient le nombre de cpus crees lors du cycle termine
         s.TAILLE_MEMOIRE           = TAILLE_MEMOIRE
         s.memoire                  = [2]*(s.TAILLE_MEMOIRE)
+        s.auteurs                  = [None]*(s.TAILLE_MEMOIRE) #pour le debogage
         s.liste_cpus 	           = []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ?
         s.insDict                  = insDict
         s.mutation 				   = mutation #definit le taux de mutation de l'univers
@@ -132,6 +133,7 @@ class Univers:
         "Ecrit l'individu indiv dans la memoire a partir de l'adresse index. indiv est sous la forme d'un tableau d'entiers"
         for i in range(len(indiv)) :
             self.memoire[self.ind(index + i)] = indiv[i]
+            0
 
     def nbCPUs_at_i(s, i) :
         """renvoie le nb (eventuellement nul) de CPUs localises a l'adresse i"""
