@@ -3,12 +3,11 @@ nop0
 nop0
 nop0
 nop0
+pushB
 rand
 pushA
 popD
 zero
-pushC
-popB
 not0
 shl
 not0
@@ -40,6 +39,7 @@ nop0
 pushD
 popA
 new
+popB
 jmp
 nop1
 nop1
