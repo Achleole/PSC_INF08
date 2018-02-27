@@ -7,17 +7,18 @@ class CPU:
     TAILLE_STACK = 10
 
     # ptr stocke l'adresse actuellement pointee par le CPU
-    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack_ptr=0):
+    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=[0]*TAILLE_STACK, stack_ptr=0, generation = 0):
         self.ax = ax
         self.bx = bx
         self.cx = cx
         self.dx = dx
         self.univers = univers
         self.ptr = ptr
-        self.stack = [0]*TAILLE_STACK #ce changement pas POUR le debogage, a conserver (mais pourquoi necessaire ???)
+        self.stack = stack
         self.stack_ptr = stack_ptr
         self.nvx = [] #debogage ?
         self.nbInsExec = 0 #pour le debogage
+        self.generation = generation # debogage
 
     def execute(self):
         "execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
