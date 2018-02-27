@@ -17,6 +17,16 @@ class TestInstructions(unittest.TestCase):
         CheckCPU.checkCPU(self, self.c, 0, 0, 0, 0, 0, 0, [0]*CPU.TAILLE_STACK)
         self.u.inserer_cpu(self.c)
 
+    def test_recopies(self):
+        for i in range(502*9) : #il faut que toutes les lignees de CPUs aient le temps de se recopier 9 fois
+            self.u.executer_cpus()
+        self.assertEqual(len(self.u.liste_cpus), 2**9)
+
+    def test_cycles(self):
+        for i in range(502*9) : #il faut que toutes les lignees de CPUs aient le temps de se recopier 9 fois
+            self.u.cycle()
+        self.assertEqual(len(self.u.liste_cpus), 2**9)
+
     def test_pas_a_pas(self) :
         s = [0]*CPU.TAILLE_STACK
         CheckCPU.checkCPU(self, self.c, 0,0,0,0,0,0, s)
