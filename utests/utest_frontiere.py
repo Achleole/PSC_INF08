@@ -5,7 +5,7 @@ import NextSiteTest
 import Instructions
 import Enregistrement
 
-class TestExec(unittest.TestCase):
+class TestFrontiere(unittest.TestCase):
     def setUp(self):
         self.U = Univers.Univers(NextSiteTest.NextSiteTest(memLen=120), TAILLE_MEMOIRE=120)
         self.U.insDict.initialize(Instructions.instructions)
