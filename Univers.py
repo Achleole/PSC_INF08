@@ -27,7 +27,7 @@ class Univers:
         s.cpus_crees               = 0 #Contient le nombre de cpus crees lors du cycle termine
         s.TAILLE_MEMOIRE           = TAILLE_MEMOIRE
         s.memoire                  = [2]*(s.TAILLE_MEMOIRE)
-        s.liste_cpus 	           = []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ?
+        s.liste_cpus 	           = []
         s.insDict                  = insDict
         s.mutation 				   = mutation #definit le taux de mutation de l'univers
         s.indice_cpu_actuel 	   = 0
@@ -78,8 +78,7 @@ class Univers:
         PRECISION IMPORTANTE : on parcourt la liste dans l'ordre des indices decroissant"
         if len(s.liste_cpus) == 0:
             raise NoCPUException()
-        indice_cpu_depart = (s.indice_cpu_actuel) #Contient le cpu auquel on devra s'arreter
-        cpu_actuel 	  = s.cpu_actuel()
+        indice_cpu_depart = s.indice_cpu_actuel #Contient le cpu auquel on devra s'arreter
         s.executer_cpu_actuel()
         s.next_cpu()
         while s.indice_cpu_actuel != indice_cpu_depart:
@@ -183,7 +182,6 @@ class Univers:
         # avec cette methode est qu'apres en avoir deja supprime, on va faire appel a killAround pour des zones potentiellement deja redescendues sous la densite seuil
         # on pourrait optimiser en ne recalculant pas les nbCPUs_around_i(les indices i deja traites par un autre k)
 
-
     def afficher(self):
         print("===============")
         print("memoire :", self.memoire)
@@ -201,3 +199,20 @@ class Univers:
                 else :
                     d[c] = 0
         return len(d)
+
+    def execute(self, n):
+        for i in range(n):
+            self.executer_cpu_actuel()
+            self.next_cpu()
+
+    def copy(self):
+        autre=Univers(self.TAILLE_MEMOIRE,self.insDict,self.mutation,self.LARGEUR_CALCUL_DENSITE,self.maxCPUs)
+        autre.memoire=self.memoire[:]
+        autre.indice_cpu_actuel=self.indice_cpu_actuel
+        autre.mutation = self.mutation
+        for cpu in self.liste_cpus:
+            c = cpu.copy(autre)
+            autre.liste_cpus.append(c)
+            autre.ajouter_cpu_localisation(c)
+        return autre
+

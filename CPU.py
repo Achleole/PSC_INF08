@@ -18,9 +18,10 @@ class CPU:
         self.stack_ptr = stack_ptr
 
     def execute(self):
-        "execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
+        """execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
+        Met a jour la localisation du CPU\
         Attention, les instructions sont stockees dans le dictionnaire de l'univers sous forme de chaine de caractere\
-        correspondant EXACTEMENT au nom des fonctions"
+        correspondant EXACTEMENT au nom des fonctions"""
         self.ptr = self.univers.ind(self.ptr)
         ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
         if ins == "HCF":
@@ -69,3 +70,5 @@ class CPU:
         print(self.ptr, " sur ", self.univers.memoire[self.ptr])
         print('valeur de la stack : ', self.stack)
         print('pointeur de la stack : ', self.stack_ptr)
+    def copy(self,nUnivers):
+        return CPU(self.ptr, nUnivers, self.ax, self.bx, self.cx, self.dx, self.stack[:], self.stack_ptr)
