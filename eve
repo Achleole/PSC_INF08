@@ -40,7 +40,7 @@ pushD
 popA
 new
 popB
-jmp
+jmpb
 nop1
 nop1
 nop1
