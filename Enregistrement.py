@@ -69,7 +69,7 @@ class Replay:
         if self.position%self.n:
             c = self.univers.cpu_actuel()
             self.univers.execute(1)
-            # si l'instruction lue est 36 == "write", c.ax n'est pas modifié, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] après avoir effectué l'instruction
+            # si l'instruction lue est 36 == "write", c.ax n'est pas modifie, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] apres avoir effectue l'instruction
             self.saveEvolution(c.univers.memoire[c.ax])
         else:
             self.univers.execute(1)
@@ -119,7 +119,7 @@ class Replay:
         if self.univers.memoire[c.ptr]!=36:
             self.univers.executer_cpu_actuel()
         else:
-            #comme la fonction write mais qui écrit la valeur case donnée en argument a la place de ce que le CPU devrait écrire.
+            #comme la fonction write mais qui ecrit la valeur case donnee en argument a la place de ce que le CPU devrait ecrire.
             c.ax = c.univers.ind(c.ax)
             c.univers.memoire[c.ax] = case
             c.decrementer_stack_ptr()
@@ -136,7 +136,7 @@ class Replay:
         self.univers.next_cpu()
 
     def photo(self,univers,mode='w'):
-        """Ecrit son etat dans le fichier done en argument. Ajoute les données a la din du fichier s'il existait deja"""
+        """Ecrit son etat dans le fichier done en argument. Ajoute les donnees a la din du fichier s'il existait deja"""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs, nbCaseMemoire,Memoire
         donnees = len(univers.liste_cpus).to_bytes(univers.b1, byteorder='big')
         donnees += univers.indice_cpu_actuel.to_bytes(univers.b1, byteorder='big')
