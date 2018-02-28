@@ -110,6 +110,8 @@ class Univers:
         """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
         s.liste_cpus.remove(cpu)
         s.supprimer_cpu_localisation(cpu)
+        if s.indice_cpu_actuel == len(s.liste_cpus) :
+            s.indice_cpu_actuel = 0
 
     def tuer_cpu_actuel(s):
         """NE PAS UTILISER SI CPU ACTUEL EN COURS D'EXECUTION"""
