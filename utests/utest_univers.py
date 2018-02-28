@@ -6,6 +6,7 @@ import Instructions
 import Enregistrement
 import NextSiteTest
 import CheckCPU
+import sys
 
 
 class TestUnivers(unittest.TestCase):
@@ -223,8 +224,41 @@ class TestUnivers(unittest.TestCase):
         for i in range(10) :
             self.assertTrue(u.nbCPUs_around_i(i)<=1)
 
+    def test_executer_cpus(self):
+        u = Univers.Univers(NextSiteTest.NextSiteTest(memLen=10), TAILLE_MEMOIRE = 10, LARGEUR_CALCUL_DENSITE = 1, maxCPUs = 2)
+        u.memoire = [0,37,0,0,0,0,0,0,0,0]
+        u.insDict.initialize(Instructions.instructions)
+        c1 = CPU.CPU(0, u)
+        c2 = CPU.CPU(0, u)
+        c3 = CPU.CPU(0, u)
+        u.inserer_cpu(c1)
+        u.inserer_cpu(c2)
+        u.inserer_cpu(c3)
+        self.assertEqual(u.liste_cpus[0], c1)
+        self.assertEqual(u.liste_cpus[1], c3)
+        self.assertEqual(u.liste_cpus[2], c2)
+        u.executer_cpus()
+        self.assertEqual(c1.ptr, 1)
+        self.assertEqual(c2.ptr, 1)
+        self.assertEqual(c3.ptr, 1)
+        self.assertRaises(Univers.NoCPUException, u.executer_cpus)
+        c1 = CPU.CPU(1, u)
+        c2 = CPU.CPU(2, u)
+        c3 = CPU.CPU(0, u)
+        u.inserer_cpu(c1)
+        u.inserer_cpu(c2)
+        u.inserer_cpu(c3)
+        self.assertEqual(u.liste_cpus[0], c1)
+        self.assertEqual(u.liste_cpus[1], c3)
+        self.assertEqual(u.liste_cpus[2], c2)
+        u.indice_cpu_actuel = 1
+        u.executer_cpus()
+        self.assertEqual(u.liste_cpus, [c3, c2])
+        self.assertEqual(c3.ptr, 1)
+        self.assertEqual(c2.ptr, 3)
+
     # def test_executions_rapide(self):
-    #     u = Univers.Univers(NextSiteTest.NextSiteTest(memLen=5000)TAILLE_MEMOIRE = 5000, LARGEUR_CALCUL_DENSITE = 1, maxCPUs = 2)
+    #     u = Univers.Univers(NextSiteTest.NextSiteTest(memLen=5000), TAILLE_MEMOIRE = 5000, LARGEUR_CALCUL_DENSITE = 1, maxCPUs = 2)
     #     u.insDict.initialize(Instructions.instructions)
     #     eve = Enregistrement.charger_genome('eve')
     #     ancestor = u.insDict.toInts(eve)

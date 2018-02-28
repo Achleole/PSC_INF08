@@ -77,12 +77,10 @@ class Univers:
     def executer_cpus(s):
         "Cette fonction execute tous les CPU 1 fois\
         PRECISION IMPORTANTE : on parcourt la liste dans l'ordre des indices decroissant"
-        if len(s.liste_cpus) == 0:
+        nb = len(s.liste_cpus)
+        if nb == 0 :
             raise NoCPUException()
-        indice_cpu_depart = s.indice_cpu_actuel #Contient le cpu auquel on devra s'arreter
-        s.executer_cpu_actuel()
-        s.next_cpu()
-        while s.indice_cpu_actuel != indice_cpu_depart:
+        for i in range(nb) :
             s.executer_cpu_actuel()
             s.next_cpu()
 
@@ -120,6 +118,8 @@ class Univers:
 
     def next_cpu(s):
         "Met a jour cpu_actuel pour pointer le suivant a executer"
+        if len(s.liste_cpus) == 0:
+            raise NoCPUException()
         s.indice_cpu_actuel = (s.indice_cpu_actuel - 1)%(len(s.liste_cpus))
 
     def inserer_cpu(s, c):
