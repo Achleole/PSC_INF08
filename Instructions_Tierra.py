@@ -157,7 +157,7 @@ def movii(c):
 
 def adr(c, fonc=trouver_template_complementaire):
     try:
-        l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
+        l_pattern, indice, i = fonc(c, LIMITE_RECHERCHE)
     except NoPatternException:
         pass
     except PatternNotFoundException as e:
