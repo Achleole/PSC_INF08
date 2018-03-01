@@ -34,6 +34,7 @@ class Univers:
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
         s.maxCPUs                 = maxCPUs
+        s.lastId                   = 0
 
     def set_statistiques(s, stats):
         "Initialisation des stats"
@@ -48,6 +49,13 @@ class Univers:
     def ind(self, i):
         """Renvoie l'indice i modulo TAILLE_MEMOIRE"""
         return (i%self.TAILLE_MEMOIRE)
+
+    def nextId(self, c):
+        self.lastId += 1
+        if c == None :
+            return str(self.lastId)
+        else :
+            return c.id + "/" + str(self.lastId)
 
     def incremente_cpus_crees(s):
         s.cpus_crees += 1

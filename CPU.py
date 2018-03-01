@@ -7,7 +7,8 @@ class CPU:
     TAILLE_STACK = 10
 
     # ptr stocke l'adresse actuellement pointee par le CPU
-    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=[0] * TAILLE_STACK, stack_ptr=0):
+    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=[0] * TAILLE_STACK, stack_ptr=0, father=None):
+        self.id = univers.nextId(father)
         self.ax = ax
         self.bx = bx
         self.cx = cx
