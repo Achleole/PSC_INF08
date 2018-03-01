@@ -7,7 +7,7 @@ class CPU:
     TAILLE_STACK = 10
 
     # ptr stocke l'adresse actuellement pointee par le CPU
-    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=None, stack_ptr=0, generation = 0, father=None):
+    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=None, stack_ptr=0, father=None):
         """Doit contenir la meme valeur que ptr dans bx (pour eve)"""
         self.id = univers.nextId(father)
         self.ax = ax
@@ -21,9 +21,6 @@ class CPU:
         else :
             self.stack = stack
         self.stack_ptr = stack_ptr
-        self.nvx = [] #debogage ?
-        self.nbInsExec = 0 #pour le debogage
-        self.generation = generation # debogage
 
     def execute(self):
         """execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
@@ -45,19 +42,15 @@ class CPU:
             finally:
                 self.incrementer_ptr()
                 self.univers.ajouter_cpu_localisation(self)
-        self.nbInsExec += 1
-        0
 
     def incrementer_ptr(self):
         self.ptr = self.univers.ind((self.ptr + 1))
 
     def incrementer_stack_ptr(self):
         self.stack_ptr = (self.stack_ptr + 1) % (TAILLE_STACK)
-        0
 
     def decrementer_stack_ptr(self):
         self.stack_ptr = (self.stack_ptr - 1) % (TAILLE_STACK)
-        0
 
     def pop_stack(self):
         "Retourne la valeur du stack qui est au dessus i.e en stack_ptr - 1 SANS DECREMENTER\
