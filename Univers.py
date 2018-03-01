@@ -19,7 +19,7 @@ class Univers:
     n3=16 #nb de bit d'un registre du CPU
     n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
-    def __init__(s, nextSite, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=1, maxCPUs=1):
+    def __init__(s, nextSite, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=23, maxCPUs=1):
         #code temporaire
         s.statistiques             = None #Pointeur vers l'instance de la classe statistiques 
                                             #qui va recuperer les donnees de l'univers
