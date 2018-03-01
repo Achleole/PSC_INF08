@@ -175,7 +175,7 @@ def adrf(c):
 #													NOUVELLES INSTRUCTIONS
 def new(c):
     "Creer un nouveau cpu a l'endroit de ax"
-    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, generation = c.generation+1))
+    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, generation = c.generation+1, father=c))
     c.nvx.append(c.ax)
     0
 
