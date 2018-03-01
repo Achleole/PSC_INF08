@@ -1,4 +1,6 @@
 from Utilitaire import *
+import random
+import CPU
 
 LIMITE_RECHERCHE = 10
 
