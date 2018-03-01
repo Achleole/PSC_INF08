@@ -8,7 +8,7 @@ import CheckCPU
 
 class TestInstructions(unittest.TestCase):
     def setUp(self):
-        self.u = Univers.Univers(NextSiteTest.NextSiteTest(memLen=300), TAILLE_MEMOIRE=300)
+        self.u = Univers.Univers(NextSiteTest.NextSiteTest(memLen=26000), TAILLE_MEMOIRE=26000)
         self.u.insDict.initialize(Instructions.instructions)
         eve = Enregistrement.charger_genome('eve')
         self.ancestor = self.u.insDict.toInts(eve)
