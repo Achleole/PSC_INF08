@@ -1,9 +1,4 @@
-import Univers
-import CPU
-import random
 from Utilitaire import *
-import math
-from Enregistrement import charger_genome
 
 LIMITE_RECHERCHE = 10
 
@@ -67,7 +62,6 @@ def decD(c):
 def pushA(c):
     c.push_stack(c.ax)
     c.incrementer_stack_ptr()
-    0
 
 def pushB(c):
     c.push_stack(c.bx)
@@ -133,14 +127,12 @@ def call(c):
         c.push_stack(c.ptr + l_pattern + 1)
         #c.incrementer_stack_ptr() #on stocke l'ANCIENNE adresse + l_pattern
         c.ptr = indice + l_pattern - 1 #car on va a l'adresse apres le pattern
-        0
 
 
 def ret(c):
     x = c.pop_stack()
     #c.decrementer_stack_ptr()
     c.ptr = x - 1 #car on va incrementer ensuite c.ptr
-    0
 
 def movDC(c):
     c.dx = c.cx
@@ -175,9 +167,7 @@ def adrf(c):
 #													NOUVELLES INSTRUCTIONS
 def new(c):
     "Creer un nouveau cpu a l'endroit de ax"
-    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, generation = c.generation+1, father=c))
-    c.nvx.append(c.ax)
-    0
+    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, father=c))
 
 def rand(c):
     c.ax  = c.univers.nextSite.getNext()
@@ -188,7 +178,6 @@ def read(c):
     c.bx = c.univers.ind(c.bx)
     c.push_stack(c.univers.memoire[c.bx])
     c.incrementer_stack_ptr()
-    c.lastRead = (c.bx, c.univers.memoire[c.bx])
 
 def write(c):
     "Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
@@ -198,9 +187,7 @@ def write(c):
         c.univers.memoire[c.ax] = c.pop_stack()
     else:
         c.univers.memoire[c.ax] = random.randint(0,37)
-    c.univers.auteurs[c.ax] = (c, c.nbInsExec, c.lastRead[0], c.lastRead[1]) #debogage
     c.decrementer_stack_ptr()
-    0
 
 def HCF(c):
     "Tue le cpu qui la lit"
