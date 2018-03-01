@@ -119,7 +119,7 @@ def jmpb(c):
         return
     else:
         c.ptr = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
-        print('truc')
+        #print('truc')
 
 def call(c):
     try:
