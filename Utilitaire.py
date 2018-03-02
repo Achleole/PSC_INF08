@@ -61,7 +61,6 @@ def trouver_template_complementaire_avant_mem(memoire, ptr, LIMITE_RECHERCHE):
 
     #dans le cas ou on a rien trouve
     if i < 0:
-        print("La recherche avant de ",pattern, " a echoue.")
         raise PatternNotFoundException(longueur_pattern)
 
     indice_reel = 0
@@ -90,7 +89,6 @@ def trouver_template_complementaire_arriere_mem(memoire, ptr, LIMITE_RECHERCHE):
 
     #dans le cas ou on a rien trouve
     if i < 0:
-        print("La recherche arriere de ", pattern, " a echoue.")
         raise PatternNotFoundException(longueur_pattern)
 
     indice_reel = 0
