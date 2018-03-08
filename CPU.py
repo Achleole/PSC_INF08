@@ -22,6 +22,11 @@ class CPU:
             self.stack = stack
         self.stack_ptr = stack_ptr
 
+        self.a_mute     = False #Passe a vrai des que le code diverge de l'ancetre initial
+        self.ecriture_mutee = False #Passe a vrai quand il y a mutation dans le code qu'on ecrit 
+        #repasse a faux quand on a finit de se diviser et qu'on passe a la reecriture suivante
+        self.generation = 1
+
     def execute(self):
         """execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
         Met a jour la localisation du CPU\

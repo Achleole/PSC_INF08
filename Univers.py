@@ -36,6 +36,7 @@ class Univers:
         s.maxCPUs                  = maxCPUs
         s.nextSite                 = nextSite  #la classe utilisee lorsqu'un CPU veut savoir ou se recopier (vaut randint en temps normal)
         s.lastId                   = 0
+        s.historique_gen_mut       = []
 
     def set_statistiques(s, stats):
         "Initialisation des stats"
@@ -63,6 +64,17 @@ class Univers:
 
     def incremente_cpus_crees(s):
         s.cpus_crees += 1
+
+    def ajouter_cpu_historique_gen_mut(s, c):
+        "Ajoute le cpu passe en argument dans l'historique pour etre enregistre dans les statistiques\
+        On n'enregistre la generation et si le cpu a mute ou non"
+        s.historique_gen_mut.append((c.generation, c.a_mute))
+
+    def retourner_historique_gen_mut(s):
+        "Reinitialise aussi le tableau d'historique"
+        tmp = s.historique_gen_mut[:]
+        s.historique_gen_mut = []
+        return tmp
 
     def reinitialise_cpus_crees(s):
         s.cpus_crees = 0
@@ -140,6 +152,7 @@ class Univers:
        s.liste_cpus.insert(s.indice_cpu_actuel + 1, c)
        s.ajouter_cpu_localisation(c)
        s.incremente_cpus_crees()
+       s.ajouter_cpu_historique_gen_mut(c)
 
     def addIndividual(self, index, indiv) :
         "Ecrit l'individu indiv dans la memoire a partir de l'adresse index. indiv est sous la forme d'un tableau d'entiers"

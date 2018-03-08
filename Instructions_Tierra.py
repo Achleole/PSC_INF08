@@ -165,7 +165,11 @@ def adrf(c):
 #													NOUVELLES INSTRUCTIONS
 def new(c):
     "Creer un nouveau cpu a l'endroit de ax"
-    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, father=c))
+    nouveau_CPU         = CPU.CPU(c.ax, c.univers, bx=c.ax, father=c)
+    nouveau_CPU.generation  = c.generation + 1
+    if c.ecriture_mutee or c.a_mute:
+        nouveau_CPU.a_mute = True
+    c.univers.inserer_cpu(nouveau_CPU)
 
 def rand(c):
     c.ax  = c.univers.nextSite.getNext()
@@ -185,6 +189,7 @@ def write(c):
         c.univers.memoire[c.ax] = c.pop_stack()
     else:
         c.univers.memoire[c.ax] = random.randint(0,37)
+        c.ecriture_mutee     = True
     c.decrementer_stack_ptr()
 
 def HCF(c):

@@ -10,8 +10,8 @@ popD
 zero
 not0
 shl
-not0
-shl
+nop0
+sh
 shl
 shl
 shl
