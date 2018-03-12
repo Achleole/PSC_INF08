@@ -203,9 +203,7 @@ class Univers:
 
     def exec(self, n):
         for i in range(n):
-            self.supprimer_cpu_localisation(self.cpu_actuel())
             self.executer_cpu_actuel()
-            self.ajouter_cpu_localisation(self.cpu_actuel())
             self.next_cpu()
     def copy(self):
         autre=Univers(self.TAILLE_MEMOIRE,self.insDict,self.mutation,self.LARGEUR_CALCUL_DENSITE,self.maxCPUs)
@@ -217,4 +215,15 @@ class Univers:
             autre.liste_cpus.append(c)
             autre.ajouter_cpu_localisation(c)
         return autre
+    def __ne__(self,other):
+        return not self.__eq__(other)
+    def __eq__(self,other):
+        bool=True
+        for cpu in self.liste_cpus:
+            bool*=cpu in other.liste_cpus #needs to override cpu.__eq__
+        bool *= (len(self.liste_cpus)==len(other.liste_cpus))
+        bool *= self.memoire==other.memoire
+        return bool
+
+
 

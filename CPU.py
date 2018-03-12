@@ -71,3 +71,14 @@ class CPU:
         print('pointeur de la stack : ', self.stack_ptr)
     def copy(self,nUnivers):
         return CPU(self.ptr, nUnivers, self.ax, self.bx, self.cx, self.dx, self.stack[:], self.stack_ptr)
+    def __ne__(self,other):
+        return not self.__eq__(other)
+    def __eq__(self,other):
+        bool = self.ptr == other.ptr
+        bool *= self.ax == other.ax
+        bool *= self.bx == other.bx
+        bool *= self.cx == other.cx
+        bool *= self.dx == other.dx
+        bool *= self.stack == other.stack
+        bool *= self.stack_ptr == other.stack_ptr
+        return bool
