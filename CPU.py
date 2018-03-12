@@ -7,20 +7,26 @@ class CPU:
     TAILLE_STACK = 10
 
     # ptr stocke l'adresse actuellement pointee par le CPU
-    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=[0] * TAILLE_STACK, stack_ptr=0):
+    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=None, stack_ptr=0, father=None):
+        """Doit contenir la meme valeur que ptr dans bx (pour eve)"""
+        self.id = univers.nextId(father)
         self.ax = ax
         self.bx = bx
         self.cx = cx
         self.dx = dx
         self.univers = univers
         self.ptr = ptr
-        self.stack = stack
+        if stack is None :
+            self.stack = [0]*TAILLE_STACK
+        else :
+            self.stack = stack
         self.stack_ptr = stack_ptr
 
     def execute(self):
-        "execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
+        """execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
+        Met a jour la localisation du CPU\
         Attention, les instructions sont stockees dans le dictionnaire de l'univers sous forme de chaine de caractere\
-        correspondant EXACTEMENT au nom des fonctions"
+        correspondant EXACTEMENT au nom des fonctions"""
         self.ptr = self.univers.ind(self.ptr)
         ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
         if ins == "HCF":

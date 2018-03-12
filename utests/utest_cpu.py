@@ -1,22 +1,19 @@
 import unittest
 import Univers
 import CPU
+import NextSiteTest
+import CheckCPU
 
 class TestCPU(unittest.TestCase):
     def setUp(self):
-        self.u = Univers.Univers()
+        self.u = Univers.Univers(NextSiteTest.NextSiteTest())
 
     def test_creationCPU(self) :
         stack = [i for i in range(CPU.TAILLE_STACK)]
         c = CPU.CPU(102, self.u, 3,7,9,11, stack,2)
-        self.assertEqual(c.ptr, 102)
-        self.assertEqual(c.ax, 3)
-        self.assertEqual(c.bx,7)
-        self.assertEqual(c.cx,9)
-        self.assertEqual(c.dx,11)
-        for i in range(CPU.TAILLE_STACK) :
-            self.assertEqual(c.stack[c.stack_ptr],(i+2)%CPU.TAILLE_STACK)
-            c.incrementer_stack_ptr()
+        CheckCPU.checkCPU(self, c, 102, 3,7,9,11,2, stack)
+        c2 = CPU.CPU(101, self.u)
+        CheckCPU.checkCPU(self, c2, 101, 0, 0, 0, 0, 0, [0]*CPU.TAILLE_STACK)
 
     def test_incr_stack(self) :
         c = CPU.CPU(102, self.u)
@@ -91,7 +88,6 @@ class TestCPU(unittest.TestCase):
 
     def test_pop_stack(self):
         c = CPU.CPU(102, self.u, stack=[0]*CPU.TAILLE_STACK)
-        self.assertEqual(c.stack_ptr, 0)
         self.assertEqual(0,c.pop_stack())
         c.stack = [i for i in range(CPU.TAILLE_STACK)]
         self.assertEqual(CPU.TAILLE_STACK-1, c.pop_stack()) #On verifie que pop_stack renvoie la bonne valeur...

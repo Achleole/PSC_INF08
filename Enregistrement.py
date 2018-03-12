@@ -92,6 +92,15 @@ class Replay:
                 self.univers.exec(1)
                 self.photo(self.univers,'a')
             self.position+=1
+        if self.position%self.n:
+            c = self.univers.cpu_actuel()
+            self.univers.execute(1)
+            # si l'instruction lue est 36 == "write", c.ax n'est pas modifie, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] apres avoir effectue l'instruction
+            self.saveEvolution(c.univers.memoire[c.ax])
+        else:
+            self.univers.execute(1)
+            self.photo(self.univers,'a')
+        self.position+=1
     def openLoad(self,fichier):
         if self.etat!='':
             self.f.close()
@@ -155,6 +164,8 @@ class Replay:
 
     def photo(self):
         """Ecrit son etat dans le fichier done en argument. Ajoute les données a la din du fichier s'il existait deja"""
+    def photo(self,univers,mode='w'):
+        """Ecrit son etat dans le fichier done en argument. Ajoute les donnees a la din du fichier s'il existait deja"""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs, nbCaseMemoire,Memoire
 
         donnees = len(self.univers.liste_cpus).to_bytes(self.univers.b1, byteorder='big')

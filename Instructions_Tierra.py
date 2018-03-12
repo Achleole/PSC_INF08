@@ -1,8 +1,6 @@
-import Univers
-import CPU
-import random
 from Utilitaire import *
-import math
+import random
+import CPU
 
 LIMITE_RECHERCHE = 10
 
@@ -100,13 +98,10 @@ def jmp(c):
         l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
         c.ptr += e.l_pattern
-        print("pattern non trouve")
     except NoPatternException:
-        print("pas de pattern apres l'instruction jmp")
         return
     else:
         c.ptr = indice + l_pattern- 1 #on soustrait 1 car le ptr va ensuite etre incremente
-
 
 def jmpb(c):
     try:
@@ -116,8 +111,7 @@ def jmpb(c):
     except NoPatternException:
         return
     else:
-        print('truc')
-        c.ptr = indice + l_pattern - 1 #on soustrait 1 car le ptr va ensuite etre incremente
+        c.ptr = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
 
 def call(c):
     try:
@@ -153,7 +147,7 @@ def movii(c):
 
 def adr(c, fonc=trouver_template_complementaire):
     try:
-        l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
+        l_pattern, indice, i = fonc(c, LIMITE_RECHERCHE)
     except NoPatternException:
         pass
     except PatternNotFoundException as e:
@@ -171,10 +165,10 @@ def adrf(c):
 #													NOUVELLES INSTRUCTIONS
 def new(c):
     "Creer un nouveau cpu a l'endroit de ax"
-    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers))
+    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, father=c))
 
 def rand(c):
-    c.ax  = int(c.univers.TAILLE_MEMOIRE*random.random())
+    c.ax  = c.univers.nextSite.getNext()
     "Place dans c.ax une valeur aleatoire"
 
 def read(c):
@@ -186,10 +180,11 @@ def read(c):
 def write(c):
     "Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
     c.ax = c.univers.ind(c.ax)
-    if random.random()>c.univers.mutation:
+    a = random.random()
+    if a>c.univers.mutation:
         c.univers.memoire[c.ax] = c.pop_stack()
     else:
-        c.univers.memoire[c.ax] = random.randint(39)
+        c.univers.memoire[c.ax] = random.randint(0,37)
     c.decrementer_stack_ptr()
 
 def HCF(c):
