@@ -22,8 +22,12 @@ def CPUtoInt(cpu):
     # if cpu.dx>2**(cpu.univers.n3):
     # 	print("erreur dx")
     # if cpu.ptr>2**(cpu.univers.n3):
-    # 	print("erreur ptr")
-    resultat = cpu.ax
+    # 	print("erreur ptr")l=cpu.id.split("/")
+    l = cpu.id.split("/")
+    resultat = int(l[-1])
+    parent=(int(l[-2]) if len(l)>1 else 2**(cpu.univers.b1 *8)-1)
+    resultat = (resultat << cpu.univers.b1*8)+parent
+    resultat = (resultat << cpu.univers.n3) + cpu.ax
     resultat = (resultat << cpu.univers.n3) + cpu.bx
     resultat = (resultat << cpu.univers.n3) + cpu.cx
     resultat = (resultat << cpu.univers.n3) + cpu.dx
@@ -31,6 +35,9 @@ def CPUtoInt(cpu):
     for i in cpu.stack:
         resultat = (resultat << cpu.univers.n2) + i
     resultat = (resultat << k) + cpu.stack_ptr
+
+
+
     return resultat
 
 
@@ -39,12 +46,9 @@ def intToCPU(entier, univers):
     bits0 = 0
     for i in range(univers.n3):
         bits0 += 2 ** i
-    bits1 = 0
-    for i in range(k):
-        bits1 += 2 ** i
-    bits2 = 0
-    for i in range(univers.n2):
-        bits2 += 2 ** i
+    bits1 = 2**k-1
+    bits2 = 2**(univers.n2)-1
+    bits3 = 2**(univers.b1 *8)-1
     stack_ptr = entier & bits1
     stack = []
     for i in range(CPU.TAILLE_STACK):
@@ -54,7 +58,10 @@ def intToCPU(entier, univers):
     cx = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 2 * univers.n3)) & bits0
     bx = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 3 * univers.n3)) & bits0
     ax = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 4 * univers.n3)) & bits0
-    return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr)
+    parent = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 5 * univers.n3)) & bits3
+    id = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + univers.b1 * 8 + 5 * univers.n3)) & bits3
+    id_final =(str(id) if parent==2**(univers.b1 *8)-1 else str(parent)+"/"+str(id))
+    return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr, None, id_final )
 
 class Replay:
     def __init__(self):
@@ -147,7 +154,7 @@ class Replay:
         if self.univers.memoire[c.ptr]!=36:
             self.univers.executer_cpu_actuel()
         else:
-            #comme la fonction write mais qui écrit la valeur case donnée en argument a la place de ce que le CPU devrait écrire.
+            #comme la fonction write mais qui ecrit la valeur case donnee en argument a la place de ce que le CPU devrait ecrire.
             c.ax = c.univers.ind(c.ax)
             self.univers.executer_cpu_actuel()
             c.univers.memoire[c.ax] = case
@@ -162,8 +169,6 @@ class Replay:
         self.univers.ajouter_cpu_localisation(self.cpu_actuel())
         self.univers.next_cpu()
 
-    def photo(self):
-        """Ecrit son etat dans le fichier done en argument. Ajoute les données a la din du fichier s'il existait deja"""
     def photo(self,univers,mode='w'):
         """Ecrit son etat dans le fichier done en argument. Ajoute les donnees a la din du fichier s'il existait deja"""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs, nbCaseMemoire,Memoire

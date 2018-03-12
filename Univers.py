@@ -18,9 +18,9 @@ class Univers:
     b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
     n2=6 #nb bit d'une case memoire
     n3=16 #nb de bit d'un registre du CPU
-    n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
+    n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2))+2*b1 #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
-    def __init__(s, nextSite, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=23, maxCPUs=1):
+    def __init__(s, nextSite, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=23, maxCPUs=1, lastid=0):
         #code temporaire
         s.statistiques             = None #Pointeur vers l'instance de la classe statistiques 
                                             #qui va recuperer les donnees de l'univers
@@ -35,7 +35,7 @@ class Univers:
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
         s.maxCPUs                  = maxCPUs
         s.nextSite                 = nextSite  #la classe utilisee lorsqu'un CPU veut savoir ou se recopier (vaut randint en temps normal)
-        s.lastId                   = 0
+        s.lastId                   = lastid
 
     def set_statistiques(s, stats):
         "Initialisation des stats"
@@ -56,7 +56,8 @@ class Univers:
         if c == None :
             return str(self.lastId)
         else :
-            return c.id + "/" + str(self.lastId)
+            l= c.id.split("/")
+            return l[-1] + "/" + str(self.lastId)
 
     def retourner_copie_memoire(self):
         return copy.copy(s.memoire)
@@ -220,7 +221,7 @@ class Univers:
             self.next_cpu()
 
     def copy(self):
-        autre=Univers(self.TAILLE_MEMOIRE,self.insDict,self.mutation,self.LARGEUR_CALCUL_DENSITE,self.maxCPUs)
+        autre=Univers(self.nextSite, self.TAILLE_MEMOIRE,self.insDict,self.mutation,self.LARGEUR_CALCUL_DENSITE,self.maxCPUs, self.lastId)
         autre.memoire=self.memoire[:]
         autre.indice_cpu_actuel=self.indice_cpu_actuel
         autre.mutation = self.mutation
