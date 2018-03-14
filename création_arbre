@@ -3,7 +3,7 @@ arbres=dict()
 for k in liste_cpus:
   arbres[k.id]=dict()
   loc_cpus[k.id]=[k.id,1]
-  arbre[k.id][1]=[k.univers.memoire[k.ptr]]
+  arbres[k.id][1]=[k.univers.memoire[k.ptr]]
   
   
 for j<n:
