@@ -61,7 +61,7 @@ def intToCPU(entier, univers):
     parent = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 5 * univers.n3)) & bits3
     id = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + univers.b1 * 8 + 5 * univers.n3)) & bits3
     id_final =(str(id) if parent==2**(univers.b1 *8)-1 else str(parent)+"/"+str(id))
-    return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr, None, id_final )
+    return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr, None, id_final)
 
 class Replay:
     def __init__(self):
@@ -99,15 +99,6 @@ class Replay:
                 self.univers.execute(1)
                 self.photo('a')
             self.position+=1
-        if self.position%self.n:
-            c = self.univers.cpu_actuel()
-            self.univers.execute(1)
-            # si l'instruction lue est 36 == "write", c.ax n'est pas modifie, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] apres avoir effectue l'instruction
-            self.saveEvolution(c.univers.memoire[c.ax])
-        else:
-            self.univers.execute(1)
-            self.photo(self.univers,'a')
-        self.position+=1
     def openLoad(self,fichier):
         if self.etat!='':
             self.f.close()

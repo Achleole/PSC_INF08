@@ -43,9 +43,18 @@ class TestCPU(unittest.TestCase):
     def test_sauvegarde(self):
         fichier = "temp.tierra"
         self.replay.univers=self.U
+        memoire=[self.U.copy()]
         self.replay.openWrite(fichier)
-        self.replay.runAndSave(self.N)
+        for i in range(self.N):
+            self.replay.runAndSave(1)
+            memoire.append(self.replay.univers.copy())
         self.U=self.replay.univers.copy()
+        nouveau=[]
         self.replay.openLoad(fichier)
-        self.replay.forward(self.N)
+        for i in range(self.N):
+            self.replay.forward(1)
+            nouveau.append(self.replay.univers.copy())
+            if not(self.replay.univers==memoire[i+1]):
+                print("je sert a rien")
+
         self.assertTrue(self.replay.univers==self.U)
