@@ -1,6 +1,6 @@
 from math import *
 from CPU import *
-from Univers import *
+import Univers
 
 def charger_genome(fichier):
     genome = []
@@ -97,7 +97,7 @@ class Replay:
                 self.saveEvolution(c.univers.memoire[c.ax])
             else:
                 self.univers.execute(1)
-                self.photo(self.univers,'a')
+                self.photo('a')
             self.position+=1
         if self.position%self.n:
             c = self.univers.cpu_actuel()
@@ -134,8 +134,8 @@ class Replay:
         self.position=0
     def saveEvolution(self,case):
         if self.etat=='w':
-            self.buffer=(self.buffer<<Univers.n2)+case
-            self.nBits+=Univers.n2
+            self.buffer=(self.buffer << Univers.Univers.n2)+case
+            self.nBits+=Univers.Univers.n2
             while self.nBits>=8:
                 saving=self.buffer>>(self.nBits-8)
                 self.buffer-=saving<<(self.nBits-8)
@@ -167,7 +167,7 @@ class Replay:
         self.univers.executer_cpu_actuel()
         self.univers.next_cpu()
 
-    def photo(self,univers,mode='w'):
+    def photo(self,mode='w'):
         """Ecrit son etat dans le fichier done en argument. Ajoute les donnees a la din du fichier s'il existait deja"""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs, nbCaseMemoire,Memoire
 

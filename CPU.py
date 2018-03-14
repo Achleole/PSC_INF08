@@ -7,9 +7,12 @@ class CPU:
     TAILLE_STACK = 10
 
     # ptr stocke l'adresse actuellement pointee par le CPU
-    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=None, stack_ptr=0, father=None):
+    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=None, stack_ptr=0, father=None, id = None):
         """Doit contenir la meme valeur que ptr dans bx (pour eve)"""
-        self.id = univers.nextId(father)
+        if id ==None:
+            self.id = univers.nextId(father)
+        else:
+            self.id = id
         self.ax = ax
         self.bx = bx
         self.cx = cx
@@ -76,7 +79,7 @@ class CPU:
         print('valeur de la stack : ', self.stack)
         print('pointeur de la stack : ', self.stack_ptr)
     def copy(self,nUnivers):
-        return CPU(self.ptr, nUnivers, self.ax, self.bx, self.cx, self.dx, self.stack[:], self.stack_ptr)
+        return CPU(self.ptr, nUnivers, self.ax, self.bx, self.cx, self.dx, self.stack[:], self.stack_ptr, None, self.id)
     def __ne__(self,other):
         return not self.__eq__(other)
     def __eq__(self,other):
@@ -87,4 +90,5 @@ class CPU:
         bool *= self.dx == other.dx
         bool *= self.stack == other.stack
         bool *= self.stack_ptr == other.stack_ptr
+        bool *= self.id == other.id
         return bool
