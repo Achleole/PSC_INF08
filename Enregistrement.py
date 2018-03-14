@@ -160,13 +160,11 @@ class Replay:
             c.univers.memoire[c.ax] = case
         self.univers.next_cpu()
     def nom_temp(self,memoire):
-        self.supprimer_cpu_localisation(self.cpu_actuel())
         if self.univers.memoire[self.univers.cpu_actuel().ptr] == 36:
             self.univers.executer_cpu_actuel()
             self.univers.memoire[self.univers.ind(self.univers.cpu_actuel().ax)]=memoire
 
         self.univers.executer_cpu_actuel()
-        self.univers.ajouter_cpu_localisation(self.cpu_actuel())
         self.univers.next_cpu()
 
     def photo(self,univers,mode='w'):
