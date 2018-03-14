@@ -19,21 +19,22 @@ class Univers:
     n3=16 #nb de bit d'un registre du CPU
     n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
-    def __init__(s, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=1, maxCPUs=1):
+    def __init__(s, nextSite, TAILLE_MEMOIRE=50000, insDict=InstructionsDict.InstructionsDict(), mutation=0, LARGEUR_CALCUL_DENSITE=23, maxCPUs=1):
         #code temporaire
-        #eve = charger_genome('eve')
         s.statistiques             = None #Pointeur vers l'instance de la classe statistiques 
                                             #qui va recuperer les donnees de l'univers
         s.cpus_crees               = 0 #Contient le nombre de cpus crees lors du cycle termine
         s.TAILLE_MEMOIRE           = TAILLE_MEMOIRE
         s.memoire                  = [2]*(s.TAILLE_MEMOIRE)
-        s.liste_cpus 	           = []     # ne pourrait-on pas gagner de l'efficacite en en faisant une liste chainee ? NOOOON. La liste dynamique de python est en O(1) pour l'accès et dans le pire des cas pondéré en O(1) pour rajouter, donc ca serait pas mieux, juste plus galère ^^
+        s.liste_cpus 	           = []
         s.insDict                  = insDict
         s.mutation 				   = mutation #definit le taux de mutation de l'univers
         s.indice_cpu_actuel 	   = 0
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
-        s.maxCPUs                 = maxCPUs
+        s.maxCPUs                  = maxCPUs
+        s.nextSite                 = nextSite  #la classe utilisee lorsqu'un CPU veut savoir ou se recopier (vaut randint en temps normal)
+        s.lastId                   = 0
 
     def set_statistiques(s, stats):
         "Initialisation des stats"
@@ -48,6 +49,13 @@ class Univers:
     def ind(self, i):
         """Renvoie l'indice i modulo TAILLE_MEMOIRE"""
         return (i%self.TAILLE_MEMOIRE)
+
+    def nextId(self, c):
+        self.lastId += 1
+        if c == None :
+            return str(self.lastId)
+        else :
+            return c.id + "/" + str(self.lastId)
 
     def incremente_cpus_crees(s):
         s.cpus_crees += 1
@@ -76,13 +84,10 @@ class Univers:
     def executer_cpus(s):
         "Cette fonction execute tous les CPU 1 fois\
         PRECISION IMPORTANTE : on parcourt la liste dans l'ordre des indices decroissant"
-        if len(s.liste_cpus) == 0:
+        nb = len(s.liste_cpus)
+        if nb == 0 :
             raise NoCPUException()
-        indice_cpu_depart = (s.indice_cpu_actuel) #Contient le cpu auquel on devra s'arreter
-        cpu_actuel 	  = s.cpu_actuel()
-        s.executer_cpu_actuel()
-        s.next_cpu()
-        while s.indice_cpu_actuel != indice_cpu_depart:
+        for i in range(nb) :
             s.executer_cpu_actuel()
             s.next_cpu()
 
@@ -112,6 +117,8 @@ class Univers:
         """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
         s.liste_cpus.remove(cpu)
         s.supprimer_cpu_localisation(cpu)
+        if s.indice_cpu_actuel == len(s.liste_cpus) :
+            s.indice_cpu_actuel = 0
 
     def tuer_cpu_actuel(s):
         """NE PAS UTILISER SI CPU ACTUEL EN COURS D'EXECUTION"""
@@ -120,6 +127,8 @@ class Univers:
 
     def next_cpu(s):
         "Met a jour cpu_actuel pour pointer le suivant a executer"
+        if len(s.liste_cpus) == 0:
+            raise NoCPUException()
         s.indice_cpu_actuel = (s.indice_cpu_actuel - 1)%(len(s.liste_cpus))
 
     def inserer_cpu(s, c):
@@ -201,10 +210,11 @@ class Univers:
                     d[c] = 0
         return len(d)
 
-    def exec(self, n):
+    def execute(self, n):
         for i in range(n):
             self.executer_cpu_actuel()
             self.next_cpu()
+
     def copy(self):
         autre=Univers(self.TAILLE_MEMOIRE,self.insDict,self.mutation,self.LARGEUR_CALCUL_DENSITE,self.maxCPUs)
         autre.memoire=self.memoire[:]
