@@ -92,11 +92,11 @@ class Replay:
         if self.etat=="w":
             if self.position%self.n: #si self.position n'est pas un multiple de self.n
                 c = self.univers.cpu_actuel()
-                self.univers.exec(1)
-                # si l'instruction lue est 36 == "write", c.ax n'est pas modifié, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] après avoir effectué l'instruction
+                self.univers.execute(1)
+                # si l'instruction lue est 36 == "write", c.ax n'est pas modifie, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] apres avoir effectue l'instruction
                 self.saveEvolution(c.univers.memoire[c.ax])
             else:
-                self.univers.exec(1)
+                self.univers.execute(1)
                 self.photo(self.univers,'a')
             self.position+=1
         if self.position%self.n:
