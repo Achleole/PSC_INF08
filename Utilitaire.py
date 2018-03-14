@@ -9,6 +9,7 @@ def knuth_morris_pratt(s, t):
     assert t != ' '
     len_s = len(s)
     len_t = len(t)
+    l_max = 0
     r = [0]*len_t
     j = r[0] = -1
     for i in range(1, len_t):
@@ -22,8 +23,11 @@ def knuth_morris_pratt(s, t):
             j = r[j]
         j += 1
         if j == len_t:
-            return i - len_t + 1
-    return -1
+            return i - len_t + 1, len_t
+        elif j > l_max :
+            l_max = j
+            i_temp = i - l_max + 1
+    return i_temp, l_max
 
 def calculer_pattern(memoire, ptr_tmp):
     "Calcule la suite de nop complemtaire a celle debutant en ptr_tmp"
@@ -56,20 +60,15 @@ def trouver_template_complementaire_avant_mem(memoire, ptr, LIMITE_RECHERCHE):
     if longueur_pattern == 0:
         raise NoPatternException()
 
-    copie_avant = memoire[ptr+longueur_pattern+1:] + memoire[:ptr]
-    i 			= knuth_morris_pratt(copie_avant, pattern)
+    copie_avant  = memoire[ptr+longueur_pattern+1:] + memoire[:ptr]
+    i, len_found = knuth_morris_pratt(copie_avant, pattern)
 
-    #dans le cas ou on a rien trouve
-    if i < 0:
-        raise PatternNotFoundException(longueur_pattern)
-
-    indice_reel = 0
     if i >= (len(memoire)-(ptr+longueur_pattern+1)):
         indice_reel = i - (len(memoire)-(ptr+longueur_pattern+1))
     else:
         indice_reel = i + ptr + longueur_pattern + 1
     #Pour l'instant, on s'en fout de LIMITE RECHERCHE
-    return (longueur_pattern, indice_reel, i)
+    return (longueur_pattern, indice_reel, i, len_found)
 
 def trouver_template_complementaire_arriere(c, LIMITE_RECHERCHE):
     return trouver_template_complementaire_arriere_mem(c.univers.memoire, c.ptr, LIMITE_RECHERCHE)
@@ -85,38 +84,32 @@ def trouver_template_complementaire_arriere_mem(memoire, ptr, LIMITE_RECHERCHE):
 
     copie_avant = memoire[ptr+longueur_pattern+1:] + memoire[:ptr]
     copie_arriere = copie_avant[::-1]
-    i 			  = knuth_morris_pratt(copie_arriere, pattern_arriere)
+    i, len_found  = knuth_morris_pratt(copie_arriere, pattern_arriere)
 
-    #dans le cas ou on a rien trouve
-    if i < 0:
-        raise PatternNotFoundException(longueur_pattern)
-
-    indice_reel = 0
     #Le i est l'indice en sachant qu'on a commence a compter a partir de c.ptr - 1
     if i >= ptr:
-        indice_reel = (len(memoire) - i + (ptr-1) - longueur_pattern + 1)%(len(memoire))
+        indice_reel = (len(memoire) - i + (ptr-1) - longueur_pattern + 1)%(len(memoire))  #utiliser univers.ind() ?
     else:
         indice_reel =(ptr - i - longueur_pattern)%len(memoire)
     #Pour l'instant, on s'en fout de LIMITE RECHERCHE
-    return (longueur_pattern, indice_reel, i)
+    return (longueur_pattern, indice_reel, i, len_found)
 
 def trouver_template_complementaire(c, LIMITE_RECHERCHE):
     try:
-        l_pattern, indice_avant, i_avant = trouver_template_complementaire_avant(c, LIMITE_RECHERCHE)
+        l_pattern, indice_avant, i_avant, len_found_avant = trouver_template_complementaire_avant(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
-        l_pattern = e.l_pattern
-        indice_avant = float('inf')
+        raise NoCPUException()  #ne devrait jamais arriver
     except NoPatternException:
         raise NoPatternException()
     try:
-        l_pattern_arriere, indice_arriere, i_arriere = trouver_template_complementaire_arriere(c, LIMITE_RECHERCHE)
+        l_pattern_arriere, indice_arriere, i_arriere, len_found_arriere = trouver_template_complementaire_arriere(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
-        indice_arriere = float('inf')
-    if indice_arriere == indice_avant == float('inf'):
+        raise NoCPUException()  # ne devrait jamais arriver
+    if len_found_arriere == len_found_avant == 0:
         #dans ce cas, on a trouve le pattern nul part
         raise PatternNotFoundException(l_pattern)
     else:
-        if i_arriere < i_avant:
-            return l_pattern_arriere, indice_arriere, i_arriere
+        if len_found_arriere >= len_found_avant:
+            return l_pattern_arriere, indice_arriere, i_arriere, len_found_arriere
         else:
-            return l_pattern, indice_avant, i_avant
+            return l_pattern, indice_avant, i_avant, len_found_avant

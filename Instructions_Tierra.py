@@ -95,27 +95,27 @@ def popD(c):
 
 def jmp(c):
     try:
-        l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
+        l_pattern, indice, i, len_found = trouver_template_complementaire(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
         c.ptr += e.l_pattern
     except NoPatternException:
         return
     else:
-        c.ptr = indice + l_pattern- 1 #on soustrait 1 car le ptr va ensuite etre incremente
+        c.ptr = indice + len_found- 1 #on soustrait 1 car le ptr va ensuite etre incremente
 
 def jmpb(c):
     try:
-        l_pattern, indice, i = trouver_template_complementaire_arriere(c, LIMITE_RECHERCHE)
+        l_pattern, indice, i, len_found = trouver_template_complementaire_arriere(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
         c.ptr += e.l_pattern
     except NoPatternException:
         return
     else:
-        c.ptr = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
+        c.ptr = indice + len_found - 1  # on soustrait 1 car le ptr va ensuite etre incremente
 
 def call(c):
     try:
-        l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
+        l_pattern, indice, i, len_found = trouver_template_complementaire(c, LIMITE_RECHERCHE)
     except NoPatternException:
         c.push_stack(c.ptr+1)
         c.incrementer_stack_ptr()#cf doc tierra sur le comportement de la fonction (j'ai un doute)
@@ -124,7 +124,7 @@ def call(c):
     else:
         c.push_stack(c.ptr + l_pattern + 1)
         #c.incrementer_stack_ptr() #on stocke l'ANCIENNE adresse + l_pattern
-        c.ptr = indice + l_pattern - 1 #car on va a l'adresse apres le pattern
+        c.ptr = indice + len_found - 1 #car on va a l'adresse apres le pattern
 
 
 def ret(c):
@@ -147,13 +147,13 @@ def movii(c):
 
 def adr(c, fonc=trouver_template_complementaire):
     try:
-        l_pattern, indice, i = fonc(c, LIMITE_RECHERCHE)
+        l_pattern, indice, i, len_found = fonc(c, LIMITE_RECHERCHE)
     except NoPatternException:
         pass
     except PatternNotFoundException as e:
         pass
     else:
-        c.ax = indice + l_pattern #car on stocke l'adresse suivant le pattern
+        c.ax = indice + len_found #car on stocke l'adresse suivant le pattern
 
 
 def adrb(c):
