@@ -98,13 +98,10 @@ def jmp(c):
         l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
         c.ptr += e.l_pattern
-        print("pattern non trouve")
     except NoPatternException:
-        print("pas de pattern apres l'instruction jmp")
         return
     else:
         c.ptr = indice + l_pattern- 1 #on soustrait 1 car le ptr va ensuite etre incremente
-
 
 def jmpb(c):
     try:
@@ -115,7 +112,6 @@ def jmpb(c):
         return
     else:
         c.ptr = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
-        #print('truc')
 
 def call(c):
     try:
@@ -185,9 +181,15 @@ def write(c):
     "Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
     c.ax = c.univers.ind(c.ax)
     a = random.random()
-    if a>c.univers.mutation:
+    if a > c.univers.mutation: #ecriture normale
         c.univers.memoire[c.ax] = c.pop_stack()
-    else:
+    elif c.univers.mutation >= a > 2.*c.univers.mutation/3: #deletion
+        c.pop_stack()
+        c.ax -= 1
+    elif 2.*c.univers.mutation/3 >= a > c.univers.mutation/3.: #insertion
+        c.univers.memoire[c.ax] = random.randint(0,37)
+        c.ax += 1
+    else: #mutation
         c.univers.memoire[c.ax] = random.randint(0,37)
     c.decrementer_stack_ptr()
 

@@ -1,6 +1,7 @@
 from CPU import *
 from Enregistrement import *
 from math import *
+import copy
 import InstructionsDict
 import random
 
@@ -58,6 +59,9 @@ class Univers:
             l=c.id.split("/")
             return l[-1]+ "/" + str(self.lastId)
 
+    def retourner_copie_memoire(self):
+        return copy.copy(s.memoire)
+
     def incremente_cpus_crees(s):
         s.cpus_crees += 1
 
@@ -71,7 +75,7 @@ class Univers:
         return len(s.liste_cpus)
 
     def cycle(s):
-        "Execute les CPUs, met a jour les statistiques puit les tue par densite"
+        "Execute les CPUs, met a jour les statistiques puis les tue par densite"
         try:
             s.executer_cpus()
             s.tuer_cpus_par_densite()
