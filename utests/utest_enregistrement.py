@@ -9,7 +9,7 @@ import Statistiques
 import NextSite
 import random
 
-class TestCPU(unittest.TestCase):
+class TestEnregistrement(unittest.TestCase):
     def setUp(self):
         self.i = 0
         self.U = Univers.Univers( NextSite.NextSite())

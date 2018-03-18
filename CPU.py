@@ -83,12 +83,15 @@ class CPU:
     def __ne__(self,other):
         return not self.__eq__(other)
     def __eq__(self,other):
-        bool = self.ptr == other.ptr
-        bool *= self.ax == other.ax
-        bool *= self.bx == other.bx
-        bool *= self.cx == other.cx
-        bool *= self.dx == other.dx
-        bool *= self.stack == other.stack
-        bool *= self.stack_ptr == other.stack_ptr
-        bool *= self.id == other.id
-        return bool
+        if other is None:
+            return self is None
+        else:
+            bool = self.ptr == other.ptr
+            bool *= self.ax == other.ax
+            bool *= self.bx == other.bx
+            bool *= self.cx == other.cx
+            bool *= self.dx == other.dx
+            bool *= self.stack == other.stack
+            bool *= self.stack_ptr == other.stack_ptr
+            bool *= self.id == other.id
+            return bool
