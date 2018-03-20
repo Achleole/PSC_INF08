@@ -55,6 +55,7 @@ class TestEnregistrement(unittest.TestCase):
             self.replay.forward(1)
             nouveau.append(self.replay.univers.copy())
             if not(self.replay.univers==memoire[i+1]):
-                print("je sers a rien")
+                pass
+                #print("je sers a rien")
 
         self.assertTrue(self.replay.univers==self.U)

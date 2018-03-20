@@ -8,6 +8,7 @@ def charger_genome(fichier):
     f = open(fichier, 'r')
     for line in f:
         genome.append(line.strip())
+    f.close()
     return genome
 
 
@@ -94,8 +95,16 @@ class Replay:
                 c = self.univers.cpu_actuel()
                 self.univers.execute(1)
                 # si l'instruction lue est 36 == "write", c.ax n'est pas modifie, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] apres avoir effectue l'instruction
-                self.saveEvolution(c.univers.memoire[c.ax])
+                instruction = self.univers.memoire[c.ptr]
+                if instruction==36:
+                    self.saveWrite(c.univers.memoire[c.ax])
+                elif instruction==34:
+                    self.saveRand(c.ax)
             else:
+                saving = self.buffer << (8- self.nBits )
+                self.nBits = 0
+                self.buffer = 0
+                self.f.write(saving.to_bytes(1, byteorder='big'))
                 self.univers.execute(1)
                 self.photo('a')
             self.position+=1
@@ -112,7 +121,7 @@ class Replay:
             if self.position%self.n==0:
                 self.loadPhoto()
             else:
-                self.advance(self.readEvolution())
+                self.advance()
             self.position+=1
     def openWrite(self,fichier,n=100):
         if self.etat!='':
@@ -123,7 +132,16 @@ class Replay:
         self.n=n
         self.f.write(n.to_bytes(3,byteorder='big'))
         self.position=0
-    def saveEvolution(self,case):
+    def saveRand(self,ax):
+        if self.etat=='w':
+            self.buffer = (self.buffer << (Univers.Univers.b2 *8))+ax
+            self.nBits += Univers.Univers.b2 *8
+            while self.nBits>=8:
+                saving=self.buffer>>(self.nBits-8)
+                self.buffer-=saving<<(self.nBits-8)
+                self.f.write(saving.to_bytes(1,byteorder='big'))
+                self.nBits-=8
+    def saveWrite(self,case):
         if self.etat=='w':
             self.buffer=(self.buffer << Univers.Univers.n2)+case
             self.nBits+=Univers.Univers.n2
@@ -132,7 +150,7 @@ class Replay:
                 self.buffer-=saving<<(self.nBits-8)
                 self.f.write(saving.to_bytes(1,byteorder='big'))
                 self.nBits-=8
-    def readEvolution(self):
+    def readEvolutionWrite(self):
         if self.etat=='r':
             while self.nBits< Univers.Univers.n2:
                 self.buffer=(self.buffer<<8)+int.from_bytes(self.f.read(1), byteorder='big')
@@ -140,16 +158,31 @@ class Replay:
             case=self.buffer>>(self.nBits - Univers.Univers.n2)
             self.buffer-=case<<(self.nBits - Univers.Univers.n2)
             self.nBits-= Univers.Univers.n2
-    def advance(self,case):
+            return case
+    def readEvolutionRand(self):
+        if self.etat=='r':
+            while self.nBits< Univers.Univers.b2*8:
+                self.buffer=(self.buffer<<8)+int.from_bytes(self.f.read(1), byteorder='big')
+                self.nBits+=8
+            case=self.buffer>>(self.nBits - Univers.Univers.b2 * 8)
+            self.buffer-=case<<(self.nBits - Univers.Univers.b2*8)
+            self.nBits-= Univers.Univers.b2*8
+            return case
+    def advance(self):
         c=self.univers.cpu_actuel()
-        if self.univers.memoire[c.ptr]!=36:
-            self.univers.executer_cpu_actuel()
-        else:
-            #comme la fonction write mais qui ecrit la valeur case donnee en argument a la place de ce que le CPU devrait ecrire.
+        if self.univers.memoire[c.ptr]==36:
             c.ax = c.univers.ind(c.ax)
             self.univers.executer_cpu_actuel()
-            c.univers.memoire[c.ax] = case
+            c.univers.memoire[c.ax] = self.readEvolutionWrite()
+            # comme la fonction write mais qui ecrit la valeur case donnee en argument a la place de ce que le CPU devrait ecrire.
+        elif self.univers.memoire[c.ptr]==34:
+            c.ax = self.readEvolutionRand()
+        else:
+            self.univers.executer_cpu_actuel()
         self.univers.next_cpu()
+
+
+
     def nom_temp(self,memoire):
         if self.univers.memoire[self.univers.cpu_actuel().ptr] == 36:
             self.univers.executer_cpu_actuel()
