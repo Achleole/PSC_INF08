@@ -93,20 +93,20 @@ class Replay:
         if self.etat=="w":
             if self.position%self.n: #si self.position n'est pas un multiple de self.n
                 c = self.univers.cpu_actuel()
-                self.univers.execute(1)
-                # si l'instruction lue est 36 == "write", c.ax n'est pas modifie, sinon, on s'en fiche de ce que l'on sauvegarde, donc dans tous les cas on peut sauvegarder ce qu'il y a dans c.univers.memoire[c.ax] apres avoir effectue l'instruction
                 instruction = self.univers.memoire[c.ptr]
+                self.univers.execute(1)
                 if instruction==36:
                     self.saveWrite(c.univers.memoire[c.ax])
                 elif instruction==34:
                     self.saveRand(c.ax)
             else:
-                saving = self.buffer << (8- self.nBits )
-                self.nBits = 0
-                self.buffer = 0
-                self.f.write(saving.to_bytes(1, byteorder='big'))
+                if self.nBits>0:
+                    saving = self.buffer << (8- self.nBits )
+                    self.nBits = 0
+                    self.buffer = 0
+                    self.f.write(saving.to_bytes(1, byteorder='big'))
                 self.univers.execute(1)
-                self.photo('a')
+                self.photo()
             self.position+=1
     def openLoad(self,fichier):
         if self.etat!='':
@@ -118,6 +118,7 @@ class Replay:
         self.position=0
     def readOne(self):
         if self.etat=="r":
+            print(self.position)
             if self.position%self.n==0:
                 self.loadPhoto()
             else:
@@ -132,15 +133,6 @@ class Replay:
         self.n=n
         self.f.write(n.to_bytes(3,byteorder='big'))
         self.position=0
-    def saveRand(self,ax):
-        if self.etat=='w':
-            self.buffer = (self.buffer << (Univers.Univers.b2 *8))+ax
-            self.nBits += Univers.Univers.b2 *8
-            while self.nBits>=8:
-                saving=self.buffer>>(self.nBits-8)
-                self.buffer-=saving<<(self.nBits-8)
-                self.f.write(saving.to_bytes(1,byteorder='big'))
-                self.nBits-=8
     def saveWrite(self,case):
         if self.etat=='w':
             self.buffer=(self.buffer << Univers.Univers.n2)+case
@@ -159,6 +151,17 @@ class Replay:
             self.buffer-=case<<(self.nBits - Univers.Univers.n2)
             self.nBits-= Univers.Univers.n2
             return case
+    def saveRand(self, ax):
+        if self.etat == 'w':
+            self.buffer = (self.buffer << (Univers.Univers.b2 * 8)) + ax
+            self.nBits += Univers.Univers.b2 * 8
+            nBytes = self.nBits//8
+            while self.nBits >= 8:
+                saving = self.buffer >> (self.nBits - 8*nBytes)
+                self.buffer -= saving << (self.nBits - 8*nBytes)
+                self.f.write(saving.to_bytes(nBytes, byteorder='big'))
+                self.nBits -= 8*nBytes
+            print("écriture rand :", ax)
     def readEvolutionRand(self):
         if self.etat=='r':
             while self.nBits< Univers.Univers.b2*8:
@@ -167,19 +170,20 @@ class Replay:
             case=self.buffer>>(self.nBits - Univers.Univers.b2 * 8)
             self.buffer-=case<<(self.nBits - Univers.Univers.b2*8)
             self.nBits-= Univers.Univers.b2*8
+            print("lecture rand :",case)
             return case
     def advance(self):
         c=self.univers.cpu_actuel()
         if self.univers.memoire[c.ptr]==36:
             c.ax = c.univers.ind(c.ax)
-            self.univers.executer_cpu_actuel()
+            self.univers.execute(1)
             c.univers.memoire[c.ax] = self.readEvolutionWrite()
             # comme la fonction write mais qui ecrit la valeur case donnee en argument a la place de ce que le CPU devrait ecrire.
         elif self.univers.memoire[c.ptr]==34:
+            self.univers.execute(1)
             c.ax = self.readEvolutionRand()
         else:
             self.univers.executer_cpu_actuel()
-        self.univers.next_cpu()
 
 
 
@@ -191,7 +195,7 @@ class Replay:
         self.univers.executer_cpu_actuel()
         self.univers.next_cpu()
 
-    def photo(self,mode='w'):
+    def photo(self):
         """Ecrit son etat dans le fichier done en argument. Ajoute les donnees a la din du fichier s'il existait deja"""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs, nbCaseMemoire,Memoire
 
