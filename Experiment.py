@@ -45,14 +45,22 @@ class Experiment:
     def setFolderName(self, nom):
         self.folderName = nom
 
-    def enregistrer_resultat(self, nom_fichier, taille_memoire, nombre_experiences, nombre_iterations):
+    def enregistrer_resultat(self, nom_fichier, taille_memoire, nombre_experiences, nombre_iterations, res):
         "Enregistre sous forme de tableau les resultats"
+        if not os.path.exists(self.folderName):
+            os.makedirs(self.folderName)
+
         nom_enregistrement = self.folderName + '/' + nom_fichier
-        f = open(nom_enregistrement, 'r')
-        #a implementer : enregistrement de la matrice sous un format facile a lire 
+        f = open(nom_enregistrement, 'w')
+        np.savetxt(f, res) #bug a cet endroit : le format entre le tableau est incompatible avec le format utilise 
+        #par la fonction
+        f.write('NB_EXPERIENCES : ' + str(nombre_experiences) + 'NB_ITERATIONS' +   str(nombre_iterations))
+        
 
     def enregistrer_graphe(self, nom_fichier, nombre_iterations, res):
         nom_enregistrement = self.folderName + '/' + nom_fichier
+        if not os.path.exists(self.folderName):
+            os.makedirs(self.folderName)
         abscisses = np.linspace(1, nombre_iterations, nombre_iterations)
         plt.clf()
         plt.plot(abscisses, res)
@@ -60,9 +68,9 @@ class Experiment:
         plt.clf()
 
 
-    def exeriment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
+    def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         if TAILLE_MEMOIRE == None :
-            TAILLE_MEMOIRE 		= [250, 500, 1000, 2000, 3000, 4000]
+            TAILLE_MEMOIRE 		= [250, 500, 1000, 2000, 3000, 4000] 
         #NOMBRE_EXPERIENCESnombre de fois qu'on va faire l'experience pour chaque taille memoire
         #NOMBRE_ITERATIONS meme nombre de cycles d'univers pour chaque experience
 
@@ -91,3 +99,8 @@ class Experiment:
             plt.savefig(nom_fichier)
 
             print("Fini")
+
+e = Experiment()
+e.setFolderName("dossier_test")
+res = np.array([42.0, 0.0])
+e.enregistrer_resultat("fichier_test", 0, 0 ,0, res)
