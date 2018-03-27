@@ -15,6 +15,7 @@ import numpy as np
 class Experiment:
 
     def __init__(self):
+        self.folderName = "defaultExperiment" #folderName est le nom du dossier dans lequel on enregistre les graphes
         return
 
     def test(self):
@@ -27,19 +28,39 @@ class Experiment:
         return self.test()
 
     def setUpForExp(self, m, taille_memoire):
-        self.i = 0
+        self.resultats = None #tableau contenant les resultats des experiences 
+        "Initialise l'experience et ses variables"
+        self.i = 0 #compte le nombre de cycles d'univers a executer
         nextSite = NextSite.NextSite()
         self.U = Univers.Univers(nextSite, TAILLE_MEMOIRE=taille_memoire, mutation=m)
         self.stats = Statistiques.Statistiques(self.U)
-        self.U.insDict.initialize(Instructions.instructions)
-        eve = charger_genome('eve')
-        ancestor = self.U.insDict.toInts(eve)
-        self.U.addIndividual(0, ancestor)
-        c = CPU.CPU(0, self.U)
+        self.U.insDict.initialize(Instructions.instructions) 
+        eve = charger_genome('eve') #charge le genome eve
+        ancestor = self.U.insDict.toInts(eve) #et convertit en instructions
+        self.U.addIndividual(0, ancestor) #on ajoute le genome au debut de la memoire
+        c = CPU.CPU(0, self.U)  #on ajoute un CPU pour lire le genome
         c.generation = 1
         self.U.inserer_cpu(c)
 
-    def exeriment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS 	= 10000):
+    def setFolderName(self, nom):
+        self.folderName = nom
+
+    def enregistrer_resultat(self, nom_fichier, taille_memoire, nombre_experiences, nombre_iterations):
+        "Enregistre sous forme de tableau les resultats"
+        nom_enregistrement = self.folderName + '/' + nom_fichier
+        f = open(nom_enregistrement, 'r')
+        #a implementer : enregistrement de la matrice sous un format facile a lire 
+
+    def enregistrer_graphe(self, nom_fichier, nombre_iterations, res):
+        nom_enregistrement = self.folderName + '/' + nom_fichier
+        abscisses = np.linspace(1, nombre_iterations, nombre_iterations)
+        plt.clf()
+        plt.plot(abscisses, res)
+        plt.savefig(nom_enregistrement)
+        plt.clf()
+
+
+    def exeriment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         if TAILLE_MEMOIRE == None :
             TAILLE_MEMOIRE 		= [250, 500, 1000, 2000, 3000, 4000]
         #NOMBRE_EXPERIENCESnombre de fois qu'on va faire l'experience pour chaque taille memoire
