@@ -46,15 +46,15 @@ class Experiment:
         self.folderName = nom
 
     def enregistrer_resultat(self, nom_fichier, taille_memoire, nombre_experiences, nombre_iterations, res):
-        "Enregistre sous forme de tableau les resultats"
+        "Enregistre sous forme de tableau les resultats. Pour l'instant, on ne peut pas enregistrer dans le fichier\
+        les infos de l'experience (taille memoire, nombre d'experiences, etc.) mais seulement le contenu des resutlats"
         if not os.path.exists(self.folderName):
             os.makedirs(self.folderName)
 
         nom_enregistrement = self.folderName + '/' + nom_fichier
-        f = open(nom_enregistrement, 'w')
-        np.savetxt(f, res) #bug a cet endroit : le format entre le tableau est incompatible avec le format utilise 
-        #par la fonction
-        f.write('NB_EXPERIENCES : ' + str(nombre_experiences) + 'NB_ITERATIONS' +   str(nombre_iterations))
+        np.save(nom_enregistrement, res)
+        
+        
         
 
     def enregistrer_graphe(self, nom_fichier, nombre_iterations, res):
@@ -66,7 +66,6 @@ class Experiment:
         plt.plot(abscisses, res)
         plt.savefig(nom_enregistrement)
         plt.clf()
-
 
     def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         if TAILLE_MEMOIRE == None :
@@ -102,5 +101,5 @@ class Experiment:
 
 e = Experiment()
 e.setFolderName("dossier_test")
-res = np.array([42.0, 0.0])
+res = np.array([[42.0, 0.0]])
 e.enregistrer_resultat("fichier_test", 0, 0 ,0, res)
