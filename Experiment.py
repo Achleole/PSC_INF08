@@ -10,6 +10,8 @@ import NextSite
 import matplotlib.pyplot as plt
 import numpy as np
 
+import datetime #utilise pour donner un nom par defaut aux fichiers
+
 
 
 class Experiment:
@@ -43,27 +45,34 @@ class Experiment:
         self.U.inserer_cpu(c)
 
     def setFolderName(self, nom):
+        "Change le nom du dossier dans lequell on enregistre les graphes et les resultats"
         self.folderName = nom
 
     def enregistrer_resultat(self, nom_fichier, taille_memoire, nombre_experiences, nombre_iterations, res):
         "Enregistre sous forme de tableau les resultats. Pour l'instant, on ne peut pas enregistrer dans le fichier\
-        les infos de l'experience (taille memoire, nombre d'experiences, etc.) mais seulement le contenu des resutlats"
+        les infos de l'experience (taille memoire, nombre d'experiences, etc.) mais seulement le contenu des resultats"
         if not os.path.exists(self.folderName):
             os.makedirs(self.folderName)
 
         nom_enregistrement = self.folderName + '/' + nom_fichier
         np.save(nom_enregistrement, res)
-        
-        
-        
 
-    def enregistrer_graphe(self, nom_fichier, nombre_iterations, res):
+    def enregistrer_graphe(self, nom_fichier, nombre_iterations, res, titre=""):
+        "On enregistre ici les donnees qui sont en fonction de l'iteration donc la longueur de res\
+        doit etre egale a nombre_iterations"
+        assert len(res) == nombre_iterations
+        assert type(titre) is str
         nom_enregistrement = self.folderName + '/' + nom_fichier
         if not os.path.exists(self.folderName):
             os.makedirs(self.folderName)
         abscisses = np.linspace(1, nombre_iterations, nombre_iterations)
         plt.clf()
         plt.plot(abscisses, res)
+        if titre != "":
+            plt.title(titre)
+        else:
+            now = datetime.datetime.now()
+            titre = str(now.day) + '_' + str(now.month) + '_' + str(now.year) + '_at_' + str(now.hour) + '_' + str(now.minute) + '.png'
         plt.savefig(nom_enregistrement)
         plt.clf()
 
@@ -98,8 +107,3 @@ class Experiment:
             plt.savefig(nom_fichier)
 
             print("Fini")
-
-e = Experiment()
-e.setFolderName("dossier_test")
-res = np.array([[42.0, 0.0]])
-e.enregistrer_resultat("fichier_test", 0, 0 ,0, res)
