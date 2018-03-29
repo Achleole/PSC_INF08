@@ -1,8 +1,8 @@
 import unittest
 import Univers
 import CPU
-import NextSiteTest
-import CheckCPU
+import utests.NextSiteTest as NextSiteTest
+import utests.CheckCPU as CheckCPU
 
 class TestCPU(unittest.TestCase):
     def setUp(self):

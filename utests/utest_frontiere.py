@@ -1,7 +1,7 @@
 import unittest
 import Univers
 import CPU
-import NextSiteTest
+import utests.NextSiteTest as NextSiteTest
 import Instructions
 import Enregistrement
 
