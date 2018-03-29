@@ -168,5 +168,5 @@ def interaction(treeConstructed,maxclus):
     for cpuid in treeConstructed:
         for instructionid in treeConstructed[cpuid]:
             if treeConstructed[cpuid].has_key(instructionid//2):
-                stat[treeConstructed[cpuid][instructionid//2]-1]=treeConstructed[cpuid][instructionid]-1
+                stat[treeConstructed[cpuid][instructionid//2]-1,treeConstructed[cpuid][instructionid]-1]+=1
     return stat
