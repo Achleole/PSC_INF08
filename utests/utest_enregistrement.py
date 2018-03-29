@@ -7,7 +7,7 @@ import Instructions
 import CPU
 import Statistiques
 import NextSite
-import NextSiteTest as NST
+import utests.NextSiteTest as NST
 import random
 
 class TestEnregistrement(unittest.TestCase):
@@ -43,7 +43,6 @@ class TestEnregistrement(unittest.TestCase):
             self.assertTrue(self.U == self.U.copy())
         self.setUp()
     def test_sauvegarde(self):
-        self.replay.debug=True
         fichier = "temp.tierra"
         self.replay.univers=self.U.copy()
         self.replay.openWrite(fichier)

@@ -4,8 +4,8 @@ import CPU
 import InstructionsDict
 import Instructions
 import Enregistrement
-import NextSiteTest
-import CheckCPU
+import utests.NextSiteTest as NextSiteTest
+import utests.CheckCPU as CheckCPU
 import sys
 
 
