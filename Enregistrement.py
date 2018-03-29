@@ -73,6 +73,7 @@ class Replay:
         self.nBits=0
         self.etat=''
         self.position=0
+        self.debug=False
 
     def test(self,fichier,univers,k):
         self.univers=univers
@@ -110,29 +111,41 @@ class Replay:
             self.position+=1
     def openLoad(self,fichier):
         if self.etat!='':
-            self.f.close()
+            self.close()
         self.etat='r'
         self.fichier=fichier
         self.f=open(fichier,"rb")
         self.n=int.from_bytes(self.f.read(3),byteorder='big')
         self.position=0
+        self.buffer=0
     def readOne(self):
         if self.etat=="r":
-            print(self.position)
             if self.position%self.n==0:
                 self.loadPhoto()
+                k=2
             else:
                 self.advance()
             self.position+=1
     def openWrite(self,fichier,n=100):
         if self.etat!='':
-            self.f.close()
+            self.close()
         self.etat='w'
         self.fichier=fichier
         self.f=open(fichier,"wb")
         self.n=n
         self.f.write(n.to_bytes(3,byteorder='big'))
         self.position=0
+    def close(self):
+        if self.etat=="w":
+            self.viderBuffer()
+        self.f.close()
+    def viderBuffer(self):
+        assert(self.nBits<8)
+        if self.nBits>0:
+            ecrire = self.buffer << (8 - self.nBits)
+            self.f.write(ecrire.to_bytes(1, byteorder='big'))
+            self.buffer=0
+            self.nBits=0
     def saveWrite(self,case):
         if self.etat=='w':
             self.buffer=(self.buffer << Univers.Univers.n2)+case
@@ -142,6 +155,8 @@ class Replay:
                 self.buffer-=saving<<(self.nBits-8)
                 self.f.write(saving.to_bytes(1,byteorder='big'))
                 self.nBits-=8
+            if self.debug:
+                print("write evolution :",case, "position :",self.position)
     def readEvolutionWrite(self):
         if self.etat=='r':
             while self.nBits< Univers.Univers.n2:
@@ -150,6 +165,8 @@ class Replay:
             case=self.buffer>>(self.nBits - Univers.Univers.n2)
             self.buffer-=case<<(self.nBits - Univers.Univers.n2)
             self.nBits-= Univers.Univers.n2
+            if self.debug:
+                print("read evolution :",case, "position :",self.position)
             return case
     def saveRand(self, ax):
         if self.etat == 'w':
@@ -161,7 +178,8 @@ class Replay:
                 self.buffer -= saving << (self.nBits - 8*nBytes)
                 self.f.write(saving.to_bytes(nBytes, byteorder='big'))
                 self.nBits -= 8*nBytes
-            print("écriture rand :", ax)
+            if self.debug:
+                print("écriture rand :", ax, "position :",self.position)
     def readEvolutionRand(self):
         if self.etat=='r':
             while self.nBits< Univers.Univers.b2*8:
@@ -170,7 +188,8 @@ class Replay:
             case=self.buffer>>(self.nBits - Univers.Univers.b2 * 8)
             self.buffer-=case<<(self.nBits - Univers.Univers.b2*8)
             self.nBits-= Univers.Univers.b2*8
-            print("lecture rand :",case)
+            if self.debug:
+                print("lecture rand :",case, "position :",self.position)
             return case
     def advance(self):
         c=self.univers.cpu_actuel()
@@ -196,9 +215,11 @@ class Replay:
         self.univers.next_cpu()
 
     def photo(self):
+        if self.debug:
+            print("photo, buffer :",self.buffer, "position :",self.position)
         """Ecrit son etat dans le fichier done en argument. Ajoute les donnees a la din du fichier s'il existait deja"""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs, nbCaseMemoire,Memoire
-
+        self.viderBuffer()
         donnees = len(self.univers.liste_cpus).to_bytes(self.univers.b1, byteorder='big')
         donnees += self.univers.indice_cpu_actuel.to_bytes(self.univers.b1, byteorder='big')
 
@@ -215,7 +236,6 @@ class Replay:
             temp = (temp << self.univers.n1) + CPUtoInt(self.univers.liste_cpus[i])
         k = (len(self.univers.liste_cpus) - nextToSave) * self.univers.n1
         n = ceil(k / 8.)
-        # print("n :",n,"/",k,log(temp,2))
         donnees += (temp << (8 * n - k)).to_bytes(n, byteorder='big')
 
         donnees += len(self.univers.memoire).to_bytes(self.univers.b2, byteorder='big')
@@ -236,9 +256,12 @@ class Replay:
         donnees += (temp << (8 * n - k)).to_bytes(n, byteorder='big')
 
         self.f.write(donnees)
-        print(donnees)
 
     def loadPhoto(self):
+        if self.debug:
+            print("load photo, buffer :",self.buffer)
+        assert(self.buffer==0)
+        self.nBits=0
         """Lit un etat dans le fichier donne en argument."""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs,nbCaseMemoire,Memoire
         self.univers.liste_cpus = []
@@ -263,7 +286,6 @@ class Replay:
 
         lenMemoire = int.from_bytes(self.f.read(self.univers.b2), byteorder='big')
         memory = self.f.read(ceil(self.univers.n2 * lenMemoire / 8.))
-        # print(memory)
         k1 = 0
         for k in range(lenMemoire):
             temp = 0

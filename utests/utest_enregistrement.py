@@ -7,12 +7,13 @@ import Instructions
 import CPU
 import Statistiques
 import NextSite
+import NextSiteTest as NST
 import random
 
 class TestEnregistrement(unittest.TestCase):
     def setUp(self):
         self.i = 0
-        self.U = Univers.Univers( NextSite.NextSite())
+        self.U = Univers.Univers( NST.NextSiteTest())
         self.U.insDict.initialize(Instructions.instructions)
         self.U.addIndividual(0, self.U.insDict.toInts(charger_genome('eve')))
         self.U.inserer_cpu(CPU.CPU(0, self.U))
@@ -34,6 +35,7 @@ class TestEnregistrement(unittest.TestCase):
         self.replay.photo()
         self.replay.openLoad(fichier)
         self.assertTrue(self.replay.loadPhoto()==self.U)
+        self.replay.close()
     def test_univers_copy(self):
         for i in range(10):
             for i in range(100):
@@ -41,20 +43,18 @@ class TestEnregistrement(unittest.TestCase):
             self.assertTrue(self.U == self.U.copy())
         self.setUp()
     def test_sauvegarde(self):
+        self.replay.debug=True
         fichier = "temp.tierra"
-        self.replay.univers=self.U
-        memoire=[self.U.copy()]
+        self.replay.univers=self.U.copy()
         self.replay.openWrite(fichier)
         for i in range(self.N):
             self.replay.runAndSave(1)
-            memoire.append(self.replay.univers.copy())
-        self.U=self.replay.univers.copy()
-        nouveau=[]
+        self.V=self.replay.univers.copy()
+        self.replay.univers=self.U.copy()
         self.replay.openLoad(fichier)
         for i in range(self.N):
             self.replay.forward(1)
-            nouveau.append(self.replay.univers.copy())
-            if not(self.replay.univers==memoire[i+1]):
-                print("je sers a rien")
 
-        self.assertTrue(self.replay.univers==self.U)
+
+        self.assertTrue(self.replay.univers==self.V)
+        self.replay.close()
