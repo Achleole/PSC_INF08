@@ -1,6 +1,38 @@
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 import numpy as np
+from replay import *
+from pygraphviz import *
+
+
+def creer_arbres(univ,fichier):
+  replay=Replay()  
+  replay.univers=univ
+  replay.openLoad(fichier)
+  
+
+  famille_cpus=dict()
+  arbres=dict()
+  for k in replay.univers.liste_cpus:
+    arbres[k.id]=dict()
+    loc_cpus[k.id]=[k.id,1]
+    arbres[k.id][1]=[k.univers.memoire[k.ptr]]
+  
+  for j<n:
+    replay.tourSlicer()
+    for k,ind in enumerate(k.univers.liste_cpus,1):
+      branche=arbres[loc_cpus[k.id][0]][loc_cpus[k.id][1]]
+      if branche[-1]="NEW":
+        loc_cpus[k.id][1]=2*loc_cpus[k.id][1]
+        loc_cpus[k.univers.liste_cpus[ind].id]=[loc_cpus[k.id][0],2*loc_cpus[k.id][1]+1]
+        arbres[loc_cpus[k.id][0]][loc_cpus[k.id][1]]=[k.univers.memoire[k.ptr]
+        arbres[loc_cpus[k.univers.liste_cpus[ind].id][0]][loc_cpus[k.univers.liste_cpus[ind].id][1]]=[]
+      else:
+        branche.add([k.univers.memoire[k.ptr]])
+      
+
+
+
 
 def euclidiandistance(a=0,b=0):
     return abs(a-b)
@@ -99,7 +131,8 @@ def dictOfDictToList(dictofdict):
     return l
 
 
-def constructTree(dictofdict,epsilon=0.1):
+def constructTree(univ,fichier,epsilon=0.1):
+    dictofdict=creer_arbres(univ,fichier)
     treeConstructed = dict()
     for cpuid in dictofdict:
         treeConstructed[cpuid] = dict()
@@ -136,5 +169,14 @@ def interaction(treeConstructed,maxclus):
     for cpuid in treeConstructed:
         for instructionid in treeConstructed[cpuid]:
             if treeConstructed[cpuid].has_key(instructionid//2):
-                stat[treeConstructed[cpuid][instructionid//2]-1]=treeConstructed[cpuid][instructionid]-1
-    return stat
+                stat[treeConstructed[cpuid][instructionid//2]-1,treeConstructed[cpuid][instructionid]-1]+=1
+    G=AGraph()
+    for i in range(maxclus):
+        G.add_node('i')
+    n=np.max(stat)
+    for i in range(maxclus):
+        for j in range(maxclus): 
+            G.add_edge('i','j',arrowsize=3*stat[i][j]/n)  
+    print(G)
+    return(G)
+                                             
