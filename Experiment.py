@@ -20,14 +20,22 @@ class Experiment:
         self.folderName = "defaultExperiment" #folderName est le nom du dossier dans lequel on enregistre les graphes
         return
 
-    def test(self):
-        return (self.stats.cpus_total, self.stats.cpus_crees)
+    def test(self, nb_iterations):
+        cpus_total, cpus_crees = (self.stats.cpus_total, self.stats.cpus_crees)
+        delta = nb_iterations - len(cpus_total)
+        cpus_total += [-1]*delta
+        delta = nb_iterations - len(cpus_crees)
+        cpus_crees += [-1]*delta
+        return (cpus_total, cpus_crees)
 
     def run(self, iteration=0):
         while self.i < iteration:
-            self.U.cycle()
+            try:
+                self.U.cycle()
+            except Exception as e:
+                print(e)
             self.i += 1
-        return self.test()
+        return self.test(iteration)
 
     def setUpForExp(self, m, taille_memoire):
         self.resultats = None #tableau contenant les resultats des experiences 
@@ -89,21 +97,18 @@ class Experiment:
 
             for e in range(NOMBRE_EXPERIENCES):
                 print('-> Experience numero ', str(e+1))
-                self.SetUpForExp(0.0, t_m)
+                self.setUpForExp(0.0, t_m)
                 total, crees = self.run(NOMBRE_ITERATIONS)
                 for i in range(NOMBRE_ITERATIONS):
                     ord1[i] += total[i]
                     ord2[i] += crees[i]
 
-            abscisses = np.linspace(1, NOMBRE_ITERATIONS, NOMBRE_ITERATIONS)
-            ord1 = [float(x)/float(NOMBRE_EXPERIENCES) for x in ord1]
-            ord2 = [float(x)/float(NOMBRE_EXPERIENCES) for x in ord2] #on fait la moyenne sur les experiences
-            plt.clf()
-            plt.plot(abscisses, ord1)
-            plt.plot(abscisses, ord2)
-            titre = "Nombre d'experiences = " + str(NOMBRE_EXPERIENCES) + ". Taille de la memoire = " + str(t_m)
-            plt.title(titre)
-            nom_fichier ="Resultats/cpus_total_mutation_0_taille_memoire_" + str(t_m) + ".png"
-            plt.savefig(nom_fichier)
+            ord1 = [float(x)/NOMBRE_EXPERIENCES for x in ord1]
+            ord2 = [float(y)/NOMBRE_EXPERIENCES for y in ord2]
+
+            nom_fichier = "" + str(t_m) + "_crees"
+            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord2)
+            nom_fichier = "" + str(t_m) + "_total"
+            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord1)
 
             print("Fini")
