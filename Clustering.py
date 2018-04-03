@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 import numpy as np
 from replay import *
+from pygraphviz import *
 
 
 def creer_arbres(univ,fichier):
@@ -169,4 +170,13 @@ def interaction(treeConstructed,maxclus):
         for instructionid in treeConstructed[cpuid]:
             if treeConstructed[cpuid].has_key(instructionid//2):
                 stat[treeConstructed[cpuid][instructionid//2]-1,treeConstructed[cpuid][instructionid]-1]+=1
-    return stat
+    G=AGraph()
+    for i in range(maxclus):
+        G.add_node('i')
+    n=np.max(stat)
+    for i in range(maxclus):
+        for j in range(maxclus): 
+            G.add_edge('i','j',arrowsize=3*stat[i][j]/n)  
+    print(G)
+    return(G)
+                                             
