@@ -18,6 +18,7 @@ class Experiment:
 
     def __init__(self):
         self.folderName = "defaultExperiment" #folderName est le nom du dossier dans lequel on enregistre les graphes
+        self.current_ancestor = None
         return
 
     def test(self, nb_iterations):
@@ -36,6 +37,20 @@ class Experiment:
                 print(e)
             self.i += 1
         return self.test(iteration)
+
+    def run2(self, iteration=0):
+        "Variation  de run, pour l'experience 2 : a chaque iteration on va compter le nombre d'occurences\
+        puis les stocker dans un tableau"
+        occurences = [0]*iteration
+        while self.i < iteration:
+            try:
+                self.U.cycle()
+            except Exception as e:
+                print(e)
+            occurences[self.i] = self.compter_genomes(self.current_ancestor, self.U.memoire)
+            self.i += 1
+        tmp = self.test(iteration)
+        return (tmp[0], occurences)
 
     def setUpForExp(self, m, taille_memoire):
         self.resultats = None #tableau contenant les resultats des experiences 
@@ -84,9 +99,29 @@ class Experiment:
         plt.savefig(nom_enregistrement)
         plt.clf()
 
+    def compter_genomes(self, code_genetique, memoire):
+        "Compte le nombre d'instances du code passe en argument dans la memoire\
+        Actuellement, ne prendra pas en compte un code qui chevaucherait la fin et le debut\
+        de la memoire donc le resultat sera decale de 1. Pour l'instant c'est pas tres grave puisqu'on veut\
+        faire des statistiques a temps long => beaucoup de codes a priori"
+        nombre, l, i = 0, len(code_genetique), 0
+        premier_i = 0 #stocke l'indice auquel commence le premier code qu'on a trouve
+        #va servir a chercher le code si il chevauche la fin et le debut de la memoire
+        res = 0
+        #res stocke l'indice renvoye par KMP (et -1 si le code est pas trouve)
+
+        while res != -1:
+            res = knuth_morris_pratt(memoire, code_genetique, debut=i)
+            i = res + l #on commencera la recherche juste apres la derniere recherche
+            if res != -1:
+                if nombre == 0:
+                    premier_i = res
+                nombre += 1
+        return nombre
+
     def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         if TAILLE_MEMOIRE == None :
-            TAILLE_MEMOIRE 		= [250, 500, 1000, 2000, 3000, 4000] 
+            TAILLE_MEMOIRE 	= [250, 500, 1000, 2000, 3000, 4000] 
         #NOMBRE_EXPERIENCESnombre de fois qu'on va faire l'experience pour chaque taille memoire
         #NOMBRE_ITERATIONS meme nombre de cycles d'univers pour chaque experience
 
@@ -109,6 +144,39 @@ class Experiment:
             nom_fichier = "" + str(t_m) + "_crees"
             self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord2)
             nom_fichier = "" + str(t_m) + "_total"
+            plt.clf()
             self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord1)
 
             print("Fini")
+
+    def experiment2(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
+        "Dans cette experience, on va comparer l'evolution du nombre de CPUs en vie et le nombre"
+        if TAILLE_MEMOIRE == None:
+            TAILLE_MEMOIRE = [250, 500, 1000, 2000, 3000, 4000]
+
+        for t_m in TAILLE_MEMOIRE:
+            print("Taille memoire = ", t_m)
+            ord1 = [0]*NOMBRE_ITERATIONS
+            ord2 = [0]*NOMBRE_ITERATIONS
+
+            for e in range(NOMBRE_EXPERIENCES):
+                print('-> Experience numero ', str(e+1))
+                self.setUpForExp(0.0, t_m)
+                eve = charger_genome("eve")
+                self.current_ancestor = self.U.insDict.toInts(eve) #l'ancetre sera cherche dans la memoire dans la suite
+                total, occurences = self.run2(NOMBRE_ITERATIONS)
+                for i in range(NOMBRE_ITERATIONS):
+                    ord1[i] += total[i]
+                    ord2[i] += occurences[i]
+                    #apres la i eme iteration
+
+            ord1 = [float(x)/NOMBRE_EXPERIENCES for x in ord1]
+            ord2 = [float(y)/NOMBRE_EXPERIENCES for y in ord2]
+
+            nom_fichier = "" + str(t_m) + "_occurences"
+            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord2)
+            nom_fichier = "" + str(t_m) + "_total"
+            plt.clf()
+            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord1)
+
+            print("Fini")   

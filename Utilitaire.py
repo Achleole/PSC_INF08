@@ -3,7 +3,7 @@ from Exceptions import *
 
 import math 
 
-def knuth_morris_pratt(s, t):
+def knuth_morris_pratt(s, t, debut=0):
     "Retourne l'indice a partir duquel commence la sous chaine t dans s"
     #s est la "grande" chaine de caractere, t est le motif a trouver
     assert t != ' '
@@ -17,7 +17,7 @@ def knuth_morris_pratt(s, t):
         j += 1
         r[i] = j
     j = 0
-    for i in range(len_s):
+    for i in range(debut, len_s):
         while j >= 0 and s[i] != t[j]:
             j = r[j]
         j += 1
