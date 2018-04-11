@@ -83,8 +83,8 @@ class Univers:
                 s.statistiques.mettre_a_jour()
             s.reinitialise_cpus_crees()
         except Exception as e:
-            prin(e)
-            raiset
+            print(e)
+            raise
 
     def executer_cpus(s):
         "Cette fonction execute tous les CPU 1 fois\
