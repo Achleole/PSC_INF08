@@ -1,5 +1,5 @@
 from math import *
-from CPU import *
+import CPU
 import Univers
 
 def charger_genome(fichier):
@@ -109,6 +109,25 @@ class Replay:
                 self.univers.execute(1)
                 self.photo()
             self.position+=1
+    def cycleAndSave(self, n):
+        for i in range(n):
+            self.cycleAndSaveOne()
+    def cycleAndSaveOne(self):
+        nb = len(self.univers.liste_cpus)
+        try:
+            if nb == 0:
+                raise CPU.NoCPUException()
+            for i in range(nb):
+                self.runAndSaveOne()
+            self.univers.tuer_cpus_par_densite()
+        except Exception as e:
+            print(e)
+            raise
+        finally:
+            if self.univers.statistiques != None:
+                self.univers.statistiques.mettre_a_jour()
+            self.univers.reinitialise_cpus_crees()
+
     def openLoad(self,fichier):
         if self.etat!='':
             self.close()
