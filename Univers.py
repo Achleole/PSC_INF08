@@ -79,13 +79,14 @@ class Univers:
         try:
             s.executer_cpus()
             s.tuer_cpus_par_densite()
-            if s.statistiques != None:
-                s.statistiques.mettre_a_jour()
-            s.reinitialise_cpus_crees()
         except Exception as e:
             print(e)
             raise
-
+        finally:
+            if s.statistiques != None:
+                s.statistiques.mettre_a_jour()
+            s.reinitialise_cpus_crees()
+            
     def executer_cpus(s):
         "Cette fonction execute tous les CPU 1 fois\
         PRECISION IMPORTANTE : on parcourt la liste dans l'ordre des indices decroissant"

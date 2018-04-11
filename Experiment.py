@@ -23,10 +23,11 @@ class Experiment:
 
     def test(self, nb_iterations):
         cpus_total, cpus_crees = (self.stats.cpus_total, self.stats.cpus_crees)
-        delta = nb_iterations - len(cpus_total)
+        """delta = nb_iterations - len(cpus_total)
         cpus_total += [-1]*delta
         delta = nb_iterations - len(cpus_crees)
         cpus_crees += [-1]*delta
+        """
         return (cpus_total, cpus_crees)
 
     def run(self, iteration=0):
