@@ -112,8 +112,6 @@ class Univers:
                 del s.localisation_cpus[i]
         except Exception as e:
             print("Erreur de suppression de localisation :", e)
-            print(s.memoire)
-            os.system("pause") #tres temporaire
 
 
     def ajouter_cpu_localisation(s, cpu):
