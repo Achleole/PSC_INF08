@@ -176,7 +176,7 @@ def interaction(treeConstructed,maxclus):
     n=np.max(stat)
     for i in range(maxclus):
         for j in range(maxclus): 
-            G.add_edge('i','j',arrowsize=3*stat[i][j]/n)  
+            G.add_edge('i','j',arrowsize=3*stat[i,j]/n)  
     print(G)
     return(G)
                                              
