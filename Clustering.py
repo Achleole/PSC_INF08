@@ -11,7 +11,7 @@ def creer_arbres(univ,fichier):
   replay.openLoad(fichier)
   
 
-  famille_cpus=dict()
+  loc_cpus=dict()
   arbres=dict()
   for k in replay.univers.liste_cpus:
     arbres[k.id]=dict()
