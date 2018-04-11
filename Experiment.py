@@ -1,7 +1,7 @@
 import os
 import Univers
 import NextSite
-from Enregistrement import *
+import Enregistrement
 from CPU import *
 import Instructions
 import CPU
@@ -57,16 +57,18 @@ class Experiment:
         self.resultats = None #tableau contenant les resultats des experiences 
         "Initialise l'experience et ses variables"
         self.i = 0 #compte le nombre de cycles d'univers a executer
-        nextSite = NextSite.NextSite()
+        nextSite = NextSite.NextSite(memLen=taille_memoire)
         self.U = Univers.Univers(nextSite, TAILLE_MEMOIRE=taille_memoire, mutation=m)
         self.stats = Statistiques.Statistiques(self.U)
         self.U.insDict.initialize(Instructions.instructions) 
-        eve = charger_genome('eve') #charge le genome eve
+        eve = Enregistrement.charger_genome('eve') #charge le genome eve
         ancestor = self.U.insDict.toInts(eve) #et convertit en instructions
         self.U.addIndividual(0, ancestor) #on ajoute le genome au debut de la memoire
         c = CPU.CPU(0, self.U)  #on ajoute un CPU pour lire le genome
         c.generation = 1
         self.U.inserer_cpu(c)
+        self.replay = Enregistrement.Replay()
+        self.replay.univers = self.U
 
     def setFolderName(self, nom):
         "Change le nom du dossier dans lequell on enregistre les graphes et les resultats"
@@ -134,10 +136,13 @@ class Experiment:
             for e in range(NOMBRE_EXPERIENCES):
                 print('-> Experience numero ', str(e+1))
                 self.setUpForExp(0.0, t_m)
-                total, crees = self.run(NOMBRE_ITERATIONS)
+                #total, crees = self.run(NOMBRE_ITERATIONS)
+                nom = "Exp/exp1-nbexp"+str(NOMBRE_EXPERIENCES)+"-nbiter"+str(NOMBRE_ITERATIONS)+"-n"
+                self.replay.openWrite(nom+str(e))
+                self.replay.cycleAndSave(NOMBRE_ITERATIONS)
                 for i in range(NOMBRE_ITERATIONS):
-                    ord1[i] += total[i]
-                    ord2[i] += crees[i]
+                    ord1[i] += self.stats.cpus_total[i]
+                    ord2[i] += self.stats.cpus_crees[i]
 
             ord1 = [float(x)/NOMBRE_EXPERIENCES for x in ord1]
             ord2 = [float(y)/NOMBRE_EXPERIENCES for y in ord2]
@@ -163,7 +168,7 @@ class Experiment:
             for e in range(NOMBRE_EXPERIENCES):
                 print('-> Experience numero ', str(e+1))
                 self.setUpForExp(0.0, t_m)
-                eve = charger_genome("eve")
+                eve = Enregistrement.charger_genome("eve")
                 self.current_ancestor = self.U.insDict.toInts(eve) #l'ancetre sera cherche dans la memoire dans la suite
                 total, occurences = self.run2(NOMBRE_ITERATIONS)
                 for i in range(NOMBRE_ITERATIONS):

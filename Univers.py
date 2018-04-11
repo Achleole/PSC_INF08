@@ -217,6 +217,7 @@ class Univers:
         return len(d)
 
     def execute(self, n):
+        """Execute les n CPU a venir. Attention, ne tue jamais par densite"""
         for i in range(n):
             self.executer_cpu_actuel()
             self.next_cpu()

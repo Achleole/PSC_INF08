@@ -1,21 +1,20 @@
 import os 
 import Univers
 import NextSite
-from Enregistrement import *
 from CPU import *
 import Instructions
 import CPU
 import Statistiques
 import NextSite
+import Enregistrement
+import Experiment
 
 class Main:
 
 	def test(self):
 		print(len(self.U.liste_cpus))
 
-	def __init__(self):
-		self.i = 0
-
+	def __initancien__(self):
 		nextSite = NextSite.NextSite()
 		self.U = Univers.Univers(nextSite)
 		self.stats = Statistiques.Statistiques(self.U)
@@ -25,8 +24,16 @@ class Main:
 		self.U.addIndividual(0, ancestor)
 		c = CPU.CPU(0, self.U)
 		self.U.inserer_cpu(c)
-		while self.i < 1000000:
-			self.U.cycle()
+		self.replay = Enregistrement.Replay()
+		self.replay.univers = self.U
+		nom = "Enregs/enreg"
+		print(ancestor)
+		for i in range(100):
+			self.replay.openWrite(nom+str(i))
+			self.replay.runAndSave(5000)
 			self.test()
-			self.i += 1
+
+	def __init__(selfself):
+		exp = Experiment.Experiment()
+		exp.experiment1(TAILLE_MEMOIRE=[10000, 20000])
 Main()
