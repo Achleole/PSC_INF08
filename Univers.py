@@ -4,6 +4,7 @@ from math import *
 import copy
 import InstructionsDict
 import random
+import os
 
 
 #TAILLE_MEMOIRE = 50000
@@ -110,8 +111,10 @@ class Univers:
             if s.localisation_cpus[i] == []:
                 del s.localisation_cpus[i]
         except Exception as e:
-            print("Erreur de suppression de localisation !")
-            print(e)
+            print("Erreur de suppression de localisation :", e)
+            print(s.memoire)
+            os.system("pause") #tres temporaire
+
 
     def ajouter_cpu_localisation(s, cpu):
         if not cpu.ptr in s.localisation_cpus:
@@ -123,7 +126,7 @@ class Univers:
         """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
         s.liste_cpus.remove(cpu)
         s.supprimer_cpu_localisation(cpu)
-        if s.indice_cpu_actuel == len(s.liste_cpus) :
+        if s.indice_cpu_actuel == len(s.liste_cpus):
             s.indice_cpu_actuel = 0
 
     def tuer_cpu_actuel(s):
@@ -178,8 +181,7 @@ class Univers:
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par killAround dans les endroits trop denses"""
         l = 2 * s.LARGEUR_CALCUL_DENSITE  # largeur reelle de l'intervalle de calcul de densite - 1
-        start = random.randint(0,
-                               len(s.liste_cpus) - 1)  # on commence a un CPU aleatoire pour ne pas introduire de biais d'age
+        start = random.randint(0, len(s.liste_cpus) - 1)  # on commence a un CPU aleatoire pour ne pas introduire de biais d'age
         killZones = []
         for k in range(start, len(s.liste_cpus)) :
             i = s.liste_cpus[k].ptr
