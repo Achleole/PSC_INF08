@@ -1,7 +1,7 @@
 from math import *
 from CPU import *
 import Univers
-
+import sys
 def charger_genome(fichier):
     genome = []
     "Renvoie sous forme de tableau de strings le genome specifie dans le fichier"
@@ -156,7 +156,8 @@ class Replay:
                 self.f.write(saving.to_bytes(1,byteorder='big'))
                 self.nBits-=8
             if self.debug:
-                print("write evolution :",case, "position :",self.position)
+                sys.stdout.write('WE'+str(case)+' '+str(self.position)+' ')
+                #print("write evolution :",case, "position :",self.position)
     def readEvolutionWrite(self):
         if self.etat=='r':
             while self.nBits< Univers.Univers.n2:
@@ -166,7 +167,8 @@ class Replay:
             self.buffer-=case<<(self.nBits - Univers.Univers.n2)
             self.nBits-= Univers.Univers.n2
             if self.debug:
-                print("read evolution :",case, "position :",self.position)
+                sys.stdout.write('RE'+str(case)+' '+str(self.position)+' ')
+                #print("read evolution :",case, "position :",self.position)
             return case
     def saveRand(self, ax):
         if self.etat == 'w':
@@ -179,7 +181,8 @@ class Replay:
                 self.f.write(saving.to_bytes(nBytes, byteorder='big'))
                 self.nBits -= 8*nBytes
             if self.debug:
-                print("écriture rand :", ax, "position :",self.position)
+                sys.stdout.write('WR'+str(ax)+' '+str(self.position)+' ')
+                #print("écriture rand :", ax, "position :",self.position)
     def readEvolutionRand(self):
         if self.etat=='r':
             while self.nBits< Univers.Univers.b2*8:
@@ -189,7 +192,8 @@ class Replay:
             self.buffer-=case<<(self.nBits - Univers.Univers.b2*8)
             self.nBits-= Univers.Univers.b2*8
             if self.debug:
-                print("lecture rand :",case, "position :",self.position)
+                sys.stdout.write('RR'+str(case)+' '+str(self.position)+' ')
+                #print("lecture rand :",case, "position :",self.position)
             return case
     def advance(self):
         c=self.univers.cpu_actuel()
@@ -203,6 +207,7 @@ class Replay:
             c.ax = self.readEvolutionRand()
         else:
             self.univers.executer_cpu_actuel()
+            self.univers.next_cpu()
 
 
 
@@ -216,7 +221,8 @@ class Replay:
 
     def photo(self):
         if self.debug:
-            print("photo, buffer :",self.buffer, "position :",self.position)
+            sys.stdout.write('WP'+str(len(self.univers.liste_cpus))+' '+str(self.position)+' ')
+            #print("photo, buffer :",self.buffer, "position :",self.position)
         """Ecrit son etat dans le fichier done en argument. Ajoute les donnees a la din du fichier s'il existait deja"""
         # Dans l'ordre : nb CPUs, nuero CPU suivant, CPUs, nbCaseMemoire,Memoire
         self.viderBuffer()
@@ -259,7 +265,8 @@ class Replay:
 
     def loadPhoto(self):
         if self.debug:
-            print("load photo, buffer :",self.buffer)
+            sys.stdout.write('RP'+str(len(self.univers.liste_cpus))+' '+str(self.position)+' ')
+            #print("load photo, buffer :",self.buffer)
         assert(self.buffer==0)
         self.nBits=0
         """Lit un etat dans le fichier donne en argument."""
@@ -268,7 +275,6 @@ class Replay:
         lenCPU = int.from_bytes(self.f.read(self.univers.b1), byteorder='big')
 
         self.univers.indice_cpu_actuel = int.from_bytes(self.f.read(self.univers.b1), byteorder='big')
-
         CPUs = self.f.read(ceil(self.univers.n1 * lenCPU / 8.))
         k1 = 0
         for k in range(lenCPU):
@@ -297,6 +303,7 @@ class Replay:
                         8 - nombreALire)) & 0b11111111  # on veut lire de debut a debut+nombre a lire.
                 k1 += nombreALire
             self.univers.memoire.append(temp)
+        self.univers.localisation_cpus={}
         for cpu in self.univers.liste_cpus:
             self.univers.ajouter_cpu_localisation(cpu)
         return self.univers
