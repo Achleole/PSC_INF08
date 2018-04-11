@@ -24,10 +24,9 @@ def creer_arbres(univ, fichier,n):
             if branche[-1]=="NEW":
                 loc_cpus[k.id][1] = 2 * loc_cpus[k.id][1]
                 loc_cpus[k.univers.liste_cpus[ind].id] = [loc_cpus[k.id][0], 2 * loc_cpus[k.id][1] + 1]
-                arbres[loc_cpus[k.id][0]][loc_cpus[k.id][1]] = [k.univers.memoire[k.ptr]
-                                                                arbres[loc_cpus[k.univers.liste_cpus[ind].id][0]][
-                                                                    loc_cpus[k.univers.liste_cpus[ind].id][1]] = []
-                else:
+                arbres[loc_cpus[k.id][0]][loc_cpus[k.id][1]] = [k.univers.memoire[k.ptr]]
+                arbres[loc_cpus[k.univers.liste_cpus[ind].id][0]][loc_cpus[k.univers.liste_cpus[ind].id][1]] = []
+            else:
                 branche.add([k.univers.memoire[k.ptr]])
       
 
