@@ -4,6 +4,9 @@ class NextSiteTest:
         self.lastSpot = lastSpot
         self.memLen = memLen
 
+    def setMemSize(self, memLen):
+        self.memLen = memLen
+
     def getNext(s):
         s.lastSpot = (s.lastSpot + s.interval) % s.memLen
         return s.lastSpot

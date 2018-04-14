@@ -35,7 +35,8 @@ class Univers:
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
         s.maxCPUs                  = maxCPUs
-        s.nextSite                 = nextSite  #la classe utilisee lorsqu'un CPU veut savoir ou se recopier (vaut randint en temps normal)
+        s.nextSite                 = nextSite #la classe utilisee lorsqu'un CPU veut savoir ou se recopier (vaut randint en temps normal)
+        s.nextSite.setMemSize(s.TAILLE_MEMOIRE)
         s.lastId                   = lastid
 
     def set_statistiques(s, stats):
