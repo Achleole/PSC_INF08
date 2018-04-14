@@ -30,12 +30,12 @@ class CPU:
         Met a jour la localisation du CPU\
         Attention, les instructions sont stockees dans le dictionnaire de l'univers sous forme de chaine de caractere\
         correspondant EXACTEMENT au nom des fonctions"""
-        self.univers.supprimer_cpu_localisation(self)
         self.ptr = self.univers.ind(self.ptr)
         ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
         if ins == "HCF":
             HCF(self)
         else:
+            self.univers.supprimer_cpu_localisation(self)
             try:
                 f = eval(ins)
                 f(self)
@@ -44,7 +44,7 @@ class CPU:
                 print(e)
             finally:
                 self.incrementer_ptr()
-        self.univers.ajouter_cpu_localisation(self)
+                self.univers.ajouter_cpu_localisation(self)
 
     def incrementer_ptr(self):
         self.ptr = self.univers.ind((self.ptr + 1))
