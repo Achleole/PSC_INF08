@@ -62,7 +62,7 @@ def intToCPU(entier, univers):
     parent = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 5 * univers.n3)) & bits3
     id = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + univers.b1 * 8 + 5 * univers.n3)) & bits3
     id_final =(str(id) if parent==2**(univers.b1 *8)-1 else str(parent)+"/"+str(id))
-    return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr, None, id_final)
+    return CPU.CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr, None, id_final)
 
 class Replay:
     def __init__(self):
