@@ -122,7 +122,7 @@ class Experiment:
                 nombre += 1
         return nombre
 
-    def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
+    def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000, dossier="Exp"):
         if TAILLE_MEMOIRE == None :
             TAILLE_MEMOIRE 	= [250, 500, 1000, 2000, 3000, 4000] 
         #NOMBRE_EXPERIENCESnombre de fois qu'on va faire l'experience pour chaque taille memoire
@@ -137,7 +137,7 @@ class Experiment:
                 print('-> Experience numero ', str(e+1))
                 self.setUpForExp(0.0, t_m)
                 #total, crees = self.run(NOMBRE_ITERATIONS)
-                nom = "Exp/exp1-nbexp"+str(NOMBRE_EXPERIENCES)+"-nbiter"+str(NOMBRE_ITERATIONS)+"-n"
+                nom = dossier+"/exp1-nbexp"+str(NOMBRE_EXPERIENCES)+"-nbiter"+str(NOMBRE_ITERATIONS)+"-n"
                 self.replay.openWrite(nom+str(e))
                 self.replay.cycleAndSave(NOMBRE_ITERATIONS)
                 for i in range(NOMBRE_ITERATIONS):

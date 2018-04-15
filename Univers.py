@@ -17,7 +17,7 @@ class Univers:
     #valeurs non contractuelles.
     b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
     b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
-    n2=6 #nb bit d'une case memoire
+    n2=16 #nb bit d'une case memoire
     n3=16 #nb de bit d'un registre du CPU
     n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) + 2*b1*8 #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
