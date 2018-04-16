@@ -44,7 +44,7 @@ class CPU:
                 print(e)
             finally:
                 self.incrementer_ptr()
-                self.univers.ajouter_cpu_localisation(self)
+            self.univers.ajouter_cpu_localisation(self)
 
     def incrementer_ptr(self):
         self.ptr = self.univers.ind((self.ptr + 1))
