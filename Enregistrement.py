@@ -2,6 +2,7 @@ from math import *
 import CPU
 import Univers
 import sys
+import NextSite
 def charger_genome(fichier):
     genome = []
     "Renvoie sous forme de tableau de strings le genome specifie dans le fichier"
