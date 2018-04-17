@@ -16,7 +16,7 @@ class Univers:
     #valeurs non contractuelles.
     b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
     b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
-    n2=12 #nb bit d'une case memoire
+    n2=8*b2 #nb bit d'une case memoire
     n3=16 #nb de bit d'un registre du CPU
     n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) + 2*b1*8 #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
@@ -171,8 +171,8 @@ class Univers:
             j = s.ind(random.randint(i, i+l))   # +1 ou pas ?
             if j in s.localisation_cpus :
                 k = random.randint(0,len(s.localisation_cpus[j])-1)
-                s.tuer_cpu(s.localisation_cpus[j][k])
                 morts+=[s.localisation_cpus[j][k].id]
+                s.tuer_cpu(s.localisation_cpus[j][k])
                 n-=1
         # peut-etre le cpu c est-il dans plusieurs localisations ? (et lorsqu'il est supprime de liste_cpus, toute les localisations ne sont pas supprimees...)
         return morts
