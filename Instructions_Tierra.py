@@ -189,6 +189,7 @@ def write(c):
     elif 2.*c.univers.mutation/3 >= a > c.univers.mutation/3.: #insertion
         c.univers.memoire[c.ax] = random.randint(0,37)
         c.ax += 1
+        c.univers.memoire[c.ax] = c.pop_stack()
     else: #mutation
         c.univers.memoire[c.ax] = random.randint(0,37)
     c.decrementer_stack_ptr()

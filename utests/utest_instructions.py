@@ -1,10 +1,10 @@
 import unittest
 import Univers
 import CPU
-import NextSiteTest
+import utests.NextSiteTest as NextSiteTest
 import Enregistrement
 import Instructions
-import CheckCPU
+import utests.CheckCPU as CheckCPU
 
 class TestInstructions(unittest.TestCase):
     def setUp(self):

@@ -1,5 +1,5 @@
 from math import *
-from CPU import *
+import CPU
 import Univers
 import sys
 def charger_genome(fichier):
@@ -62,7 +62,7 @@ def intToCPU(entier, univers):
     parent = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + 5 * univers.n3)) & bits3
     id = (entier >> (k + CPU.TAILLE_STACK * univers.n2 + univers.b1 * 8 + 5 * univers.n3)) & bits3
     id_final =(str(id) if parent==2**(univers.b1 *8)-1 else str(parent)+"/"+str(id))
-    return CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr, None, id_final)
+    return CPU.CPU(ptr, univers, ax, bx, cx, dx, stack, stack_ptr, None, id_final)
 
 class Replay:
     def __init__(self):
@@ -112,6 +112,25 @@ class Replay:
                 self.univers.execute(1)
                 self.photo()
             self.position+=1
+    def cycleAndSave(self, n):
+        for i in range(n):
+            self.cycleAndSaveOne()
+    def cycleAndSaveOne(self):
+        nb = len(self.univers.liste_cpus)
+        try:
+            if nb == 0:
+                raise CPU.NoCPUException()
+            for i in range(nb):
+                self.runAndSaveOne()
+            self.univers.tuer_cpus_par_densite()
+        except Exception as e:
+            print(e)
+            raise
+        finally:
+            if self.univers.statistiques != None:
+                self.univers.statistiques.mettre_a_jour()
+            self.univers.reinitialise_cpus_crees()
+
     def openLoad(self,fichier):
         if self.etat!='':
             self.close()

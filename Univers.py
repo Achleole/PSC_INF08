@@ -4,6 +4,7 @@ from math import *
 import copy
 import InstructionsDict
 import random
+import os
 
 
 #TAILLE_MEMOIRE = 50000
@@ -17,6 +18,7 @@ class Univers:
     b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
     b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
     n2=8*b2 #nb bit d'une case memoire
+
     n3=16 #nb de bit d'un registre du CPU
     n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) + 2*b1*8 #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
@@ -34,7 +36,8 @@ class Univers:
         s.localisation_cpus        = {} # dictionnaire dont les clefs sont des adresses memoire, qui contient la liste des CPUs
         s.LARGEUR_CALCUL_DENSITE   = LARGEUR_CALCUL_DENSITE
         s.maxCPUs                  = maxCPUs
-        s.nextSite                 = nextSite  #la classe utilisee lorsqu'un CPU veut savoir ou se recopier (vaut randint en temps normal)
+        s.nextSite                 = nextSite #la classe utilisee lorsqu'un CPU veut savoir ou se recopier (vaut randint en temps normal)
+        s.nextSite.setMemSize(s.TAILLE_MEMOIRE)
         s.lastId                   = lastid
 
     def set_statistiques(s, stats):
@@ -79,13 +82,14 @@ class Univers:
         try:
             s.executer_cpus()
             s.tuer_cpus_par_densite()
-            if s.statistiques != None:
-                s.statistiques.mettre_a_jour()
-            s.reinitialise_cpus_crees()
         except Exception as e:
             print(e)
             raise
-
+        finally:
+            if s.statistiques != None:
+                s.statistiques.mettre_a_jour()
+            s.reinitialise_cpus_crees()
+            
     def executer_cpus(s):
         "Cette fonction execute tous les CPU 1 fois\
         PRECISION IMPORTANTE : on parcourt la liste dans l'ordre des indices decroissant"
@@ -109,8 +113,8 @@ class Univers:
             if s.localisation_cpus[i] == []:
                 del s.localisation_cpus[i]
         except Exception as e:
-            print("Erreur de suppression de localisation !")
-            print(e)
+            print("Erreur de suppression de localisation :", e)
+
 
     def ajouter_cpu_localisation(s, cpu):
         if not cpu.ptr in s.localisation_cpus:
@@ -122,7 +126,7 @@ class Univers:
         """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
         s.liste_cpus.remove(cpu)
         s.supprimer_cpu_localisation(cpu)
-        if s.indice_cpu_actuel == len(s.liste_cpus) :
+        if s.indice_cpu_actuel == len(s.liste_cpus):
             s.indice_cpu_actuel = 0
 
     def tuer_cpu_actuel(s):
@@ -179,8 +183,7 @@ class Univers:
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par killAround dans les endroits trop denses"""
         l = 2 * s.LARGEUR_CALCUL_DENSITE  # largeur reelle de l'intervalle de calcul de densite - 1
-        start = random.randint(0,
-                               len(s.liste_cpus) - 1)  # on commence a un CPU aleatoire pour ne pas introduire de biais d'age
+        start = random.randint(0, len(s.liste_cpus) - 1)  # on commence a un CPU aleatoire pour ne pas introduire de biais d'age
         killZones = []
         for k in range(start, len(s.liste_cpus)) :
             i = s.liste_cpus[k].ptr
@@ -219,6 +222,7 @@ class Univers:
         return len(d)
 
     def execute(self, n):
+        """Execute les n CPU a venir. Attention, ne tue jamais par densite"""
         for i in range(n):
             self.executer_cpu_actuel()
             self.next_cpu()
