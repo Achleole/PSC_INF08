@@ -66,7 +66,7 @@ def intToCPU(entier, univers):
 
 class Replay:
     def __init__(self):
-        self.univers=None
+        self.univers = Univers.Univers(NextSite.NextSite())
         self.fichier=None
         self.f=None
         self.buffer=0
