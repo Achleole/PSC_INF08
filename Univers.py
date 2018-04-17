@@ -17,7 +17,8 @@ class Univers:
     #valeurs non contractuelles.
     b1=2 #nb bytes du nb de CPU et du numero du CPU considere actuellement.(limite leur nombre)
     b2=2 #nb bytes du nb de case memoire.(limite leur nombre)
-    n2=16 #nb bit d'une case memoire
+    n2=8*b2 #nb bit d'une case memoire
+
     n3=16 #nb de bit d'un registre du CPU
     n1=5*n3+CPU.TAILLE_STACK*n2+ceil(log(CPU.TAILLE_STACK,2)) + 2*b1*8 #nb bit d'un CPU
     #TAILLE_MEMOIRE = 500
@@ -167,16 +168,18 @@ class Univers:
     def killAround(s, i, n):
         """Tue les CPUs dans la region commencant a l'indice i et contenant au depart n CPUs, jusqu'a atteindre la moitie de la densite limite"""
         # suppose qu'aucun CPU n'est en cours d'execution
+        morts=[]
         l = 2*s.LARGEUR_CALCUL_DENSITE
         target = max(1, (s.maxCPUs / 2))
         while n > target :
             j = s.ind(random.randint(i, i+l))   # +1 ou pas ?
             if j in s.localisation_cpus :
                 k = random.randint(0,len(s.localisation_cpus[j])-1)
+                morts+=[s.localisation_cpus[j][k].id]
                 s.tuer_cpu(s.localisation_cpus[j][k])
                 n-=1
         # peut-etre le cpu c est-il dans plusieurs localisations ? (et lorsqu'il est supprime de liste_cpus, toute les localisations ne sont pas supprimees...)
-
+        return morts
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par killAround dans les endroits trop denses"""
         l = 2 * s.LARGEUR_CALCUL_DENSITE  # largeur reelle de l'intervalle de calcul de densite - 1
@@ -194,8 +197,9 @@ class Univers:
                 n = s.nbCPUs_around_i(s.ind(i+j))
                 if n > s.maxCPUs:
                     killZones.append(s.ind(i+j))
+        morts=[]
         for i in killZones :
-            s.killAround(s.ind(i-s.LARGEUR_CALCUL_DENSITE), s.nbCPUs_around_i(i))
+            morts+=s.killAround(s.ind(i-s.LARGEUR_CALCUL_DENSITE), s.nbCPUs_around_i(i))
         # avec cette methode est qu'apres en avoir deja supprime, on va faire appel a killAround pour des zones potentiellement deja redescendues sous la densite seuil
         # on pourrait optimiser en ne recalculant pas les nbCPUs_around_i(les indices i deja traites par un autre k)
 
@@ -236,9 +240,9 @@ class Univers:
     def __ne__(self,other):
         return not self.__eq__(other)
     def __eq__(self,other):
-        bool=True
-        for cpu in self.liste_cpus:
-            bool*=cpu in other.liste_cpus #needs to override cpu.__eq__
+        bool = True
+        bool *= self.liste_cpus==other.liste_cpus
+        bool *= self.indice_cpu_actuel==other.indice_cpu_actuel
         bool *= (len(self.liste_cpus)==len(other.liste_cpus))
         bool *= self.memoire==other.memoire
         return bool

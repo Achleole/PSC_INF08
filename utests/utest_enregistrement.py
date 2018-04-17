@@ -46,13 +46,26 @@ class TestEnregistrement(unittest.TestCase):
         fichier = "temp.tierra"
         self.replay.univers=self.U.copy()
         self.replay.openWrite(fichier)
+        self.N=5000
+        memoire=[]
         for i in range(self.N):
             self.replay.runAndSave(1)
+            if i%100==0:
+                memoire.append(self.replay.univers.copy())
+
+        print(" ")
         self.V=self.replay.univers.copy()
         self.replay.univers=self.U.copy()
         self.replay.openLoad(fichier)
         for i in range(self.N):
             self.replay.forward(1)
+            if i>=1600 and i<1650:
+                univ=memoire[i-1600]
+                a=5
+            if i%100==0:
+                bool=self.replay.univers==memoire[int(i/100)]
+                if not bool:
+                    pass
 
 
         self.assertTrue(self.replay.univers==self.V)
