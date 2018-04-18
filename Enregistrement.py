@@ -319,6 +319,7 @@ class Replay:
         donnees += (temp << (8 * n - k)).to_bytes(n, byteorder='big')
 
         self.f.write(donnees)
+        self.univers.TAILLE_MEMOIRE = len(self.univers.memoire)
 
     def loadPhoto(self):
         if self.debug:
