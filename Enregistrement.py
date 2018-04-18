@@ -76,6 +76,7 @@ class Replay:
         self.position=0
         self.debug=False
         self.positionsPhotos=[]
+        self.tour=0
 
     def test(self,fichier,univers,k):
         self.univers=univers
@@ -113,6 +114,8 @@ class Replay:
                 self.univers.execute(1)
                 self.photo()
             self.position+=1
+            if self.univers.indice_cpu_actuel==0:
+                self.tour+=1
     def cycleAndSave(self, n):
         for i in range(n):
             self.cycleAndSaveOne()
@@ -143,6 +146,7 @@ class Replay:
         self.n=int.from_bytes(self.f.read(3),byteorder='big')
         self.position=0
         self.buffer=0
+        self.tour=0
     def readOne(self):
         if self.etat=="r":
             if self.position%self.n==0:
@@ -151,6 +155,8 @@ class Replay:
             else:
                 self.advance()
             self.position+=1
+            if self.univers.indice_cpu_actuel==0:
+                self.tour+=1
     def openWrite(self,fichier,n=100):
         if self.etat!='':
             self.close()
@@ -161,6 +167,7 @@ class Replay:
         self.f.write(n.to_bytes(3,byteorder='big'))
         self.position=0
         self.positionsPhotos=[]
+        self.tour=0
     def close(self):
         if self.etat=="w":
             self.viderBuffer()
@@ -256,7 +263,29 @@ class Replay:
             self.univers.next_cpu()
             #self.readVoid()
 
-
+    def find_closest(self,nbtour):
+        if len(self.positionsPhotos)==0:
+            return None,0
+        elif self.positionsPhotos[a][1]<nbtour:
+            a=0
+            b=len(self.positionsPhotos)-1
+            while a<b:
+                c=(a+b)/2
+                if self.positionsPhotos[c][1]<nbtour:
+                    a=c
+                else:
+                    b=c-1
+            return self.positionsPhotos[a]
+        else:
+            return None
+    def goto(self,n):
+        pos,tours=self.find_closest(n)
+        self.f.seek(pos)
+        self.tour=tours
+        self.position=0
+        while self.tour<n:
+            self.readOne()
+        #la normalement c'est bon
 
     def nom_temp(self,memoire):
         if self.univers.memoire[self.univers.cpu_actuel().ptr] == 36:
@@ -268,18 +297,21 @@ class Replay:
     def writePositionsPhotos(self):
         if self.etat=='w':
             for i in self.positionsPhotos:
-                self.f.write(i.to_bytes(8,byteorder='big'))
+                self.f.write(i[0].to_bytes(8,byteorder='big'))
+                self.f.write(i[1].to_bytes(8,byteorder='big'))
             self.f.write(len(self.positionsPhotos).to_bytes(8,byteorder='big'))
     def loadPositionsPhotos(self):
         self.f.seek(-8,2)
         len=int.from_bytes(self.f.read(8),byteorder='big')
-        self.f.seek(-8*(len+1),2)
+        self.f.seek(-16*len-8,2)
         self.positionsPhotos=[]
         for i in range(len):
-            self.positionsPhotos.append(int.from_bytes(self.f.read(8),byteorder='big'))
+            pos = int.from_bytes(self.f.read(8),byteorder='big')
+            tours=int.from_bytes(self.f.read(8),byteorder='big')
+            self.positionsPhotos.append((pos,tours))
 
     def photo(self):
-        self.positionsPhotos.append(self.f.tell())
+        self.positionsPhotos.append((self.f.tell(),self.tour))
         if self.debug:
             sys.stdout.write('WP'+str(len(self.univers.liste_cpus))+' '+str(self.position)+' ')
             #print("photo, buffer :",self.buffer, "position :",self.position)
