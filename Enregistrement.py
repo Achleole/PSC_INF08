@@ -138,6 +138,8 @@ class Replay:
         self.etat='r'
         self.fichier=fichier
         self.f=open(fichier,"rb")
+        self.loadPositionsPhotos()
+        self.f.seek(0)
         self.n=int.from_bytes(self.f.read(3),byteorder='big')
         self.position=0
         self.buffer=0
@@ -162,6 +164,7 @@ class Replay:
     def close(self):
         if self.etat=="w":
             self.viderBuffer()
+            self.writePositionsPhotos()
         self.f.close()
     def viderBuffer(self):
         assert(self.nBits<8)
