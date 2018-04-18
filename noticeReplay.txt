@@ -1,0 +1,13 @@
+Pour utiliser la classe replay, il faut d'abord l'instancier comme ceci  "r = Replay()"
+Si vous voulez l'utiliser pour créer une sauvegarde a partir d'un univers donné, "r.univers=votre_univers"
+puis "r.openWrite(le_nom_du_fichier)" si il n'existe pas, cela crée le fichier et si il existe déjà cela le remplace. Je vous propose d'utiliser l'extension .tierra, mais n'importe quelle extention marche.
+Pour avancer, utilisez la fonction "r.runAndSave(le_nombre_d_itération_que_vous_voulez)" une itération étant la lecture d'une instruction par un cpu. Parralèlement on pourra utiliser la fonction "r.cycleAndSave(n)" qui prend en argument plutôt le nombre de tour de slicer.
+Si vous voulez l'utilisez pour lire une sauvegarde "r.openLoad(le_nom_du_fichier)"
+Puis "r.forward(le_nombre_d_itération_que_vous_voulez)" pour avancer. une itération était la lecture d'une instruction par un cpu.
+
+/!\ Partie suivante en cours de débug /!\
+
+Parralèlement on pourra utiliser la fonction "r.ForwardCycle(n)" qui prend en argument plutôt le nombre de tour de slicer.
+
+Pendant la lecture, pour revenir en arrière ou se déplacer plus facilement, vous pouvez utiliser "r.goto(nombre_de_tour_de_slicer_depuis_le_debut_de_la_sauvegarde)"
+Si vous avez besoin d'une fonction similaire a la précedente mais qui prend en argument plutot le nombre d'itération depuis le début de l'univer, je peux assez facilement l'implementer, demandez moi.
