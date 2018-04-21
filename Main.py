@@ -15,5 +15,5 @@ class Main:
 		exp = Experiment.Experiment()
 		exp.setLargeurCalculDensite(0)
 		exp.setFolderName("experiences_20_avril")
-		exp.experiment2SimpleNextSite([200], 1, 500)
+		exp.experiment2SimpleNextSite([550], 1, 1000)
 Main()
