@@ -1,33 +1,48 @@
+from random import *
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 import numpy as np
-from replay import *
-from pygraphviz import *
+'from Enregistrement import *'
+'from pygraphviz import *'
 
 
-def creer_arbres(univ, fichier,n):
-    replay = Replay()
-    replay.univers = univ
-    replay.openLoad(fichier)
+
+
+
+def creer_arbre(n):
+    nextSite = NextSite()
+    univ = Univers(nextSite)
+    univ.insDict.initialize(instructions)
+    eve = ["nop0","nop0","nop0","nop0","nop0","pushB","rand","pushA","popD","zero","not0","shl","not0","shl","shl","shl","nop0","nop0","nop1","read","write","incA","incB","decC","ifz","jmp","nop1","nop0","nop1","jmp","nop1","nop1","nop0","zero","nop0","nop1","nop0","pushD","popA","new","popB","jmpb","nop1","nop1","nop1","nop1","nop1"]
+    ancestor = univ.insDict.toInts(eve)
+    univ.addIndividual(0, ancestor)
+    c = CPU(0, univ)
+    univ.inserer_cpu(c)
 
     loc_cpus = dict()
-    arbres = dict()
-    for k in replay.univers.liste_cpus:
-        arbres[k.id] = dict()
-        loc_cpus[k.id] = [k.id, 1]
-        arbres[k.id][1] = [k.univers.memoire[k.ptr]]
+    arbre = dict()
+    loc_cpus[univ.liste_cpus[0].id] = 1
+    arbre[1] = [univ.memoire[univ.liste_cpus[0].ptr]]
 
     for j in range(n):
-        replay.tourSlicer()
-        for k, ind in enumerate(k.univers.liste_cpus, 1):
-            branche = arbres[loc_cpus[k.id][0]][loc_cpus[k.id][1]]
-            if branche[-1]=="NEW":
-                loc_cpus[k.id][1] = 2 * loc_cpus[k.id][1]
-                loc_cpus[k.univers.liste_cpus[ind].id] = [loc_cpus[k.id][0], 2 * loc_cpus[k.id][1] + 1]
-                arbres[loc_cpus[k.id][0]][loc_cpus[k.id][1]] = [k.univers.memoire[k.ptr]]
-                arbres[loc_cpus[k.univers.liste_cpus[ind].id][0]][loc_cpus[k.univers.liste_cpus[ind].id][1]] = []
+        univ.cycle()
+        k=0
+        while k <len(univ.liste_cpus):
+            if arbre[loc_cpus[univ.liste_cpus[k].id]]==[] :
+                arbre[loc_cpus[univ.liste_cpus[k].id]].append(univ.memoire[univ.liste_cpus[k].ptr])
+                k+=1
+            elif arbre[loc_cpus[univ.liste_cpus[k].id]][-1]==33 :
+                loc_cpus[univ.liste_cpus[k+1].id] = 2 * loc_cpus[univ.liste_cpus[k].id]+ 1
+                loc_cpus[univ.liste_cpus[k].id] = 2 * loc_cpus[univ.liste_cpus[k].id]
+                print(loc_cpus[univ.liste_cpus[k].id])
+                print(loc_cpus[univ.liste_cpus[k+1].id])
+                arbre[loc_cpus[univ.liste_cpus[k].id]] = [univ.memoire[univ.liste_cpus[k].ptr]]
+                arbre[loc_cpus[univ.liste_cpus[k+1].id]] = []
+                k+=2
             else:
-                branche.add([k.univers.memoire[k.ptr]])
+                arbre[loc_cpus[univ.liste_cpus[k].id]].append(univ.memoire[univ.liste_cpus[k].ptr])
+                k+=1
+    return(arbre) 
       
 
 
@@ -131,7 +146,7 @@ def dictOfDictToList(dictofdict):
 
 
 def constructTree(univ,fichier,epsilon=0.1):
-    dictofdict=creer_arbres(univ,fichier)
+    dictofdict=creer_arbre(univ,fichier)
     treeConstructed = dict()
     for cpuid in dictofdict:
         treeConstructed[cpuid] = dict()
@@ -178,4 +193,4 @@ def interaction(treeConstructed,maxclus):
             G.add_edge('i','j',arrowsize=3*stat[i,j]/n)  
     print(G)
     return(G)
-                                             
+
