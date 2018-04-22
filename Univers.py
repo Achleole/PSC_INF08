@@ -176,10 +176,12 @@ class Univers:
             if j in s.localisation_cpus :
                 k = random.randint(0,len(s.localisation_cpus[j])-1)
                 morts+=[s.localisation_cpus[j][k].id]
+                print(s.localisation_cpus)
                 s.tuer_cpu(s.localisation_cpus[j][k])
                 n-=1
         # peut-etre le cpu c est-il dans plusieurs localisations ? (et lorsqu'il est supprime de liste_cpus, toute les localisations ne sont pas supprimees...)
         return morts
+
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par killAround dans les endroits trop denses"""
         l = 2 * s.LARGEUR_CALCUL_DENSITE  # largeur reelle de l'intervalle de calcul de densite - 1

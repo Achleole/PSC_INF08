@@ -7,5 +7,5 @@ class NextSite:
     def setMemSize(self, memLen):
         self.memLen = memLen
 
-    def getNext(s):
+    def getNext(s, cpu=None):
         return random.randint(0, s.memLen-1)

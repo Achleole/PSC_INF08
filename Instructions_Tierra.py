@@ -165,10 +165,10 @@ def adrf(c):
 #													NOUVELLES INSTRUCTIONS
 def new(c):
     "Creer un nouveau cpu a l'endroit de ax"
-    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, father=c))
+    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=0, father=c))
 
 def rand(c):
-    c.ax  = c.univers.nextSite.getNext()
+    c.ax  = c.univers.nextSite.getNext(c)
     "Place dans c.ax une valeur aleatoire"
 
 def read(c):
