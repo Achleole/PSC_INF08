@@ -5,6 +5,7 @@ import copy
 import InstructionsDict
 import random
 import os
+import Exceptions
 
 
 #TAILLE_MEMOIRE = 50000
@@ -95,7 +96,7 @@ class Univers:
         PRECISION IMPORTANTE : on parcourt la liste dans l'ordre des indices decroissant"
         nb = len(s.liste_cpus)
         if nb == 0 :
-            raise NoCPUException()
+            raise Exceptions.NoCPUException()
         for i in range(nb) :
             s.executer_cpu_actuel()
             s.next_cpu()
@@ -123,9 +124,12 @@ class Univers:
             s.localisation_cpus[cpu.ptr].append(cpu)
 
     def tuer_cpu(s, cpu):
-        """Tue cpu qui est situe a l'indice i dans localisation_cpus, ie le supprime de ce dictionnaire et de liste_cpus"""
-        s.liste_cpus.remove(cpu)
+        """Tue cpu, ie le supprime de ce dictionnaire et de liste_cpus"""
+        i = s.liste_cpus.index(cpu)
+        s.liste_cpus.pop(i)
         s.supprimer_cpu_localisation(cpu)
+        if s.indice_cpu_actuel == i:
+            s.next_cpu()
         if s.indice_cpu_actuel == len(s.liste_cpus):
             s.indice_cpu_actuel = 0
 
