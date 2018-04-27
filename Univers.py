@@ -208,7 +208,7 @@ class Univers:
             morts+=s.killAround(s.ind(i-s.LARGEUR_CALCUL_DENSITE), s.nbCPUs_around_i(i))
         # avec cette methode est qu'apres en avoir deja supprime, on va faire appel a killAround pour des zones potentiellement deja redescendues sous la densite seuil
         # on pourrait optimiser en ne recalculant pas les nbCPUs_around_i(les indices i deja traites par un autre k)
-
+        return morts
     def afficher(self):
         print("===============")
         print("memoire :", self.memoire)

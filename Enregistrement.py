@@ -116,6 +116,22 @@ class Replay:
             self.position+=1
             if self.univers.indice_cpu_actuel==0:
                 self.tour+=1
+    def readBits(self, n):
+        while self.nBits < n:
+            self.buffer = (self.buffer << 8) + int.from_bytes(self.f.read(1), byteorder='big')
+            self.nBits += 8
+        resultat = self.buffer >> (self.nBits - n)
+        self.buffer -= resultat << (self.nBits - Univers.Univers.n2)
+        self.nBits -= n
+        return resultat
+    def writeBits(self, valeur,n):
+        self.buffer = (self.buffer << n) + valeur
+        self.nBits += n
+        while self.nBits >= 8:
+            saving = self.buffer >> (self.nBits - 8)
+            self.buffer -= saving << (self.nBits - 8)
+            self.f.write(saving.to_bytes(1, byteorder='big'))
+            self.nBits -= 8
     def cycleAndSave(self, n):
         for i in range(n):
             self.cycleAndSaveOne()
@@ -126,7 +142,7 @@ class Replay:
                 raise CPU.NoCPUException()
             for i in range(nb):
                 self.runAndSaveOne()
-            self.univers.tuer_cpus_par_densite()
+            morts = self.univers.tuer_cpus_par_densite()
         except Exception as e:
             print(e)
             raise
@@ -179,75 +195,36 @@ class Replay:
         self.f.close()
     def viderBuffer(self):
         assert(self.nBits<8)
-        if self.nBits>0:
-            ecrire = self.buffer << (8 - self.nBits)
-            self.f.write(ecrire.to_bytes(1, byteorder='big'))
-            self.buffer=0
-            self.nBits=0
+        self.writeBits(self.buffer,self.nBits)
     def saveWrite(self,case):
         if self.etat=='w':
-            self.buffer=(self.buffer << Univers.Univers.n2)+case
-            self.nBits+=Univers.Univers.n2
-            while self.nBits>=8:
-                saving=self.buffer>>(self.nBits-8)
-                self.buffer-=saving<<(self.nBits-8)
-                self.f.write(saving.to_bytes(1,byteorder='big'))
-                self.nBits-=8
+            self.writeBits(case,Univers.Univers.n2)
             if self.debug:
                 sys.stdout.write('WE'+str(case)+' '+str(self.position)+' ')
                 #print("write evolution :",case, "position :",self.position)
     def readEvolutionWrite(self):
         if self.etat=='r':
-            while self.nBits< Univers.Univers.n2:
-                self.buffer=(self.buffer<<8)+int.from_bytes(self.f.read(1), byteorder='big')
-                self.nBits+=8
-            case=self.buffer>>(self.nBits - Univers.Univers.n2)
-            self.buffer-=case<<(self.nBits - Univers.Univers.n2)
-            self.nBits-= Univers.Univers.n2
+            case = self.readBits(Univers.Univers.n2)
             if self.debug:
                 sys.stdout.write('RE'+str(case)+' '+str(self.position)+' ')
                 #print("read evolution :",case, "position :",self.position)
             return case
     def readVoid(self):
         if self.etat=='r':
-            while self.nBits< Univers.Univers.n2:
-                self.buffer=(self.buffer<<8)+int.from_bytes(self.f.read(1), byteorder='big')
-                self.nBits+=8
-            contenu=self.buffer>>(self.nBits - Univers.Univers.n2)
-            self.buffer-=contenu<<(self.nBits - Univers.Univers.n2)
+            contenu = self.readBits(Univers.Univers.n2)
             assert(contenu==0)
-            self.nBits-= Univers.Univers.n2
     def saveRand(self, ax):
         if self.etat == 'w':
-            self.buffer = (self.buffer << (Univers.Univers.b2 * 8)) + ax
-            self.nBits += Univers.Univers.b2 * 8
-            nBytes = self.nBits//8
-            while self.nBits >= 8:
-                saving = self.buffer >> (self.nBits - 8*nBytes)
-                self.buffer -= saving << (self.nBits - 8*nBytes)
-                self.f.write(saving.to_bytes(nBytes, byteorder='big'))
-                self.nBits -= 8*nBytes
+            self.writeBits(ax, Univers.Univers.b2*8)
             if self.debug:
                 sys.stdout.write('WR'+str(ax)+' '+str(self.position)+' ')
                 #print("écriture rand :", ax, "position :",self.position)
     def saveVoid(self):
         if self.etat == 'w':
-            self.buffer = (self.buffer << (Univers.Univers.b2 * 8))
-            self.nBits += Univers.Univers.b2 * 8
-            nBytes = self.nBits//8
-            while self.nBits >= 8:
-                saving = self.buffer >> (self.nBits - 8*nBytes)
-                self.buffer -= saving << (self.nBits - 8*nBytes)
-                self.f.write(saving.to_bytes(nBytes, byteorder='big'))
-                self.nBits -= 8*nBytes
+            self.writeBits(0,Univers.Univers.b2 * 8)
     def readEvolutionRand(self):
         if self.etat=='r':
-            while self.nBits< Univers.Univers.b2*8:
-                self.buffer=(self.buffer<<8)+int.from_bytes(self.f.read(1), byteorder='big')
-                self.nBits+=8
-            case=self.buffer>>(self.nBits - Univers.Univers.b2 * 8)
-            self.buffer-=case<<(self.nBits - Univers.Univers.b2*8)
-            self.nBits-= Univers.Univers.b2*8
+            case = self.readBits(Univers.Univers.b2*8)
             if self.debug:
                 sys.stdout.write('RR'+str(case)+' '+str(self.position)+' ')
                 #print("lecture rand :",case, "position :",self.position)
@@ -274,7 +251,6 @@ class Replay:
             a=0
             b=len(self.positionsPhotos)-1
             while a<b:
-                print(a,b)
                 c=int((a+b+1)/2)
                 if self.positionsPhotos[c][1]<nbtour:
                     a=c
