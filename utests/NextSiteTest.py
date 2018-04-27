@@ -7,6 +7,6 @@ class NextSiteTest:
     def setMemSize(self, memLen):
         self.memLen = memLen
 
-    def getNext(s):
+    def getNext(s, cpu=None):
         s.lastSpot = (s.lastSpot + s.interval) % s.memLen
         return s.lastSpot
