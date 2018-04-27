@@ -46,30 +46,36 @@ class TestEnregistrement(unittest.TestCase):
         fichier = "temp.tierra"
         self.replay.univers = self.U.copy()
         self.replay.openWrite(fichier)
-        self.N = 42
+        self.N = 420
         memoire = []
         for i in range(self.N):
             self.replay.runAndSave(1)
-        for i in range(42):
-            self.replay.positionsPhotos.append((random.randint(100,200),random.randint(100,200)))#,self.replay.positionsPhotos[-1])
-        print(self.replay.positionsPhotos)
         memoire=self.replay.positionsPhotos[:]
         self.replay.openLoad(fichier)
-        print(self.replay.positionsPhotos)
         self.assertTrue(self.replay.positionsPhotos==memoire)
+
     def test_jump(self):
         fichier = "temp.tierra"
         self.replay.univers = self.U.copy()
         self.replay.openWrite(fichier)
-        self.N = 42
-        memoire = []
+        self.N = 701
+        memoire = None
+        bool=True
         for i in range(self.N):
             self.replay.runAndSave(1)
+            if bool and self.replay.tour==204:
+                memoire=self.replay.univers.copy()
+                bool=False
+        self.replay.openLoad(fichier)
+        print(self.replay.positionsPhotos)
+        self.replay.goto(204)
+        self.assertTrue(memoire==self.replay.univers)
+
     def test_sauvegarde(self):
         fichier = "temp.tierra"
         self.replay.univers=self.U.copy()
         self.replay.openWrite(fichier)
-        self.N=5000
+        self.N=1000
         memoire=[]
         for i in range(self.N):
             self.replay.runAndSave(1)

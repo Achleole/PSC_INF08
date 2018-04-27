@@ -134,7 +134,11 @@ class Replay:
             if self.univers.statistiques != None:
                 self.univers.statistiques.mettre_a_jour()
             self.univers.reinitialise_cpus_crees()
-
+    def ForwardCycle(self,n):
+        for i in range(n):
+            self.ForwardCycleOne()
+    def ForwardCycle(self):
+        pass
     def openLoad(self,fichier):
         if self.etat!='':
             self.close()
@@ -266,11 +270,12 @@ class Replay:
     def find_closest(self,nbtour):
         if len(self.positionsPhotos)==0:
             return None,0
-        elif self.positionsPhotos[a][1]<nbtour:
+        elif self.positionsPhotos[0][1]<nbtour:
             a=0
             b=len(self.positionsPhotos)-1
             while a<b:
-                c=(a+b)/2
+                print(a,b)
+                c=int((a+b+1)/2)
                 if self.positionsPhotos[c][1]<nbtour:
                     a=c
                 else:
