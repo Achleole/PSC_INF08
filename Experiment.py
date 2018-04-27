@@ -17,11 +17,11 @@ import datetime #utilise pour donner un nom par defaut aux fichiers
 
 class Experiment:
 
-    def __init__(self):
-        self.folderName = "defaultExperiment" #folderName est le nom du dossier dans lequel on enregistre les graphes
+    def __init__(self, dossier="defaultExperiment", enregistrerBool=False):
+        self.folderName = dossier #folderName est le nom du dossier dans lequel on enregistre les graphes
         self.current_ancestor = None
         self.lcd = 23 #23 : valeur par defaut de la largeur de LARGEUR_CALCUL_DENSITE
-        self.enregistrerBool = False #est-ce qu'on enregistre les experiences ou non ?
+        self.enregistrerBool = enregistrerBool #est-ce qu'on enregistre les experiences ou non ?
         return
 
     def test(self, nb_iterations):
@@ -58,7 +58,7 @@ class Experiment:
 
     def setUpForExp(self, m, taille_memoire, nextsiteclasse):
         #nextsiteclasse est la classe NextSite qu'on utilise : ca peut etre NextSite.NextSite ou NextSite.SimpleNextSite
-
+        # m est le taux de mutation
         self.resultats = None #tableau contenant les resultats des experiences 
         "Initialise l'experience et ses variables"
         self.i = 0 #compte le nombre de cycles d'univers a executer
@@ -136,7 +136,7 @@ class Experiment:
                 nombre += 1
         return nombre
 
-    def run_experiment_1(self, TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, nextsitefonction, dossier="Exp"): 
+    def run_experiment_1(self, TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, nextsitefonction):
         #nextsite : fonction nextsite qu'on utilise (la normale ou SimpleNextSite)
         for t_m in TAILLE_MEMOIRE:
             print("Taille memoire = ", t_m)
@@ -150,7 +150,7 @@ class Experiment:
                 #total, crees = self.run(NOMBRE_ITERATIONS)
                 
                 if self.enregistrerBool:
-                    nom = dossier+"/exp1-nbexp"+str(NOMBRE_EXPERIENCES)+"-nbiter"+str(NOMBRE_ITERATIONS)+"-n"
+                    nom = self.folderName + "/exp1-nbexp"+str(NOMBRE_EXPERIENCES)+"-nbiter"+str(NOMBRE_ITERATIONS)+"-n"
                     self.replay.openWrite(nom+str(e))
                     self.replay.cycleAndSave(NOMBRE_ITERATIONS)
                 else:
@@ -172,8 +172,7 @@ class Experiment:
             print("Fini")
 
     def run_experiment_2(self, TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, nextsitefonction):
-        if self.enregistrerBool: 
-            raise Exception("Probleme : l'experience 2 n'est pas compatible avec l'enregistrement")
+        eve = Enregistrement.charger_genome("eve")
         for t_m in TAILLE_MEMOIRE:
             print("Taille memoire = ", t_m)
             ord1 = [0]*NOMBRE_ITERATIONS #stocke le nombre de cpus total
@@ -182,9 +181,20 @@ class Experiment:
             for e in range(NOMBRE_EXPERIENCES):
                 print('-> Experience numero ', str(e+1))
                 self.setUpForExp(0.0, t_m, nextsitefonction)
-                
-                #total, crees = self.run(NOMBRE_ITERATIONS)
-                total, occurences = self.run2(NOMBRE_ITERATIONS) #experience 1 -> on appelle la fonction run
+                ancestor = self.U.insDict.toInts(eve)  # l'ancetre sera cherche dans la memoire dans la suite
+
+                if self.enregistrerBool:
+                    total = []
+                    occurences = []
+                    nom = self.folderName + "/exp2-nbexp" + str(NOMBRE_EXPERIENCES) + "-nbiter" + str(NOMBRE_ITERATIONS) + "-n"
+                    self.replay.openWrite(nom + str(e))
+                    for i in range(NOMBRE_ITERATIONS):
+                        self.replay.cycleAndSave(1)
+                        total.append(len(self.U.liste_cpus))
+                        occurences.append(self.compter_genomes(ancestor, self.U.memoire))
+                else:
+                        total, occurences = self.run2(NOMBRE_ITERATIONS)
+
                 for i in range(NOMBRE_ITERATIONS):
                     ord1[i] += total[i]
                     ord2[i] += occurences[i]
@@ -201,12 +211,12 @@ class Experiment:
 
             print("Fini")
 
-    def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000, dossier="Exp"):
+    def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         if TAILLE_MEMOIRE == None :
             TAILLE_MEMOIRE 	= [250, 500, 1000, 2000, 3000, 4000] 
         #NOMBRE_EXPERIENCESnombre de fois qu'on va faire l'experience pour chaque taille memoire
         #NOMBRE_ITERATIONS meme nombre de cycles d'univers pour chaque experience
-        self.run_experiment_1(TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, NextSite.NextSite, dossier)
+        self.run_experiment_1(TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, NextSite.NextSite)
 
 
     def experiment2(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
@@ -216,12 +226,12 @@ class Experiment:
         self.run_experiment_2(TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, NextSite.NextSite)
   
 
-    def experimentSimpleNextSite(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000, dossier="Exp"):
+    def experimentSimpleNextSite(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         if TAILLE_MEMOIRE == None :
             TAILLE_MEMOIRE  = [250, 500, 1000, 2000, 3000, 4000] 
         #NOMBRE_EXPERIENCESnombre de fois qu'on va faire l'experience pour chaque taille memoire
         #NOMBRE_ITERATIONS meme nombre de cycles d'univers pour chaque experience
-        self.run_experiment_1(TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, SimpleNextSite.SimpleNextSite, dossier)
+        self.run_experiment_1(TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, SimpleNextSite.SimpleNextSite)
 
     def experiment2SimpleNextSite(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         "Dans cette experience, on va comparer l'evolution du nombre de CPUs en vie et le nombre"
