@@ -76,7 +76,7 @@ def clustering(list,epsilon=0.01):
 
 
 
-def main():
+def test():
     mots= ["absent","absente","absents","indenpendants","indenpendant","endependant","independante"]
     clustering(mots,0.01)
     #print(pleindistancematrix(mots,levensteindistance))
@@ -90,7 +90,7 @@ def main():
     dn = dendrogram(Z)
     plt.show()
 
-main()
+test()
 
 
 
@@ -101,6 +101,7 @@ def dictionnairetolist(dict):
             l.append((dict[cpuid][instructionid],cpuid,instructionid))
     return l
 
+#Given a dictionary of dictionary, return sth with same structure but contents are replaced by the number of cluster to which belongs the original instruction
 def clusteringdict(dict):
     clustering(dictionnairetolist(dict))
 
