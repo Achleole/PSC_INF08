@@ -187,13 +187,18 @@ def write(c):
         c.pop_stack()
         c.ax -= 1
     elif 2.*c.univers.mutation/3 >= a > c.univers.mutation/3.: #insertion
-        c.univers.memoire[c.ax] = random.randint(0,37)
+        c.univers.memoire[c.ax] = random.randint(0,c.univers.insDict.nbInstructions()-1)
         c.ax += 1
         c.univers.memoire[c.ax] = c.pop_stack()
     else: #mutation
-        c.univers.memoire[c.ax] = random.randint(0,37)
+        c.univers.memoire[c.ax] = random.randint(0,c.univers.insDict.nbInstructions()-1)
     c.decrementer_stack_ptr()
 
 def HCF(c):
     "Tue le cpu qui la lit"
     c.die()
+
+############### Super instructions
+def rw(c):
+    read(c)
+    write(c)
