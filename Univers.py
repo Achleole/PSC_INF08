@@ -128,7 +128,7 @@ class Univers:
         i = s.liste_cpus.index(cpu)
         s.liste_cpus.pop(i)
         s.supprimer_cpu_localisation(cpu)
-        if s.indice_cpu_actuel == i:
+        if s.indice_cpu_actuel == i and i!=0:
             s.next_cpu()
         if s.indice_cpu_actuel == len(s.liste_cpus):
             s.indice_cpu_actuel = 0
