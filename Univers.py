@@ -180,7 +180,7 @@ class Univers:
             if j in s.localisation_cpus :
                 k = random.randint(0,len(s.localisation_cpus[j])-1)
                 morts+=[s.localisation_cpus[j][k].id]
-                print(s.localisation_cpus)
+                #print(s.localisation_cpus)
                 s.tuer_cpu(s.localisation_cpus[j][k])
                 n-=1
         # peut-etre le cpu c est-il dans plusieurs localisations ? (et lorsqu'il est supprime de liste_cpus, toute les localisations ne sont pas supprimees...)
