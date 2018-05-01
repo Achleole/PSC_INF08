@@ -41,9 +41,9 @@ def creer_arbre_superinstr(n):
                     loc_cpus[k.id.split("/")[0]]=2*a
                     arbre[2*a]=[0,False,False]
                     arbre[2*a+1]=[0,False,False]
-                if univ.memoire[k.ptr]==38:
+                if univ.memoire[(k.ptr)%TAILLE_MEMOIRE]==38:
                     arbre[loc_cpus[k.id.split("/")[1]]][1]=True
-                elif univ.memoire[k.ptr]==38:
+                elif univ.memoire[(k.ptr)%TAILLE_MEMOIRE]==38:
                     arbre[loc_cpus[k.id.split("/")[1]]][2]=True
         l=list(arbre.keys())
         k=1
