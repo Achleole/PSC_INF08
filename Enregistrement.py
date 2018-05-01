@@ -218,7 +218,7 @@ class Replay:
             self.writeBits(ax, Univers.Univers.b2*8)
             if self.debug:
                 sys.stdout.write('WR'+str(ax)+' '+str(self.position)+' ')
-                #print("écriture rand :", ax, "position :",self.position)
+                #print("ecriture rand :", ax, "position :",self.position)
     def saveVoid(self):
         if self.etat == 'w':
             self.writeBits(0,Univers.Univers.b2 * 8)

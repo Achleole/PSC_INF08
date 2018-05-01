@@ -50,7 +50,7 @@ def trouver_template_complementaire_avant_mem(memoire, ptr, LIMITE_RECHERCHE):
     ou c.ptr + 1 dans le cas ou le pattern est vide ou n'a pas ete trouve.\
     On renvoie aussi i qui est le temps pris pour trouver le pattern"
     #c est le CPU
-    pattern = calculer_pattern(memoire, ptr + 1)
+    pattern = calculer_pattern(memoire, (ptr + 1 % len(memoire)))
     longueur_pattern = len(pattern)
 
     if longueur_pattern == 0:
