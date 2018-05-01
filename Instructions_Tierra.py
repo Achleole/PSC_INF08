@@ -202,3 +202,7 @@ def HCF(c):
 def rw(c):
     read(c)
     write(c)
+
+def shll(c):
+    shl(c)
+    shl(c)
