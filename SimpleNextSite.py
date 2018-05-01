@@ -10,4 +10,7 @@ class SimpleNextSite:
 		self.memLen = memLen
 
 	def getNext(s, cpu=None):
-		return cpu.ptr + DELTA_SITE
+		if cpu.ptr >= cpu.univers.TAILLE_MEMOIRE - DELTA_SITE or cpu.ptr < -DELTA_SITE :
+			return cpu.univers.ind(cpu.ptr + DELTA_SITE)
+		else:
+			return cpu.ptr + DELTA_SITE

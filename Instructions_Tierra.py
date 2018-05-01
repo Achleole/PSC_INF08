@@ -139,21 +139,33 @@ def jmp(c):
     try:
         l_pattern, indice, i = trouver_template_complementaire(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
-        c.ptr += e.l_pattern
+        summ = c.ptr + e.l_pattern
+        if summ >= c.univers.TAILLE_MEMOIRE:
+            summ = c.univers.ind(summ)
+        c.ptr = summ
     except NoPatternException:
         return
     else:
-        c.ptr = indice + l_pattern- 1 #on soustrait 1 car le ptr va ensuite etre incremente
+        summ = indice + l_pattern- 1 #on soustrait 1 car le ptr va ensuite etre incremente
+        if summ >= c.univers.TAILLE_MEMOIRE:
+            summ = c.univers.ind(summ)
+        c.ptr = summ
 
 def jmpb(c):
     try:
         l_pattern, indice, i = trouver_template_complementaire_arriere(c, LIMITE_RECHERCHE)
     except PatternNotFoundException as e:
-        c.ptr += e.l_pattern
+        summ = c.ptr + e.l_pattern
+        if summ >= c.univers.TAILLE_MEMOIRE:
+            summ = c.univers.ind(summ)
+        c.ptr = summ
     except NoPatternException:
         return
     else:
-        c.ptr = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
+        summ = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
+        if summ >= c.univers.TAILLE_MEMOIRE:
+            summ = c.univers.ind(summ)
+        c.ptr = summ
 
 def call(c):
     try:
@@ -162,17 +174,26 @@ def call(c):
         c.push_stack(c.ptr+1)
         c.incrementer_stack_ptr()#cf doc tierra sur le comportement de la fonction (j'ai un doute)
     except PatternNotFoundException as e:
-        c.ptr += e.l_pattern
+        summ = c.ptr + e.l_pattern
+        if summ >= c.univers.TAILLE_MEMOIRE:
+            summ = c.univers.ind(summ)
+        c.ptr = summ
     else:
         c.push_stack(c.ptr + l_pattern + 1)
         #c.incrementer_stack_ptr() #on stocke l'ANCIENNE adresse + l_pattern
-        c.ptr = indice + l_pattern - 1 #car on va a l'adresse apres le pattern
+        summ = indice + l_pattern - 1  # on soustrait 1 car le ptr va ensuite etre incremente
+        if summ >= c.univers.TAILLE_MEMOIRE:
+            summ = c.univers.ind(summ)
+        c.ptr = summ #car on va a l'adresse apres le pattern
 
 
 def ret(c):
     x = c.pop_stack()
     #c.decrementer_stack_ptr()
-    c.ptr = x - 1 #car on va incrementer ensuite c.ptr
+    if x >= c.univers.TAILLE_MEMOIRE+1 or x < 1 :
+        c.ptr = c.univers.ind(x-1)
+    else:
+        c.ptr = x - 1 #car on va incrementer ensuite c.ptr
 
 def movDC(c):
     c.dx = c.cx

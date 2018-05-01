@@ -30,16 +30,14 @@ class CPU:
         Met a jour la localisation du CPU\
         Attention, les instructions sont stockees dans le dictionnaire de l'univers sous forme de chaine de caractere\
         correspondant EXACTEMENT au nom des fonctions"""
-        if self.ptr >= self.univers.TAILLE_MEMOIRE or self.ptr < 0:
-            self.ptr=self.univers.ind(self.ptr)
+        #self.ptr = self.univers.ind(self.ptr)
         ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
         if ins == "HCF":
             HCF(self)
         else:
             self.univers.supprimer_cpu_localisation(self)
             try:
-                f = eval(ins)
-                f(self)
+                eval(ins)(self)
             except Exception as e:
                 print("Instruction ayant echoue : ", ins)
                 print(e)
