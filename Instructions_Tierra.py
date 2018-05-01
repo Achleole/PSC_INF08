@@ -32,34 +32,64 @@ def ifz(c):
         c.incrementer_ptr()
 
 def subCAB(c):
-    c.cx = c.ax - c.bx
+    diff = c.ax - c.bx
+    if diff >= c.univers.TAILLE_MEMOIRE or c<0:
+        diff : c.univers.ind(diff)
+    c.cx = diff
 
 def subAAC(c):
-    c.ax = c.ax - c.cx
+    diff = c.ax - c.cx
+    if diff >= c.univers.TAILLE_MEMOIRE or c < 0:
+        diff: c.univers.ind(diff)
+    c.ax = diff
 
 def incA(c):
-    c.ax += 1
+    if c.ax == c.univers.TAILLE_MEMOIRE-1:
+        c.ax = 0
+    else:
+        c.ax += 1
 
 def incB(c):
-    c.bx += 1
+    if c.bx == c.univers.TAILLE_MEMOIRE-1:
+        c.bx = 0
+    else:
+        c.bx += 1
 
 def incC(c):
-    c.cx += 1
+    if c.cx == c.univers.TAILLE_MEMOIRE-1:
+        c.cx = 0
+    else:
+        c.cx += 1
 
 def incD(c):
-    c.dx += 1
+    if c.dx == c.univers.TAILLE_MEMOIRE-1:
+        c.dx = 0
+    else:
+        c.dx += 1
 
 def decA(c):
-    c.ax -= 1
+    if c.ax == 0:
+        c.ax = c.univers.TAILLE_MEMOIRE-1
+    else:
+        c.ax -= 1
 
 def decB(c):
-    c.bx -= 1
+    if c.bx == 0:
+        c.bx = c.univers.TAILLE_MEMOIRE-1
+    else:
+        c.bx -= 1
 
 def decC(c):
-    c.cx -= 1
+    if c.cx == 0:
+        c.cx = c.univers.TAILLE_MEMOIRE-1
+    else:
+        c.cx -= 1
 
 def decD(c):
-    c.dx -= 1
+    if c.dx == 0:
+        c.dx = c.univers.TAILLE_MEMOIRE-1
+    else:
+        c.dx -= 1
 
 def pushA(c):
     c.push_stack(c.ax)
@@ -78,19 +108,31 @@ def pushD(c):
     c.incrementer_stack_ptr()
 
 def popA(c):
-    c.ax = c.pop_stack()
+    a = c.pop_stack()
+    if a >= c.univers.TAILLE_MEMOIRE or a <0:
+        a = c.univers.TAILLE_MEMOIRE(a)
+    c.ax = a
     c.decrementer_stack_ptr()
 
 def popB(c):
-    c.bx = c.pop_stack()
+    a = c.pop_stack()
+    if a >= c.univers.TAILLE_MEMOIRE or a < 0:
+        a = c.univers.TAILLE_MEMOIRE(a)
+    c.bx = a
     c.decrementer_stack_ptr()
 
 def popC(c):
-    c.cx = c.pop_stack()
+    a = c.pop_stack()
+    if a >= c.univers.TAILLE_MEMOIRE or a < 0:
+        a = c.univers.TAILLE_MEMOIRE(a)
+    c.cx = a
     c.decrementer_stack_ptr()
 
 def popD(c):
-    c.dx = c.pop_stack()
+    a = c.pop_stack()
+    if a >= c.univers.TAILLE_MEMOIRE or a < 0:
+        a = c.univers.TAILLE_MEMOIRE(a)
+    c.dx = a
     c.decrementer_stack_ptr()
 
 def jmp(c):
@@ -141,8 +183,8 @@ def movBA(c):
 def movii(c):
     #sert a copier le contenu d'une case dans une autree
     u = c.univers
-    c.bx = u.ind(c.bx)
-    c.ax = u.ind(c.ax)
+    #c.bx = u.ind(c.bx)
+    #c.ax = u.ind(c.ax)
     u.memoire[c.ax] = u.memoire[c.bx]
 
 def adr(c, fonc=trouver_template_complementaire):
@@ -173,13 +215,13 @@ def rand(c):
 
 def read(c):
     "Lit l'instruction correspondant a l'adresse presente dans c.bx et la place dans la stack"
-    c.bx = c.univers.ind(c.bx)
+    #c.bx = c.univers.ind(c.bx)
     c.push_stack(c.univers.memoire[c.bx])
     c.incrementer_stack_ptr()
 
 def write(c):
     "Ecrit l'instruction au sommet de la pile dans l'adresse contenue dans c.ax"
-    c.ax = c.univers.ind(c.ax)
+    #c.ax = c.univers.ind(c.ax)
     a = random.random()
     if a > c.univers.mutation: #ecriture normale
         c.univers.memoire[c.ax] = c.pop_stack()

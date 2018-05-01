@@ -232,7 +232,8 @@ class Replay:
     def advance(self):
         c=self.univers.cpu_actuel()
         if self.univers.memoire[c.ptr]==36:
-            c.ax = c.univers.ind(c.ax)
+            if c.ax >= self.univers.TAILLE_MEMOIRE or c.ax <0:
+                c.ax = c.univers.ind(c.ax)
             self.univers.execute(1)
             c.univers.memoire[c.ax] = self.readEvolutionWrite()
             # comme la fonction write mais qui ecrit la valeur case donnee en argument a la place de ce que le CPU devrait ecrire.

@@ -166,7 +166,10 @@ class Univers:
         """renvoie le nb (eventuellement nul) de CPUs localises dans la region centree en l'adresse i"""
         nb = 0
         for j in range(-s.LARGEUR_CALCUL_DENSITE, s.LARGEUR_CALCUL_DENSITE+1) :
-            nb += s.nbCPUs_at_i(s.ind(i+j))
+            summ = i+j
+            if summ>=s.TAILLE_MEMOIRE or summ<0:
+                summ=s.ind(summ)
+            nb += s.nbCPUs_at_i(summ)
         return nb
 
     def killAround(s, i, n):
@@ -176,7 +179,9 @@ class Univers:
         l = 2*s.LARGEUR_CALCUL_DENSITE
         target = max(1, (s.maxCPUs / 2))
         while n > target :
-            j = s.ind(random.randint(i, i+l))   # +1 ou pas ?
+            j = random.randint(i, i+l)   # +1 ou pas ?
+            if j>s.TAILLE_MEMOIRE:
+                j = s.ind(j)
             if j in s.localisation_cpus :
                 k = random.randint(0,len(s.localisation_cpus[j])-1)
                 morts+=[s.localisation_cpus[j][k].id]
@@ -194,18 +199,26 @@ class Univers:
         for k in range(start, len(s.liste_cpus)) :
             i = s.liste_cpus[k].ptr
             for j in range(-s.LARGEUR_CALCUL_DENSITE, s.LARGEUR_CALCUL_DENSITE+1) :
-                n = s.nbCPUs_around_i(s.ind(i+j))
-                if n > s.maxCPUs:
-                    killZones.append(s.ind(i+j))
+                summ = i+j
+                if summ >= s.TAILLE_MEMOIRE or summ < 0:
+                    summ = s.ind(summ)
+                if s.nbCPUs_around_i(summ) > s.maxCPUs:
+                    killZones.append(summ)
         for k in range(0, start) :
             i = s.liste_cpus[k].ptr
             for j in range(-s.LARGEUR_CALCUL_DENSITE, s.LARGEUR_CALCUL_DENSITE+1) :
-                n = s.nbCPUs_around_i(s.ind(i+j))
+                summ = i + j
+                if summ >= s.TAILLE_MEMOIRE or summ < 0:
+                    summ = s.ind(summ)
+                n = s.nbCPUs_around_i(summ)
                 if n > s.maxCPUs:
-                    killZones.append(s.ind(i+j))
+                    killZones.append(summ)
         morts=[]
         for i in killZones :
-            morts+=s.killAround(s.ind(i-s.LARGEUR_CALCUL_DENSITE), s.nbCPUs_around_i(i))
+            begin = i-s.LARGEUR_CALCUL_DENSITE
+            if begin < 0:
+                begin = s.ind(begin)
+            morts+=s.killAround(begin, s.nbCPUs_around_i(i))
         # avec cette methode est qu'apres en avoir deja supprime, on va faire appel a killAround pour des zones potentiellement deja redescendues sous la densite seuil
         # on pourrait optimiser en ne recalculant pas les nbCPUs_around_i(les indices i deja traites par un autre k)
         return morts

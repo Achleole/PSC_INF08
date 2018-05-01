@@ -30,7 +30,8 @@ class CPU:
         Met a jour la localisation du CPU\
         Attention, les instructions sont stockees dans le dictionnaire de l'univers sous forme de chaine de caractere\
         correspondant EXACTEMENT au nom des fonctions"""
-        self.ptr = self.univers.ind(self.ptr)
+        if self.ptr >= self.univers.TAILLE_MEMOIRE or self.ptr < 0:
+            self.ptr=self.univers.ind(self.ptr)
         ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
         if ins == "HCF":
             HCF(self)
@@ -47,7 +48,10 @@ class CPU:
                 self.univers.ajouter_cpu_localisation(self)
 
     def incrementer_ptr(self):
-        self.ptr = self.univers.ind((self.ptr + 1))
+        if self.ptr == self.univers.TAILLE_MEMOIRE-1:
+            self.ptr=0
+        else:
+            self.ptr +=1
 
     def incrementer_stack_ptr(self):
         self.stack_ptr = (self.stack_ptr + 1) % (TAILLE_STACK)
