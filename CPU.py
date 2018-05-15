@@ -7,14 +7,18 @@ class CPU:
     TAILLE_STACK = 10
 
     # ptr stocke l'adresse actuellement pointee par le CPU
-    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=None, stack_ptr=0, father=None, id = None):
+    def __init__(self, ptr, univers, ax=0, bx=None, cx=0, dx=0, stack=None, stack_ptr=0, father=None, id = None):
         """Doit contenir la meme valeur que ptr dans bx (pour eve)"""
+
         if id ==None:
             self.id = univers.nextId(father)
         else:
             self.id = id
         self.ax = ax
-        self.bx = bx
+        if bx != None:
+            self.bx = bx
+        else:
+            self.bx = ptr
         self.cx = cx
         self.dx = dx
         self.univers = univers

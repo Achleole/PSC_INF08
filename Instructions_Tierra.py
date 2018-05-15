@@ -228,7 +228,9 @@ def adrf(c):
 #													NOUVELLES INSTRUCTIONS
 def new(c):
     "Creer un nouveau cpu a l'endroit de ax"
-    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=0, father=c))
+    c.univers.inserer_cpu(CPU.CPU(c.ax,c.univers, bx=c.ax, father=c))
+    #il faut que bx = ax pourque le cpu recopie le code qui est situe la ou il pointe
+    #si bx = 0, il recopiera le code situe 
 
 def rand(c):
     c.ax  = c.univers.nextSite.getNext(c)
