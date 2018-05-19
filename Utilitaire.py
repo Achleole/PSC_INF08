@@ -36,7 +36,10 @@ def calculer_pattern(memoire, ptr_tmp):
             pattern.append(0)
         else:
             break
-        ptr_tmp = (ptr_tmp + 1) % len(memoire)
+        if ptr_tmp >= len(memoire)-1:
+            ptr_tmp = (ptr_tmp + 1) % len(memoire)
+        else:
+            ptr_tmp += 1
     return pattern
 
 def trouver_template_complementaire_avant(c, LIMITE_RECHERCHE):
@@ -50,7 +53,7 @@ def trouver_template_complementaire_avant_mem(memoire, ptr, LIMITE_RECHERCHE):
     ou c.ptr + 1 dans le cas ou le pattern est vide ou n'a pas ete trouve.\
     On renvoie aussi i qui est le temps pris pour trouver le pattern"
     #c est le CPU
-    pattern = calculer_pattern(memoire, (ptr + 1 % len(memoire)))
+    pattern = calculer_pattern(memoire, ((ptr + 1) % len(memoire)))
     longueur_pattern = len(pattern)
 
     if longueur_pattern == 0:
@@ -82,7 +85,6 @@ def trouver_template_complementaire_arriere_mem(memoire, ptr, LIMITE_RECHERCHE):
 
     if longueur_pattern == 0:
         raise NoPatternException()
-
     copie_avant = memoire[ptr+longueur_pattern+1:] + memoire[:ptr]
     copie_arriere = copie_avant[::-1]
     i 			  = knuth_morris_pratt(copie_arriere, pattern_arriere)

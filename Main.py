@@ -12,8 +12,8 @@ import Experiment
 class Main:
 
 	def __init__(selfself):
-		exp = Experiment.Experiment()
-		exp.setLargeurCalculDensite(0)
-		exp.setFolderName("experiences_20_avril")
-		exp.experiment2SimpleNextSite([550], 1, 1000)
+		exp = Experiment.Experiment(mut=0.001, insSet=1)
+		exp.setLargeurCalculDensite(23)
+		exp.setFolderName("experiences_18_mai")
+		exp.experiment2([10000], 1, 1000000)
 Main()

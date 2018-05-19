@@ -80,16 +80,11 @@ class Univers:
 
     def cycle(s):
         "Execute les CPUs, met a jour les statistiques puis les tue par densite"
-        try:
-            s.executer_cpus()
-            s.tuer_cpus_par_densite()
-        except Exception as e:
-            print(e)
-            raise
-        finally:
-            if s.statistiques != None:
-                s.statistiques.mettre_a_jour()
-            s.reinitialise_cpus_crees()
+        s.executer_cpus()
+        s.tuer_cpus_par_densite()
+        if s.statistiques != None:
+            s.statistiques.mettre_a_jour()
+        s.reinitialise_cpus_crees()
             
     def executer_cpus(s):
         "Cette fonction execute tous les CPU 1 fois\
@@ -109,12 +104,9 @@ class Univers:
     def supprimer_cpu_localisation(s, cpu):
         """Prend en argument le pointeur vers un cpu et l'enleve dans le dictionnaire localisation_cpus"""
         i = cpu.ptr
-        try:
-            s.localisation_cpus[i].remove(cpu)
-            if s.localisation_cpus[i] == []:
-                del s.localisation_cpus[i]
-        except Exception as e:
-            print("Erreur de suppression de localisation :", e)
+        s.localisation_cpus[i].remove(cpu)
+        if s.localisation_cpus[i] == []:
+            del s.localisation_cpus[i]
 
 
     def ajouter_cpu_localisation(s, cpu):
@@ -128,10 +120,21 @@ class Univers:
         i = s.liste_cpus.index(cpu)
         s.liste_cpus.pop(i)
         s.supprimer_cpu_localisation(cpu)
-        if s.indice_cpu_actuel == i and i!=0:
+        if s.indice_cpu_actuel == i:
             s.next_cpu()
         if s.indice_cpu_actuel == len(s.liste_cpus):
             s.indice_cpu_actuel = 0
+
+    def tuer_cpu_pour_densite(s, cpu):
+        """Tue cpu, ie le supprime de ce dictionnaire et de liste_cpus"""
+        i = s.liste_cpus.index(cpu)
+        s.liste_cpus.pop(i)
+        if s.indice_cpu_actuel == i:
+            s.next_cpu()
+        if s.indice_cpu_actuel == len(s.liste_cpus):
+            s.indice_cpu_actuel = 0
+        if s.localisation_cpus[cpu.ptr] == []:
+            del s.localisation_cpus[cpu.ptr]
 
     def tuer_cpu_actuel(s):
         """NE PAS UTILISER SI CPU ACTUEL EN COURS D'EXECUTION"""
@@ -172,7 +175,7 @@ class Univers:
             nb += s.nbCPUs_at_i(summ)
         return nb
 
-    def killAround(s, i, n):
+    def killAround(s, i, n, spot=None):
         """Tue les CPUs dans la region commencant a l'indice i et contenant au depart n CPUs, jusqu'a atteindre la moitie de la densite limite"""
         # suppose qu'aucun CPU n'est en cours d'execution
         morts=[]
@@ -191,6 +194,39 @@ class Univers:
         # peut-etre le cpu c est-il dans plusieurs localisations ? (et lorsqu'il est supprime de liste_cpus, toute les localisations ne sont pas supprimees...)
         return morts
 
+    def killAround_faster(s, i, n, spot=None):
+        """Tue les CPUs dans la region commencant a l'indice i et contenant au depart n CPUs, jusqu'a atteindre la moitie de la densite limite"""
+        # suppose qu'aucun CPU n'est en cours d'execution
+        morts=[]
+        l = 2*s.LARGEUR_CALCUL_DENSITE
+        target = max(1, (s.maxCPUs / 2))
+
+        if spot is None:
+            spot=i
+        if n<=target:
+            return []
+        for j in range(spot, i+l+1):
+            if j>s.TAILLE_MEMOIRE:
+                j = s.ind(j)
+            while j in s.localisation_cpus:
+                c=s.localisation_cpus[j].pop()
+                morts += [c.id]
+                s.tuer_cpu_pour_densite(c)
+                n -= 1
+                if n <= target:
+                    return morts
+        for j in range(i, spot):
+            if j>s.TAILLE_MEMOIRE:
+                j = s.ind(j)
+            while j in s.localisation_cpus:
+                c=s.localisation_cpus[j].pop()
+                morts += [c.id]
+                s.tuer_cpu_pour_densite(c)
+                n -= 1
+                if n <= target:
+                    return morts
+        return []
+
     def tuer_cpus_par_densite(s):
         """Fait tuer des CPUs par killAround dans les endroits trop denses"""
         l = 2 * s.LARGEUR_CALCUL_DENSITE  # largeur reelle de l'intervalle de calcul de densite - 1
@@ -203,7 +239,7 @@ class Univers:
                 if summ >= s.TAILLE_MEMOIRE or summ < 0:
                     summ = s.ind(summ)
                 if s.nbCPUs_around_i(summ) > s.maxCPUs:
-                    killZones.append(summ)
+                    killZones.append((summ, i))
         for k in range(0, start) :
             i = s.liste_cpus[k].ptr
             for j in range(-s.LARGEUR_CALCUL_DENSITE, s.LARGEUR_CALCUL_DENSITE+1) :
@@ -212,13 +248,13 @@ class Univers:
                     summ = s.ind(summ)
                 n = s.nbCPUs_around_i(summ)
                 if n > s.maxCPUs:
-                    killZones.append(summ)
+                    killZones.append((summ, i))
         morts=[]
-        for i in killZones :
-            begin = i-s.LARGEUR_CALCUL_DENSITE
+        for x in killZones :
+            begin = x[0]-s.LARGEUR_CALCUL_DENSITE
             if begin < 0:
                 begin = s.ind(begin)
-            morts+=s.killAround(begin, s.nbCPUs_around_i(i))
+            morts+=s.killAround_faster(begin, s.nbCPUs_around_i(x[0]), spot=x[1])
         # avec cette methode est qu'apres en avoir deja supprime, on va faire appel a killAround pour des zones potentiellement deja redescendues sous la densite seuil
         # on pourrait optimiser en ne recalculant pas les nbCPUs_around_i(les indices i deja traites par un autre k)
         return morts

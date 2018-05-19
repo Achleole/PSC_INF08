@@ -40,14 +40,9 @@ class CPU:
             HCF(self)
         else:
             self.univers.supprimer_cpu_localisation(self)
-            try:
-                eval(ins)(self)
-            except Exception as e:
-                print("Instruction ayant echoue : ", ins)
-                print(e)
-            finally:
-                self.incrementer_ptr()
-                self.univers.ajouter_cpu_localisation(self)
+            eval(ins)(self)
+            self.incrementer_ptr()
+            self.univers.ajouter_cpu_localisation(self)
 
     def incrementer_ptr(self):
         if self.ptr == self.univers.TAILLE_MEMOIRE-1:

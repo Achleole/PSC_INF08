@@ -34,13 +34,13 @@ def ifz(c):
 def subCAB(c):
     diff = c.ax - c.bx
     if diff >= c.univers.TAILLE_MEMOIRE or c<0:
-        diff : c.univers.ind(diff)
+        diff = c.univers.ind(diff)
     c.cx = diff
 
 def subAAC(c):
     diff = c.ax - c.cx
     if diff >= c.univers.TAILLE_MEMOIRE or c < 0:
-        diff: c.univers.ind(diff)
+        diff = c.univers.ind(diff)
     c.ax = diff
 
 def incA(c):

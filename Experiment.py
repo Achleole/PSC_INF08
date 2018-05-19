@@ -5,10 +5,11 @@ import SimpleNextSite
 import Enregistrement
 from CPU import *
 import Instructions
+import InstructionsSuperrwshll
 import CPU
 import Statistiques
 import NextSite
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 
 import datetime #utilise pour donner un nom par defaut aux fichiers
@@ -17,11 +18,13 @@ import datetime #utilise pour donner un nom par defaut aux fichiers
 
 class Experiment:
 
-    def __init__(self, dossier="defaultExperiment", enregistrerBool=False):
+    def __init__(self, dossier="defaultExperiment", enregistrerBool=False, insSet=0, mut=0):
         self.folderName = dossier #folderName est le nom du dossier dans lequel on enregistre les graphes
         self.current_ancestor = None
         self.lcd = 23 #23 : valeur par defaut de la largeur de LARGEUR_CALCUL_DENSITE
         self.enregistrerBool = enregistrerBool #est-ce qu'on enregistre les experiences ou non ?
+        self.insSet = insSet #le set d'instructions utilise : 0 -> normal, !=0 -> InstructionsSuperrwshll
+        self.m = mut # le taux de mutation
         return
 
     def test(self, nb_iterations):
@@ -35,23 +38,23 @@ class Experiment:
 
     def run(self, iteration=0):
         while self.i < iteration:
-            try:
-                self.U.cycle()
-            except Exception as e:
-                print(e)
+            self.U.cycle()
             self.i += 1
         return self.test(iteration)
 
-    def run2(self, iteration=0):
+    def run2(self, iteration=0, expnb=-1):
         "Variation  de run, pour l'experience 2 : a chaque iteration on va compter le nombre d'occurences\
         puis les stocker dans un tableau"
         occurences = [0]*iteration
         while self.i < iteration:
-            try:
-                self.U.cycle()
-            except Exception as e:
-                print(e)
+            self.U.cycle()
             occurences[self.i] = self.compter_genomes(self.current_ancestor, self.U.memoire)
+            if self.i%70000 == 0:
+                self.chercher_autres_genomes(self.current_ancestor, self.i, expnb)
+                #if self.i%2000==0:
+                np.savetxt(self.folderName + "/exp2-expnb" + str(expnb) + "-iter" + str(self.i) + "-tm" + str(self.U.TAILLE_MEMOIRE) + "ancetres", occurences)
+                np.savetxt(self.folderName + "/exp2-expnb" + str(expnb) + "-iter" + str(self.i) + "-tm" + str(self.U.TAILLE_MEMOIRE) + "tot", self.stats.cpus_total)
+                np.savetxt(self.folderName + "/exp2-expnb" + str(expnb) + "-iter" + str(self.i) + "-tm" + str(self.U.TAILLE_MEMOIRE) + "crees", self.stats.cpus_crees)
             self.i += 1
         tmp = self.test(iteration)
         return (tmp[0], occurences)
@@ -66,7 +69,10 @@ class Experiment:
         self.U = Univers.Univers(nextSite, TAILLE_MEMOIRE=taille_memoire, mutation=m)
         self.U.LARGEUR_CALCUL_DENSITE = self.lcd
         self.stats = Statistiques.Statistiques(self.U)
-        self.U.insDict.initialize(Instructions.instructions) 
+        if self.insSet == 0:
+            self.U.insDict.initialize(Instructions.instructions)
+        else:
+            self.U.insDict.initialize(InstructionsSuperrwshll.instructions)
         eve = Enregistrement.charger_genome('eve') #charge le genome eve
         ancestor = self.U.insDict.toInts(eve) #et convertit en instructions
         self.current_ancestor = ancestor
@@ -136,6 +142,22 @@ class Experiment:
                 nombre += 1
         return nombre
 
+    def chercher_autres_genomes(self, code_ancetre, iter, expnb):
+        i=0
+        k=0
+        while i<self.U.TAILLE_MEMOIRE:
+            if k == 5:
+                if self.U.memoire[i-5:i+43]!=code_ancetre:
+                    nom = self.folderName + "/exp2-expnb" + str(expnb) + "-iter" + str(iter) + "-tm" + str(self.U.TAILLE_MEMOIRE) + "-i" + str(i)
+                    np.savetxt(nom, self.U.memoire[i-5:i+63])
+                k=0
+            if self.U.memoire[i]==0:
+                k+=1
+            else:
+                k=0
+            i+=1
+
+
     def run_experiment_1(self, TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, nextsitefonction):
         #nextsite : fonction nextsite qu'on utilise (la normale ou SimpleNextSite)
         for t_m in TAILLE_MEMOIRE:
@@ -145,12 +167,12 @@ class Experiment:
 
             for e in range(NOMBRE_EXPERIENCES):
                 print('-> Experience numero ', str(e+1))
-                self.setUpForExp(0.0, t_m, nextsitefonction)
+                self.setUpForExp(self.m, t_m, nextsitefonction)
                 
                 #total, crees = self.run(NOMBRE_ITERATIONS)
-                
+
+                nom = self.folderName + "/exp1-nbexp" + str(NOMBRE_EXPERIENCES) + "-nbiter" + str(NOMBRE_ITERATIONS) + "-tm"
                 if self.enregistrerBool:
-                    nom = self.folderName + "/exp1-nbexp"+str(NOMBRE_EXPERIENCES)+"-nbiter"+str(NOMBRE_ITERATIONS)+"-n"
                     self.replay.openWrite(nom+str(e))
                     self.replay.cycleAndSave(NOMBRE_ITERATIONS)
                 else:
@@ -163,13 +185,14 @@ class Experiment:
             ord1 = [float(x)/NOMBRE_EXPERIENCES for x in ord1]
             ord2 = [float(y)/NOMBRE_EXPERIENCES for y in ord2]
 
-            nom_fichier = "" + str(t_m) + "_crees"
-            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord2)
-            nom_fichier = "" + str(t_m) + "_total"
-            plt.clf()
-            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord1)
-
-            print("Fini")
+            nom_fichier = nom + str(t_m) + "_crees"
+            #self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord2)
+            np.savetxt(nom_fichier, ord2)
+            nom_fichier = nom + str(t_m) + "_total"
+            #plt.clf()
+            #self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord1)
+            np.savetxt(nom_fichier, ord1)
+            print("Finito!")
 
     def run_experiment_2(self, TAILLE_MEMOIRE, NOMBRE_EXPERIENCES, NOMBRE_ITERATIONS, nextsitefonction):
         eve = Enregistrement.charger_genome("eve")
@@ -180,36 +203,37 @@ class Experiment:
 
             for e in range(NOMBRE_EXPERIENCES):
                 print('-> Experience numero ', str(e+1))
-                self.setUpForExp(0.0, t_m, nextsitefonction)
+                self.setUpForExp(self.m, t_m, nextsitefonction)
                 ancestor = self.U.insDict.toInts(eve)  # l'ancetre sera cherche dans la memoire dans la suite
 
+                nom = self.folderName + "/exp2-nbexp" + str(NOMBRE_EXPERIENCES) + "-nbiter" + str(NOMBRE_ITERATIONS) + "-tm"
                 if self.enregistrerBool:
                     total = []
                     occurences = []
-                    nom = self.folderName + "/exp2-nbexp" + str(NOMBRE_EXPERIENCES) + "-nbiter" + str(NOMBRE_ITERATIONS) + "-n"
                     self.replay.openWrite(nom + str(e))
                     for i in range(NOMBRE_ITERATIONS):
                         self.replay.cycleAndSave(1)
                         total.append(len(self.U.liste_cpus))
                         occurences.append(self.compter_genomes(ancestor, self.U.memoire))
                 else:
-                        total, occurences = self.run2(NOMBRE_ITERATIONS)
+                        total, occurencesN = self.run2(NOMBRE_ITERATIONS, expnb=e)
 
                 for i in range(NOMBRE_ITERATIONS):
                     ord1[i] += total[i]
-                    ord2[i] += occurences[i]
+                    ord2[i] += occurencesN[i]
 
 
             ord1 = [float(x)/NOMBRE_EXPERIENCES for x in ord1]
             ord2 = [float(y)/NOMBRE_EXPERIENCES for y in ord2]
 
-            nom_fichier = "" + str(t_m) + "_crees"
-            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord2)
-            nom_fichier = "" + str(t_m) + "_occurences"
-            plt.clf()
-            self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord1)
-
-            print("Fini")
+            nom_fichier = nom + str(t_m) + "_totalCPUs"
+            #self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord2)
+            np.savetxt(nom_fichier, ord1)
+            nom_fichier = nom + str(t_m) + "_occurences_normal"
+            #plt.clf()
+            #self.enregistrer_graphe(nom_fichier, NOMBRE_ITERATIONS, ord1)
+            np.savetxt(nom_fichier, ord2)
+            print("Finito2!")
 
     def experiment1(self, TAILLE_MEMOIRE=None, NOMBRE_EXPERIENCES = 50, NOMBRE_ITERATIONS = 10000):
         if TAILLE_MEMOIRE == None :

@@ -99,9 +99,9 @@ class Replay:
                 c = self.univers.cpu_actuel()
                 instruction = self.univers.memoire[c.ptr]
                 self.univers.execute(1)
-                if instruction==36:
+                if self.univers.insDict.toString(instruction)=="write":
                     self.saveWrite(c.univers.memoire[c.ax])
-                elif instruction==34:
+                elif self.univers.insDict.toString(instruction)=="rand":
                     self.saveRand(c.ax)
                 # else:
                 #     self.saveVoid()
@@ -231,13 +231,13 @@ class Replay:
             return case
     def advance(self):
         c=self.univers.cpu_actuel()
-        if self.univers.memoire[c.ptr]==36:
+        if self.univers.insDict.toString(self.univers.memoire[c.ptr])=="write":
             if c.ax >= self.univers.TAILLE_MEMOIRE or c.ax <0:
                 c.ax = c.univers.ind(c.ax)
             self.univers.execute(1)
             c.univers.memoire[c.ax] = self.readEvolutionWrite()
             # comme la fonction write mais qui ecrit la valeur case donnee en argument a la place de ce que le CPU devrait ecrire.
-        elif self.univers.memoire[c.ptr]==34:
+        elif self.univers.insDict.toString(self.univers.memoire[c.ptr])=="rand":
             self.univers.execute(1)
             c.ax = self.readEvolutionRand()
         else:
