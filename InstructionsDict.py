@@ -48,5 +48,8 @@ class InstructionsDict :
     def toString(self, nb):
         """Renvoie la String traduction de l'entier nb"""
         if nb not in self.intToStr :
-            nb = random.randint(0,37)
+            nb = random.randint(0,self.nbInstructions()-1)
         return self.intToStr[nb]
+
+    def nbInstructions(self):
+        return len(self.intToStr)

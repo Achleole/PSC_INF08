@@ -7,11 +7,18 @@ class CPU:
     TAILLE_STACK = 10
 
     # ptr stocke l'adresse actuellement pointee par le CPU
-    def __init__(self, ptr, univers, ax=0, bx=0, cx=0, dx=0, stack=None, stack_ptr=0, father=None):
+    def __init__(self, ptr, univers, ax=0, bx=None, cx=0, dx=0, stack=None, stack_ptr=0, father=None, id = None):
         """Doit contenir la meme valeur que ptr dans bx (pour eve)"""
-        self.id = univers.nextId(father)
+        if id ==None:
+            self.id = univers.nextId(father)
+        
+        else:
+            self.id = id
         self.ax = ax
-        self.bx = bx
+        if bx == None:
+            self.bx = ptr
+        else:
+            self.bx = bx    
         self.cx = cx
         self.dx = dx
         self.univers = univers
@@ -22,25 +29,19 @@ class CPU:
             self.stack = stack
         self.stack_ptr = stack_ptr
 
-        self.a_mute     = False #Passe a vrai des que le code diverge de l'ancetre initial
-        self.ecriture_mutee = False #Passe a vrai quand il y a mutation dans le code qu'on ecrit 
-        #repasse a faux quand on a finit de se diviser et qu'on passe a la reecriture suivante
-        self.generation = 1
-
     def execute(self):
         """execute l'instruction actuellement pointee par le CPU puis passe a la suivante\
         Met a jour la localisation du CPU\
         Attention, les instructions sont stockees dans le dictionnaire de l'univers sous forme de chaine de caractere\
         correspondant EXACTEMENT au nom des fonctions"""
-        self.ptr = self.univers.ind(self.ptr)
+        #self.ptr = self.univers.ind(self.ptr)
         ins = self.univers.insDict.toString(self.univers.memoire[self.ptr])
         if ins == "HCF":
             HCF(self)
         else:
             self.univers.supprimer_cpu_localisation(self)
             try:
-                f = eval(ins)
-                f(self)
+                eval(ins)(self)
             except Exception as e:
                 print("Instruction ayant echoue : ", ins)
                 print(e)
@@ -49,7 +50,10 @@ class CPU:
                 self.univers.ajouter_cpu_localisation(self)
 
     def incrementer_ptr(self):
-        self.ptr = self.univers.ind((self.ptr + 1))
+        if self.ptr == self.univers.TAILLE_MEMOIRE-1:
+            self.ptr=0
+        else:
+            self.ptr +=1
 
     def incrementer_stack_ptr(self):
         self.stack_ptr = (self.stack_ptr + 1) % (TAILLE_STACK)
@@ -81,4 +85,19 @@ class CPU:
         print('valeur de la stack : ', self.stack)
         print('pointeur de la stack : ', self.stack_ptr)
     def copy(self,nUnivers):
-        return CPU(self.ptr, nUnivers, self.ax, self.bx, self.cx, self.dx, self.stack[:], self.stack_ptr)
+        return CPU(self.ptr, nUnivers, self.ax, self.bx, self.cx, self.dx, self.stack[:], self.stack_ptr, None, self.id)
+    def __ne__(self,other):
+        return not self.__eq__(other)
+    def __eq__(self,other):
+        if other is None:
+            return self is None
+        else:
+            bool = self.ptr == other.ptr
+            bool *= self.ax == other.ax
+            bool *= self.bx == other.bx
+            bool *= self.cx == other.cx
+            bool *= self.dx == other.dx
+            bool *= self.stack == other.stack
+            bool *= self.stack_ptr == other.stack_ptr
+            bool *= self.id == other.id
+            return bool
